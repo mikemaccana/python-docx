@@ -1,6 +1,6 @@
 #!/usr/bin/env python26
 '''
-Open and modify Microsoft Word 2007 docx files (called 'Office OpenXML' by Microsoft)
+Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
 
 TODO:
 - Return all text in document
@@ -67,27 +67,46 @@ def search(phrase):
     '''Recieve a search, return the results'''
     results = False
     return results
+
+def replace(search,replace):
+    '''Replace all occurences of string with a different string'''
+    results = False
+    return results
     
-def savedocx(oldfilename,document,newfilename=None):
+def savedocx(document,newfilename):
     '''Save a modified document'''
+    documentstring = etree.tostring(document, pretty_print=True)
+    newfile = zipfile.ZipFile(newfilename,mode='w')
+    newfile.writestr('word/document.xml',documentstring)
+    for file in [ 
+    '[Content_Types].xml',
+    '_rels/.rels',
+    'docProps/core.xml',
+    'docProps/thumbnail.jpeg',
+    'docProps/app.xml',
+    'word/webSettings.xml',
+    'word/_rels/document.xml.rels',
+    'word/styles.xml',
+    'word/theme/',
+    'word/theme/theme1.xml',
+    'word/settings.xml',
+    'word/fontTable.xml']:
+        newfile.write('template/'+file,file)
+    print 'Saved new file to: '+newfilename
     return    
+
     
 if __name__ == '__main__':        
-    #document = opendocx('Hello world.docx')
-    document = etree.parse('sample.xml')
-    #testelement = makeelement('success')
+    document = opendocx('Hello world.docx')
+    #document = etree.parse('sample.xml')
     #ipdb.set_trace()
-
+    
     # This location is where most document content lives 
-    documentbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)
+    docbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)
     
-    # Attach a paragraph element to our document
-    newpara = addparagraph(paratext='success')    
-    documentbody[0].insert(1, newpara)
+    # Attach a paragraph element to the top of our document body
+    newpara = addparagraph(paratext='Success! PyWord is working!')    
+    docbody[0].insert(0, newpara)
     
-    
-
-    resultsfile = open('results','w')
-    newxml = etree.tostring(document, pretty_print=True)
-    print newxml
-    resultsfile.write(newxml)    
+    # Save our document
+    savedocx(document,'Test file.docx')

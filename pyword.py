@@ -14,6 +14,7 @@ key is left column, data is right column
 
 from lxml import etree
 import zipfile
+import sys
 #import ipdb
 
 wordnamespaces = {
@@ -44,7 +45,7 @@ def makeelement(tagname,tagattributes=None,tagtext=None):
     # Add attributes with namespaces
     if tagattributes:
         for tagattribute in tagattributes:
-            newelement.set('{'+wordnamespaces['w']+'}'+tagattribute, tagattributes[tagattribute])
+            newelement.set(namespace+tagattribute, tagattributes[tagattribute])
     if tagtext:
         newelement.text = tagtext    
     return newelement
@@ -52,9 +53,8 @@ def makeelement(tagname,tagattributes=None,tagtext=None):
 
 def addparagraph(paratext):
     '''Make a new paragraph element, containing a run, and some text. Return the paragraph element.'''
-    global document
     # Make our elements
-    paragraph = makeelement('p',tagattributes={'rsidR':'008D6863','rsidRDefault':'00590D07'})
+    paragraph = makeelement('p')
     run = makeelement('r')
     text = makeelement('t',tagtext=paratext)
     # Add the text the run, and the run to the paragraph
@@ -62,7 +62,23 @@ def addparagraph(paratext):
     paragraph.append(run)    
     # Return the combined paragraph
     return paragraph
-    
+
+def addheading(headingtext,headinglevel):
+    '''Make a new heading, return the heading element'''
+    # Make our elements
+    paragraph = makeelement('p')
+    pr = makeelement('pPr')
+    pStyle = makeelement('pStyle',tagattributes={'val':'Heading'+str(headinglevel)})    
+    run = makeelement('r')
+    text = makeelement('t',tagtext=headingtext)
+    # Add the text the run, and the run to the paragraph
+    pr.append(pStyle)
+    run.append(text)
+    paragraph.append(pr)   
+    paragraph.append(run)    
+    # Return the combined paragraph
+    return paragraph   
+
 def search(phrase):
     '''Recieve a search, return the results'''
     results = False
@@ -102,11 +118,19 @@ if __name__ == '__main__':
     #ipdb.set_trace()
     
     # This location is where most document content lives 
-    docbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)
+    docbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)[0]
     
     # Attach a paragraph element to the top of our document body
-    newpara = addparagraph(paratext='Success! PyWord is working!')    
-    docbody[0].insert(0, newpara)
+    newheading = addheading('All your base are belong to us',1)    
+    docbody.append(newheading)
+
+    newheading = addheading('You have no chance to survive. ',2)    
+    docbody.append(newheading)
+
+
+    # Attach a paragraph element to the top of our document body
+    newpara = addparagraph(paratext='Make your time. Hahaha')    
+    docbody.append(newpara)
     
     # Save our document
-    savedocx(document,'Test file.docx')
+    savedocx(document,sys.argv[1])

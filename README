@@ -1,6 +1,6 @@
 Read and writes Microsoft Word 2007/Microsoft Mac Office 2008 docx files.
 
-These are confusingly referred to as 'Office Open XML' by Microsoft although that spec is incomplete.
+These are referred to as 'Office Open XML' and 'Open XML' by Microsoft although that spec does not have anything to do with the OpenOffice file format. 
 
 Features:
 - Native Python, which works on all Python platforms.

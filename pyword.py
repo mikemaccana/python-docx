@@ -3,7 +3,6 @@
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
 
 TODO:
-- Return all text in document
 - return document properties dict
 - Read word XML reference 
 - Functions to recieve dict and put into table
@@ -31,6 +30,8 @@ wordnamespaces = {
     'wp':'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
     }
 
+namespace = '{'+wordnamespaces['w']+'}'  
+
 def opendocx(file):
     '''Open a docx file, return a document XML tree'''
     mydoc = zipfile.ZipFile(file)
@@ -39,8 +40,7 @@ def opendocx(file):
     return document
 
 def makeelement(tagname,tagattributes=None,tagtext=None):
-    '''Create an element & return it'''
-    namespace = '{'+wordnamespaces['w']+'}'    
+    '''Create an element & return it'''  
     newelement = etree.Element(namespace+tagname)
     # Add attributes with namespaces
     if tagattributes:
@@ -148,6 +148,17 @@ def replace(search,replace):
     '''Replace all occurences of string with a different string'''
     results = False
     return results
+
+def getdocumenttext(document):
+    '''Document'''
+    # Recursively get all elements beneath tree
+    # Get each elements text attribute
+    contents = ''
+    for element in document.iter():
+        if element.tag == namespace+'t':
+            if element.text:
+                contents = contents+element.text+'\n'
+    return contents        
     
 def savedocx(document,newfilename):
     '''Save a modified document'''
@@ -191,6 +202,9 @@ if __name__ == '__main__':
     # Append a paragraph element 
     newpara = addparagraph(paratext='Make your time. Hahaha')    
     docbody.append(newpara)
+
+    print getdocumenttext(document)
+    #print etree.tostring(document, pretty_print=True)
     
     # Save our document
     savedocx(document,sys.argv[1])

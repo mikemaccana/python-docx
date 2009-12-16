@@ -1,9 +1,16 @@
 Read and writes Microsoft Word 2007/Microsoft Mac Office 2008 docx files.
 
-These are referred to as 'Office Open XML' and 'Open XML' by Microsoft although that spec does not have anything to do with the OpenOffice file format. 
+These are referred to as 'Office Open XML' and 'Open XML' by Microsoft although that spec does not have anything to do with the pre-existing OpenOffice file format. 
+
+Pure Python / XML / XPath. Does not use any desktop-era tools:
+- Does not use Microsoft Office or OpenOffice (too ugly)
+- Does not use COM, .net or Java (too stinky)
+Just Python. Runs happily on your webserver.
 
 Features:
-- Native Python, which works on all Python platforms.
-- Does not use or require Microsoft Office or OpenOffice like other solutions
+- 100% Native Python. Works on all Python platforms.
+- Can add paragraphs, multiple levels of headings, and tables
+- Can get all text out of a document
+- Support for adding arbitrary elements in included via makelement(), which creates XML elements with required Word namespaces in their tag names and attributes
 
 Mike MacCana mike.maccana@gmail.com

@@ -7,6 +7,19 @@ from lxml import etree
 import zipfile
 #import ipdb
 
+wordnamespaces = {'mv':'urn:schemas-microsoft-com:mac:vml',
+    'mo':'http://schemas.microsoft.com/office/mac/office/2008/main',
+    've':'http://schemas.openxmlformats.org/markup-compatibility/2006',
+    'o':'urn:schemas-microsoft-com:office:office',
+    'r':'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+    'm':'http://schemas.openxmlformats.org/officeDocument/2006/math',
+    'v':'urn:schemas-microsoft-com:vml',
+    'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+    'w10':'urn:schemas-microsoft-com:office:word',
+    'wne':'http://schemas.microsoft.com/office/word/2006/wordml',
+    'wp':'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
+    }
+
 def opendocx(file):
     '''Open a docx file, return a document XML tree'''
     mydoc = zipfile.ZipFile(file)
@@ -16,7 +29,15 @@ def opendocx(file):
 
 def makeelement(tagname,tagattributes=None,tagtext=None,**kwargs):
     '''Create an element & return it'''
-    newelement = etree.Element(tagname)
+    #newelement = etree.Element(tagname)
+    #ns = "{...}"
+    #Element(ns+"p"
+    #
+    namespace = '{'+wordnamespaces['w']+'}'    
+    newelement = etree.Element(namespace+tagname)
+    
+    #newelement = etree.Element("{urn:oasis:names:tc:opendocument:xmlns:text:1.0}p",stylename='Standard')
+    #text_element = etree.Element("{urn:oasis:names:tc:opendocument:xmlns:text:1.0}p",stylename='Standard')
     if tagattributes:
         for tagattribute in tagattributes:
             newelement.set(tagattribute, tagattributes[tagattribute])
@@ -28,18 +49,7 @@ def appendelement(addlocation,tagname,tagattributes=None,tagtext=None,**kwargs):
     '''Make and append an element at a path location'''
     global document
     newelement = makeelement(tagname,tagattributes,tagtext)
-    location = document.xpath(addlocation, namespaces={'mv':'urn:schemas-microsoft-com:mac:vml',
-        'mo':'http://schemas.microsoft.com/office/mac/office/2008/main',
-        've':'http://schemas.openxmlformats.org/markup-compatibility/2006',
-        'o':'urn:schemas-microsoft-com:office:office',
-        'r':'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
-        'm':'http://schemas.openxmlformats.org/officeDocument/2006/math',
-        'v':'urn:schemas-microsoft-com:vml',
-        'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
-        'w10':'urn:schemas-microsoft-com:office:word',
-        'wne':'http://schemas.microsoft.com/office/word/2006/wordml',
-        'wp':'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
-        })
+    location = document.xpath(addlocation, namespaces=wordnamespaces)
     location[0].insert(1, newelement)
     return
 
@@ -54,6 +64,7 @@ def search(phrase):
     return results
     
 def savedocx(oldfilename,document,newfilename=None):
+    '''Save a modified document'''
     return    
     
 if __name__ == '__main__':        
@@ -62,8 +73,8 @@ if __name__ == '__main__':
     testelement = makeelement('success')
     #ipdb.set_trace()
     appendelement('/w:document/w:body','p',tagattributes={'rsidR':'008D6863','rsidRDefault':'00590D07'})
-    appendelement('/w:document/w:body/p','r')
-    appendelement('/w:document/w:body/p/r','t',tagtext='success')
+    appendelement('/w:document/w:body/w:p[2]','r')
+    appendelement('/w:document/w:body/w:p[2]/w:r','t',tagtext='success')
 
     resultsfile = open('results','w')
     newxml = etree.tostring(document, pretty_print=True)

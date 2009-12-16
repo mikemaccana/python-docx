@@ -5,5 +5,5 @@
         <w:t>Hello world</w:t>
       </w:r>
     </w:p>
-  <p rsidRDefault="00590D07" rsidR="008D6863"><r><t>success</t></r></p></w:body>
+  <w:p rsidRDefault="00590D07" rsidR="008D6863"><w:r><w:t>success</w:t></w:r></w:p></w:body>
 </w:document>

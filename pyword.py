@@ -79,6 +79,66 @@ def addheading(headingtext,headinglevel):
     # Return the combined paragraph
     return paragraph   
 
+
+def addtable(contents):
+    '''Get a list of lists, return a table'''
+    table = makeelement('tbl')
+    columns = len(contents[0][0])
+    
+    # Table properties
+    tableprops = makeelement('tblPr')
+    tablestyle = makeelement('tblStyle',tagattributes={'val':'ColorfulGrid-Accent1'})
+    tablewidth = makeelement('tblW',tagattributes={'w':'0','type':'auto'})
+    tablelook = makeelement('tblLook',tagattributes={'val':'0400'})
+    for tableproperty in [tablestyle,tablewidth,tablelook]:
+        tableprops.append(tableproperty)
+    table.append(tableprops)    
+    
+    # Table Grid    
+    tablegrid = makeelement('tblGrid')
+    for _ in range(columns):
+        tablegrid.append(makeelement('gridCol',tagattributes={'gridCol':'2390'}))
+    table.append(tablegrid)     
+
+    # Heading Row    
+    row = makeelement('tr')
+    rowprops = makeelement('trPr')
+    cnfStyle = makeelement('cnfStyle',tagattributes={'val':'000000100000'})
+    rowprops.append(cnfStyle)
+    row.append(rowprops)
+    for heading in contents[0]:
+        cell = makeelement('tc')  
+        # Cell properties  
+        cellprops = makeelement('tcPr')
+        cellwidth = makeelement('tcW',tagattributes={'w':'2390','type':'dxa'})
+        cellstyle = makeelement('shd',tagattributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
+        cellprops.append(cellwidth)
+        cellprops.append(cellstyle)
+        cell.append(cellprops)
+        
+        # Paragraph (Content)
+        cell.append(addparagraph(heading))
+        row.append(cell)
+    table.append(row)    
+        
+    # Contents Rows   
+    for contentrow in contents[1:]:
+        row = makeelement('tr')     
+        for content in contentrow:   
+            cell = makeelement('tc')
+            # Properties
+            cellprops = makeelement('tcPr')
+            cellwidth = makeelement('tcW',tagattributes={'type':'dxa'})
+            cellprops.append(cellwidth)
+            cell.append(cellprops)
+
+            # Paragraph (Content)
+            cell.append(addparagraph(content))
+            row.append(cell)    
+        table.append(row)   
+    return table                 
+                        
+
 def search(phrase):
     '''Recieve a search, return the results'''
     results = False
@@ -94,7 +154,8 @@ def savedocx(document,newfilename):
     documentstring = etree.tostring(document, pretty_print=True)
     newfile = zipfile.ZipFile(newfilename,mode='w')
     newfile.writestr('word/document.xml',documentstring)
-    for file in [ 
+    # Add support files
+    for xmlfile in [ 
     '[Content_Types].xml',
     '_rels/.rels',
     'docProps/core.xml',
@@ -107,28 +168,27 @@ def savedocx(document,newfilename):
     'word/theme/theme1.xml',
     'word/settings.xml',
     'word/fontTable.xml']:
-        newfile.write('template/'+file,file)
+        newfile.write('template/'+xmlfile,xmlfile)
     print 'Saved new file to: '+newfilename
     return    
 
     
 if __name__ == '__main__':        
-    document = opendocx('Hello world.docx')
-    #document = etree.parse('sample.xml')
+    #document = opendocx('Hello world.docx')
+    document = etree.parse('template/word/document.xml')
     #ipdb.set_trace()
     
     # This location is where most document content lives 
     docbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)[0]
     
-    # Attach a paragraph element to the top of our document body
-    newheading = addheading('All your base are belong to us',1)    
-    docbody.append(newheading)
+    # Append two headings
+    docbody.append(addheading('All your base are belong to us',1)  )   
+    docbody.append(addheading('You have no chance to survive. ',2))
 
-    newheading = addheading('You have no chance to survive. ',2)    
-    docbody.append(newheading)
+    # Append a table
+    docbody.append(addtable([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
 
-
-    # Attach a paragraph element to the top of our document body
+    # Append a paragraph element 
     newpara = addparagraph(paratext='Make your time. Hahaha')    
     docbody.append(newpara)
     

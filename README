@@ -1,3 +1,9 @@
-A very early attempt at a library to read Microsoft Word 2007/2008 docx files (sometimes confusingly referred to as 'Office Open XML' by Microsoft)
+Read and writes Microsoft Word 2007/Microsoft Mac Office 2008 docx files.
 
-mike.maccana@gmail.com
+These are confusingly referred to as 'Office Open XML' by Microsoft although that spec is incomplete.
+
+Features:
+- Native Python, which works on all Python platforms.
+- Does not use or require Microsoft Office or OpenOffice like other solutions
+
+Mike MacCana mike.maccana@gmail.com

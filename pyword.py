@@ -1,13 +1,23 @@
 #!/usr/bin/env python26
 '''
 Open and modify Microsoft Word 2007 docx files (called 'Office OpenXML' by Microsoft)
+
+TODO:
+- Return all text in document
+- return document properties dict
+- Read word XML reference 
+- Functions to recieve dict and put into table
+key is left column, data is right column
+- Package for easy_install
+- rest converter??
 '''
 
 from lxml import etree
 import zipfile
 #import ipdb
 
-wordnamespaces = {'mv':'urn:schemas-microsoft-com:mac:vml',
+wordnamespaces = {
+    'mv':'urn:schemas-microsoft-com:mac:vml',
     'mo':'http://schemas.microsoft.com/office/mac/office/2008/main',
     've':'http://schemas.openxmlformats.org/markup-compatibility/2006',
     'o':'urn:schemas-microsoft-com:office:office',
@@ -27,36 +37,31 @@ def opendocx(file):
     document = etree.fromstring(xmlcontent)    
     return document
 
-def makeelement(tagname,tagattributes=None,tagtext=None,**kwargs):
+def makeelement(tagname,tagattributes=None,tagtext=None):
     '''Create an element & return it'''
-    #newelement = etree.Element(tagname)
-    #ns = "{...}"
-    #Element(ns+"p"
-    #
     namespace = '{'+wordnamespaces['w']+'}'    
     newelement = etree.Element(namespace+tagname)
-    
-    #newelement = etree.Element("{urn:oasis:names:tc:opendocument:xmlns:text:1.0}p",stylename='Standard')
-    #text_element = etree.Element("{urn:oasis:names:tc:opendocument:xmlns:text:1.0}p",stylename='Standard')
+    # Add attributes with namespaces
     if tagattributes:
         for tagattribute in tagattributes:
-            newelement.set(tagattribute, tagattributes[tagattribute])
+            newelement.set('{'+wordnamespaces['w']+'}'+tagattribute, tagattributes[tagattribute])
     if tagtext:
         newelement.text = tagtext    
     return newelement
     
-def appendelement(addlocation,tagname,tagattributes=None,tagtext=None,**kwargs):
-    '''Make and append an element at a path location'''
-    global document
-    newelement = makeelement(tagname,tagattributes,tagtext)
-    location = document.xpath(addlocation, namespaces=wordnamespaces)
-    location[0].insert(1, newelement)
-    return
 
-def appendparagraph(document,text):
-    '''Make a new text paragraph, return the modified document tree'''
-    #newelement
-    return
+def addparagraph(paratext):
+    '''Make a new paragraph element, containing a run, and some text. Return the paragraph element.'''
+    global document
+    # Make our elements
+    paragraph = makeelement('p',tagattributes={'rsidR':'008D6863','rsidRDefault':'00590D07'})
+    run = makeelement('r')
+    text = makeelement('t',tagtext=paratext)
+    # Add the text the run, and the run to the paragraph
+    run.append(text)
+    paragraph.append(run)    
+    # Return the combined paragraph
+    return paragraph
     
 def search(phrase):
     '''Recieve a search, return the results'''
@@ -70,11 +75,17 @@ def savedocx(oldfilename,document,newfilename=None):
 if __name__ == '__main__':        
     #document = opendocx('Hello world.docx')
     document = etree.parse('sample.xml')
-    testelement = makeelement('success')
+    #testelement = makeelement('success')
     #ipdb.set_trace()
-    appendelement('/w:document/w:body','p',tagattributes={'rsidR':'008D6863','rsidRDefault':'00590D07'})
-    appendelement('/w:document/w:body/w:p[2]','r')
-    appendelement('/w:document/w:body/w:p[2]/w:r','t',tagtext='success')
+
+    # This location is where most document content lives 
+    documentbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)
+    
+    # Attach a paragraph element to our document
+    newpara = addparagraph(paratext='success')    
+    documentbody[0].insert(1, newpara)
+    
+    
 
     resultsfile = open('results','w')
     newxml = etree.tostring(document, pretty_print=True)

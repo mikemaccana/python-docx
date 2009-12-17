@@ -1,11 +1,6 @@
 #!/usr/bin/env python2.6
 '''
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
-
-TODO:
-- return document properties dict
-- Package for easy_install
-- rest converter??
 '''
 
 from lxml import etree

@@ -3,7 +3,6 @@
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
 
 TODO:
-- numbering
 - return document properties dict
 - Read word XML reference 
 - Functions to recieve dict and put into table
@@ -54,7 +53,7 @@ def makeelement(tagname,tagattributes=None,tagtext=None):
     return newelement
     
 
-def addparagraph(paratext,style='BodyText'):
+def paragraph(paratext,style='BodyText'):
     '''Make a new paragraph element, containing a run, and some text. 
     Return the paragraph element.'''
     # Make our elements
@@ -74,7 +73,7 @@ def addparagraph(paratext,style='BodyText'):
     return paragraph
 
 
-def addheading(headingtext,headinglevel):
+def heading(headingtext,headinglevel):
     '''Make a new heading, return the heading element'''
     # Make our elements
     paragraph = makeelement('p')
@@ -91,7 +90,7 @@ def addheading(headingtext,headinglevel):
     return paragraph   
 
 
-def addtable(contents):
+def table(contents):
     '''Get a list of lists, return a table'''
     table = makeelement('tbl')
     columns = len(contents[0][0])    
@@ -124,7 +123,7 @@ def addtable(contents):
         cellprops.append(cellstyle)
         cell.append(cellprops)        
         # Paragraph (Content)
-        cell.append(addparagraph(heading))
+        cell.append(paragraph(heading))
         row.append(cell)
     table.append(row)            
     # Contents Rows   
@@ -138,7 +137,7 @@ def addtable(contents):
             cellprops.append(cellwidth)
             cell.append(cellprops)
             # Paragraph (Content)
-            cell.append(addparagraph(content))
+            cell.append(paragraph(content))
             row.append(cell)    
         table.append(row)   
     return table                 
@@ -211,20 +210,20 @@ if __name__ == '__main__':
     docbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)[0]
     
     # Append two headings
-    docbody.append(addheading('''Welcome to Python's docx module''',1)  )   
-    docbody.append(addheading('This document was created with it.',2))
-    docbody.append(addparagraph(paratext='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed metus sed nisi blandit posuere at tincidunt turpis. Vestibulum eu quam id ante scelerisque vehicula. Mauris rutrum turpis in orci ullamcorper at consectetur orci convallis. '))
+    docbody.append(heading('''Welcome to Python's docx module''',1)  )   
+    docbody.append(heading('This document was created with it.',2))
+    docbody.append(paragraph(paratext='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed metus sed nisi blandit posuere at tincidunt turpis. Vestibulum eu quam id ante scelerisque vehicula. Mauris rutrum turpis in orci ullamcorper at consectetur orci convallis. '))
 
     # Append a table
-    docbody.append(addtable([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
+    docbody.append(table([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
 
     # Append a paragraph element 
-    docbody.append(addparagraph(paratext='Sed nec diam purus, a eleifend metus. Ut vitae ligula risus. Nunc pretium ligula nec arcu vestibulum quis mattis magna tincidunt. Aliquam faucibus ligula sollicitudin nunc egestas aliquam. Nullam vel libero nisl. '))
+    docbody.append(paragraph(paratext='Sed nec diam purus, a eleifend metus. Ut vitae ligula risus. Nunc pretium ligula nec arcu vestibulum quis mattis magna tincidunt. Aliquam faucibus ligula sollicitudin nunc egestas aliquam. Nullam vel libero nisl. '))
     
     for point in ['One','Two','Three']:
-        docbody.append(addparagraph(point,style='ListNumber'))
+        docbody.append(paragraph(point,style='ListNumber'))
     for point in ['One','Two','Three']:
-        docbody.append(addparagraph(point,style='ListBullet'))
+        docbody.append(paragraph(point,style='ListBullet'))
         
     #print getdocumenttext(document)
     #print etree.tostring(document, pretty_print=True)

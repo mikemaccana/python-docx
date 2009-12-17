@@ -9,8 +9,8 @@ Just Python. Runs happily on your webserver.
 
 Features:
 - 100% Native Python. Works on all Python platforms.
-- Can add paragraphs, multiple levels of headings, and tables
+- Can add paragraphs, bullets, numbering, multiple levels of headings, and tables
 - Can get all text out of a document
-- Support for adding arbitrary elements in included via makelement(), which creates XML elements with required Word namespaces in their tag names and attributes
+- Support for adding arbitrary elements in included via makeelement(), which creates XML elements with required Word namespaces in their tag names and attributes
 
 Mike MacCana mike.maccana@gmail.com

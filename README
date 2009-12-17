@@ -1,16 +1,24 @@
-The 'docx' module reads and writes Microsoft Office Word 2007/Microsoft Mac Office 2008 docx files.
+The docx module reads and writes Microsoft Office Word 2007/Microsoft Mac Office 2008 docx files.
 
-These are referred to as 'WordML', 'Office Open XML' and 'Open XML' by Microsoft although that spec does not have anything to do with the pre-existing OpenOffice file format. 
+These are referred to as 'WordML', 'Office Open XML' and 'Open XML' by Microsoft.
 
-Pure Python / XML / XPath. Does not use any desktop-era tools:
-- Does not use Microsoft Office or OpenOffice (too ugly)
-- Does not use COM, .net or Java (too stinky)
-Just Python. Runs happily on your webserver.
+The module was created when I was looking for a Python support for MS Word .doc files, but could only find various hacks involving COM automation, .net or Java, or automating OpenOffice or MS Office.
 
-Features:
-- 100% Native Python. Works on all Python platforms.
-- Can add paragraphs, bullets, numbering, multiple levels of headings, and tables
-- Can get all text out of a document
-- Support for adding arbitrary elements in included via makeelement(), which creates XML elements with required Word namespaces in their tag names and attributes
+The docx module has the following features:
 
-Mike MacCana mike.maccana@gmail.com
+Making documents
+The docx module has the following features:
+•	Paragraphs
+•	Bullets
+•	Numbered lists
+•	Multiple levels of headings
+•	Tables
+
+Editing documents
+Thanks to the awesomeness of the lxml module, we can:
+•	Search and replace
+•	Extract plain text of document
+•	Add and delete items anywhere within the document
+
+Ideas? Questions? Want to chat?
+Email <python.docx@librelist.com>

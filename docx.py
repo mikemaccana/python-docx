@@ -164,13 +164,13 @@ def replace(document,search,replace):
     for element in newdocument.iter():
         if element.tag == namespace+'t':
             if element.text:
-                if searchre.match(element.text):
-                    element.text = replace
+                if searchre.search(element.text):
+                    element.text = re.sub(search,replace,element.text)
     return newdocument
 
 
 def getdocumenttext(document):
-    '''Document'''
+    '''Get the contents of all text elements in the tree'''
     # Recursively get all elements beneath tree
     # Get each elements text attribute
     contents = ''

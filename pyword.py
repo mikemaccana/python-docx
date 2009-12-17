@@ -3,6 +3,7 @@
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
 
 TODO:
+- bullet points
 - return document properties dict
 - Read word XML reference 
 - Functions to recieve dict and put into table
@@ -14,6 +15,7 @@ key is left column, data is right column
 from lxml import etree
 import zipfile
 import sys
+import re
 #import ipdb
 
 wordnamespaces = {
@@ -30,6 +32,7 @@ wordnamespaces = {
     'wp':'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
     }
 
+# Most elements use this namespace in particular
 namespace = '{'+wordnamespaces['w']+'}'  
 
 def opendocx(file):
@@ -51,17 +54,59 @@ def makeelement(tagname,tagattributes=None,tagtext=None):
     return newelement
     
 
-def addparagraph(paratext):
-    '''Make a new paragraph element, containing a run, and some text. Return the paragraph element.'''
+def addparagraph(paratext,numbered=False,bulleted=False):
+    '''Make a new paragraph element, containing a run, and some text. 
+    Return the paragraph element.'''
     # Make our elements
     paragraph = makeelement('p')
     run = makeelement('r')
     text = makeelement('t',tagtext=paratext)
+    if numbered == True:
+        ppr = makeelement('pPr')
+        numberprops = makeelement('numPr')
+        numberprops.append(makeelement('ilvl',tagattributes={'val':'0'}))
+        numberprops.append(makeelement('numId',tagattributes={'val':'2'}))
+        ppr.append(numberprops)
+        paragraph.append(ppr)
+    elif bulleted == True:
+        ppr = makeelement('pPr')
+        numberprops = makeelement('numPr')
+        numberprops.append(makeelement('ilvl',tagattributes={'val':'0'}))
+        numberprops.append(makeelement('numId',tagattributes={'val':'3'}))
+        ppr.append(numberprops)
+        paragraph.append(ppr)
+                
     # Add the text the run, and the run to the paragraph
     run.append(text)
     paragraph.append(run)    
     # Return the combined paragraph
     return paragraph
+
+
+'''
+<w:p>
+	<w:pPr>
+		<w:numPr>
+			<w:ilvl w:val="0"/>
+			<w:numId w:val="2"/>
+		</w:numPr>
+	</w:pPr>
+	<w:r>
+		<w:t>Three</w:t>
+	</w:r>
+</w:p>
+<w:p>
+	<w:pPr>
+		<w:numPr>
+			<w:ilvl w:val="0"/>
+			<w:numId w:val="3"/>
+		</w:numPr>
+	</w:pPr>
+	<w:r>
+		<w:t>One</w:t>
+	</w:r>
+</w:p>
+'''
 
 def addheading(headingtext,headinglevel):
     '''Make a new heading, return the heading element'''
@@ -83,8 +128,7 @@ def addheading(headingtext,headinglevel):
 def addtable(contents):
     '''Get a list of lists, return a table'''
     table = makeelement('tbl')
-    columns = len(contents[0][0])
-    
+    columns = len(contents[0][0])    
     # Table properties
     tableprops = makeelement('tblPr')
     tablestyle = makeelement('tblStyle',tagattributes={'val':'ColorfulGrid-Accent1'})
@@ -93,13 +137,11 @@ def addtable(contents):
     for tableproperty in [tablestyle,tablewidth,tablelook]:
         tableprops.append(tableproperty)
     table.append(tableprops)    
-    
     # Table Grid    
     tablegrid = makeelement('tblGrid')
     for _ in range(columns):
         tablegrid.append(makeelement('gridCol',tagattributes={'gridCol':'2390'}))
     table.append(tablegrid)     
-
     # Heading Row    
     row = makeelement('tr')
     rowprops = makeelement('trPr')
@@ -114,13 +156,11 @@ def addtable(contents):
         cellstyle = makeelement('shd',tagattributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
         cellprops.append(cellwidth)
         cellprops.append(cellstyle)
-        cell.append(cellprops)
-        
+        cell.append(cellprops)        
         # Paragraph (Content)
         cell.append(addparagraph(heading))
         row.append(cell)
-    table.append(row)    
-        
+    table.append(row)            
     # Contents Rows   
     for contentrow in contents[1:]:
         row = makeelement('tr')     
@@ -131,7 +171,6 @@ def addtable(contents):
             cellwidth = makeelement('tcW',tagattributes={'type':'dxa'})
             cellprops.append(cellwidth)
             cell.append(cellprops)
-
             # Paragraph (Content)
             cell.append(addparagraph(content))
             row.append(cell)    
@@ -139,15 +178,28 @@ def addtable(contents):
     return table                 
                         
 
-def search(phrase):
-    '''Recieve a search, return the results'''
+def search(document,search):
+    '''Search a document for a regex, return '''
     results = False
+    searchre = re.compile(search)
+    for element in document.iter():
+        if element.tag == namespace+'t':
+            if element.text:
+                if searchre.match(element.text):
+                    results = True
     return results
 
-def replace(search,replace):
-    '''Replace all occurences of string with a different string'''
-    results = False
-    return results
+def replace(document,search,replace):
+    '''Replace all occurences of string with a different string, return updated document'''
+    newdocument = document
+    searchre = re.compile(search)
+    for element in newdocument.iter():
+        if element.tag == namespace+'t':
+            if element.text:
+                if searchre.match(element.text):
+                    element.text = replace
+    return newdocument
+
 
 def getdocumenttext(document):
     '''Document'''
@@ -193,18 +245,23 @@ if __name__ == '__main__':
     docbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)[0]
     
     # Append two headings
-    docbody.append(addheading('All your base are belong to us',1)  )   
-    docbody.append(addheading('You have no chance to survive. ',2))
+    docbody.append(addheading('''Welcome to Python's docx module''',1)  )   
+    docbody.append(addheading('This document was created with it.',2))
+    docbody.append(addparagraph(paratext='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed metus sed nisi blandit posuere at tincidunt turpis. Vestibulum eu quam id ante scelerisque vehicula. Mauris rutrum turpis in orci ullamcorper at consectetur orci convallis. '))
 
     # Append a table
     docbody.append(addtable([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
 
     # Append a paragraph element 
-    newpara = addparagraph(paratext='Make your time. Hahaha')    
-    docbody.append(newpara)
-
+    docbody.append(addparagraph(paratext='Sed nec diam purus, a eleifend metus. Ut vitae ligula risus. Nunc pretium ligula nec arcu vestibulum quis mattis magna tincidunt. Aliquam faucibus ligula sollicitudin nunc egestas aliquam. Nullam vel libero nisl. '))
+    
+    for point in ['One','Two','Three']:
+        docbody.append(addparagraph(point,numbered=True))
+    for point in ['One','Two','Three']:
+        docbody.append(addparagraph(point,bulleted=True))
+        
     print getdocumenttext(document)
-    #print etree.tostring(document, pretty_print=True)
+    print etree.tostring(document, pretty_print=True)
     
     # Save our document
     savedocx(document,sys.argv[1])

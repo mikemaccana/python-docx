@@ -1,21 +1,16 @@
-#!/usr/bin/env python26
+#!/usr/bin/env python2.6
 '''
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
 
 TODO:
 - return document properties dict
-- Read word XML reference 
-- Functions to recieve dict and put into table
-key is left column, data is right column
 - Package for easy_install
 - rest converter??
 '''
 
 from lxml import etree
 import zipfile
-import sys
 import re
-#import ipdb
 
 wordnamespaces = {
     'mv':'urn:schemas-microsoft-com:mac:vml',
@@ -39,6 +34,14 @@ def opendocx(file):
     mydoc = zipfile.ZipFile(file)
     xmlcontent = mydoc.read('word/document.xml')
     document = etree.fromstring(xmlcontent)    
+    return document
+
+def newdocument():
+    document = makeelement('document',tagattributes=wordnamespaces)
+    document.append(makeelement('body'))
+    '''<w:document xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" 
+    xmlns:v="urn:schemas-microsoft-com:vml" 
+    xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" ve:Ignorable="mv" ve:PreserveAttributes="mv:*">'''
     return document
 
 def makeelement(tagname,tagattributes=None,tagtext=None):
@@ -201,32 +204,4 @@ def savedocx(document,newfilename):
     print 'Saved new file to: '+newfilename
     return
     
-if __name__ == '__main__':        
-    #document = opendocx('Hello world.docx')
-    document = etree.parse('template/word/document.xml')
-    #ipdb.set_trace()
-    
-    # This location is where most document content lives 
-    docbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)[0]
-    
-    # Append two headings
-    docbody.append(heading('''Welcome to Python's docx module''',1)  )   
-    docbody.append(heading('This document was created with it.',2))
-    docbody.append(paragraph(paratext='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed metus sed nisi blandit posuere at tincidunt turpis. Vestibulum eu quam id ante scelerisque vehicula. Mauris rutrum turpis in orci ullamcorper at consectetur orci convallis. '))
 
-    # Append a table
-    docbody.append(table([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
-
-    # Append a paragraph element 
-    docbody.append(paragraph(paratext='Sed nec diam purus, a eleifend metus. Ut vitae ligula risus. Nunc pretium ligula nec arcu vestibulum quis mattis magna tincidunt. Aliquam faucibus ligula sollicitudin nunc egestas aliquam. Nullam vel libero nisl. '))
-    
-    for point in ['One','Two','Three']:
-        docbody.append(paragraph(point,style='ListNumber'))
-    for point in ['One','Two','Three']:
-        docbody.append(paragraph(point,style='ListBullet'))
-        
-    #print getdocumenttext(document)
-    #print etree.tostring(document, pretty_print=True)
-    
-    # Save our document
-    savedocx(document,sys.argv[1])

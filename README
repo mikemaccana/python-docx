@@ -1,6 +1,6 @@
-Read and writes Microsoft Word 2007/Microsoft Mac Office 2008 docx files.
+The 'docx' module reads and writes Microsoft Office Word 2007/Microsoft Mac Office 2008 docx files.
 
-These are referred to as 'Office Open XML' and 'Open XML' by Microsoft although that spec does not have anything to do with the pre-existing OpenOffice file format. 
+These are referred to as 'WordML', 'Office Open XML' and 'Open XML' by Microsoft although that spec does not have anything to do with the pre-existing OpenOffice file format. 
 
 Pure Python / XML / XPath. Does not use any desktop-era tools:
 - Does not use Microsoft Office or OpenOffice (too ugly)

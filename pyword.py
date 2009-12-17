@@ -3,7 +3,7 @@
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
 
 TODO:
-- bullet points
+- numbering
 - return document properties dict
 - Read word XML reference 
 - Functions to recieve dict and put into table
@@ -54,59 +54,25 @@ def makeelement(tagname,tagattributes=None,tagtext=None):
     return newelement
     
 
-def addparagraph(paratext,numbered=False,bulleted=False):
+def addparagraph(paratext,style='BodyText'):
     '''Make a new paragraph element, containing a run, and some text. 
     Return the paragraph element.'''
     # Make our elements
     paragraph = makeelement('p')
     run = makeelement('r')
     text = makeelement('t',tagtext=paratext)
-    if numbered == True:
-        ppr = makeelement('pPr')
-        numberprops = makeelement('numPr')
-        numberprops.append(makeelement('ilvl',tagattributes={'val':'0'}))
-        numberprops.append(makeelement('numId',tagattributes={'val':'2'}))
-        ppr.append(numberprops)
-        paragraph.append(ppr)
-    elif bulleted == True:
-        ppr = makeelement('pPr')
-        numberprops = makeelement('numPr')
-        numberprops.append(makeelement('ilvl',tagattributes={'val':'0'}))
-        numberprops.append(makeelement('numId',tagattributes={'val':'3'}))
-        ppr.append(numberprops)
-        paragraph.append(ppr)
+    pPr = makeelement('pPr')
+    pStyle = makeelement('pStyle',tagattributes={'val':style})
+    pPr.append(pStyle)
+
                 
     # Add the text the run, and the run to the paragraph
-    run.append(text)
+    run.append(text)    
+    paragraph.append(pPr)    
     paragraph.append(run)    
     # Return the combined paragraph
     return paragraph
 
-
-'''
-<w:p>
-	<w:pPr>
-		<w:numPr>
-			<w:ilvl w:val="0"/>
-			<w:numId w:val="2"/>
-		</w:numPr>
-	</w:pPr>
-	<w:r>
-		<w:t>Three</w:t>
-	</w:r>
-</w:p>
-<w:p>
-	<w:pPr>
-		<w:numPr>
-			<w:ilvl w:val="0"/>
-			<w:numId w:val="3"/>
-		</w:numPr>
-	</w:pPr>
-	<w:r>
-		<w:t>One</w:t>
-	</w:r>
-</w:p>
-'''
 
 def addheading(headingtext,headinglevel):
     '''Make a new heading, return the heading element'''
@@ -227,14 +193,14 @@ def savedocx(document,newfilename):
     'word/webSettings.xml',
     'word/_rels/document.xml.rels',
     'word/styles.xml',
+    'word/numbering.xml',
     'word/theme/',
     'word/theme/theme1.xml',
     'word/settings.xml',
     'word/fontTable.xml']:
         newfile.write('template/'+xmlfile,xmlfile)
     print 'Saved new file to: '+newfilename
-    return    
-
+    return
     
 if __name__ == '__main__':        
     #document = opendocx('Hello world.docx')
@@ -256,12 +222,12 @@ if __name__ == '__main__':
     docbody.append(addparagraph(paratext='Sed nec diam purus, a eleifend metus. Ut vitae ligula risus. Nunc pretium ligula nec arcu vestibulum quis mattis magna tincidunt. Aliquam faucibus ligula sollicitudin nunc egestas aliquam. Nullam vel libero nisl. '))
     
     for point in ['One','Two','Three']:
-        docbody.append(addparagraph(point,numbered=True))
+        docbody.append(addparagraph(point,style='ListNumber'))
     for point in ['One','Two','Three']:
-        docbody.append(addparagraph(point,bulleted=True))
+        docbody.append(addparagraph(point,style='ListBullet'))
         
-    print getdocumenttext(document)
-    print etree.tostring(document, pretty_print=True)
+    #print getdocumenttext(document)
+    #print etree.tostring(document, pretty_print=True)
     
     # Save our document
     savedocx(document,sys.argv[1])

@@ -15,7 +15,8 @@ The docx module has the following features:
 
 ### Making documents
 
-The docx module has the following features:
+Features for making documents include:
+
 - Paragraphs
 - Bullets
 - Numbered lists
@@ -26,6 +27,7 @@ The docx module has the following features:
 ### Editing documents
 
 Thanks to the awesomeness of the lxml module, we can:
+
 - Search and replace
 - Extract plain text of document
 - Add and delete items anywhere within the document

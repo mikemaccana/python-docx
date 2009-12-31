@@ -1,13 +1,19 @@
 #!/usr/bin/env python2.6
 '''
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
+
+Part of Python's docx module - 
+
+MIT licensed - see 
 '''
 
 from lxml import etree
 import zipfile
 import re
+import time
 
-wordnamespaces = {
+# Namespaces used for document.xml
+namespaces = {
     'mv':'urn:schemas-microsoft-com:mac:vml',
     'mo':'http://schemas.microsoft.com/office/mac/office/2008/main',
     've':'http://schemas.openxmlformats.org/markup-compatibility/2006',
@@ -19,10 +25,35 @@ wordnamespaces = {
     'w10':'urn:schemas-microsoft-com:office:word',
     'wne':'http://schemas.microsoft.com/office/word/2006/wordml',
     'wp':'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
+    'a':'http://schemas.openxmlformats.org/drawingml/2006/main',
+    'pic':'http://schemas.openxmlformats.org/drawingml/2006/picture',
     }
 
-# Most elements use this namespace in particular
-namespace = '{'+wordnamespaces['w']+'}'  
+# Namespaces used for document properties (core.xml)
+propertiesnamespaces={
+'cp':"http://schemas.openxmlformats.org/package/2006/metadata/core-properties", 
+'dc':"http://purl.org/dc/elements/1.1/", 
+'dcterms':"http://purl.org/dc/terms/",
+'dcmitype':"http://purl.org/dc/dcmitype/",
+'xsi':"http://www.w3.org/2001/XMLSchema-instance",
+}
+
+def namespace(nsdict,prefix):
+    '''Get a namespacedict to search, a namespace prefix to look for, return a formatted namespace'''
+    return '{'+nsdict[prefix]+'}'
+
+# Almost all text elements use this namespace
+wordnamespace = '{'+namespaces['w']+'}'  
+# Pictures use these
+worddrawnamespace = '{'+namespaces['wp']+'}'  
+drawnamespace  = '{'+namespaces['a']+'}' 
+picnamespace  = '{'+namespaces['pic']+'}' 
+
+
+propsnamespace = '{'+propertiesnamespaces['cp']+'}'  
+propsdcnamespace = '{'+propertiesnamespaces['dc']+'}'  
+datenamespace = '{'+propertiesnamespaces['dcterms']+'}'  
+xsinamespace = '{'+propertiesnamespaces['xsi']+'}'
 
 def opendocx(file):
     '''Open a docx file, return a document XML tree'''
@@ -32,20 +63,23 @@ def opendocx(file):
     return document
 
 def newdocument():
-    document = makeelement('document',tagattributes=wordnamespaces)
+    document = makeelement('document',tagattributes=namespaces)
     document.append(makeelement('body'))
     '''<w:document xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" 
     xmlns:v="urn:schemas-microsoft-com:vml" 
     xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" ve:Ignorable="mv" ve:PreserveAttributes="mv:*">'''
     return document
 
-def makeelement(tagname,tagattributes=None,tagtext=None):
+def makeelement(tagname,tagtext=None,tagnamespace=wordnamespace,tagattributes=None,attributenamespace=None):
     '''Create an element & return it'''  
-    newelement = etree.Element(namespace+tagname)
+    newelement = etree.Element(tagnamespace+tagname)
     # Add attributes with namespaces
     if tagattributes:
+        # If they haven't bothered setting attribute namespace, use the same one as the tag
+        if not attributenamespace:
+            attributenamespace = tagnamespace    
         for tagattribute in tagattributes:
-            newelement.set(namespace+tagattribute, tagattributes[tagattribute])
+            newelement.set(attributenamespace+tagattribute, tagattributes[tagattribute])
     if tagtext:
         newelement.text = tagtext    
     return newelement
@@ -139,14 +173,78 @@ def table(contents):
             row.append(cell)    
         table.append(row)   
     return table                 
-                        
+
+def picture(filename):
+    '''Create a pragraph containing an image'''
+    # Word uses paragraphs to contain images
+    # http://openxmldeveloper.org/articles/462.aspx
+    resourceid = rId5
+    newrelationship = makeelement('Relationship',tagattributes={'Id':resourceid,'Type':'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'},Target=filename)
+    newpara = makeelement('deleteme',style='BodyText')
+    makeelement('drawing')
+    makeelement('inline',tagattributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},tagnamespace=worddrawnamespace)
+    makeelement('graphic',tagnamespace=drawnamespace)
+    makeelement('graphicData',tagnamespace=drawnamespace)
+    makeelement('pic',tagnamespace=drawnamespace)
+    
+    '''
+
+    		<w:drawing>
+    			<wp:inline distT="0" distB="0" distL="0" distR="0">
+    				<wp:extent cx="2679700" cy="901700"/>
+    				<wp:effectExtent l="0" t="0" r="0" b="0"/>
+    				<wp:docPr id="7" name="Picture 7" descr="omepage"/>
+    				<wp:cNvGraphicFramePr>
+    					<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+    				</wp:cNvGraphicFramePr>
+    				<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+    					<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+    						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+    							<pic:nvPicPr>
+    								<pic:cNvPr id="0" name="Picture 7" descr="omepage"/>
+    								<pic:cNvPicPr>
+    									<a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
+    								</pic:cNvPicPr>
+    							</pic:nvPicPr>
+    							<pic:blipFill>
+    								<a:blip r:embed="rId5"/>
+    								<a:srcRect/>
+    								<a:stretch>
+    									<a:fillRect/>
+    								</a:stretch>
+    							</pic:blipFill>
+    							<pic:spPr bwMode="auto">
+    								<a:xfrm>
+    									<a:off x="0" y="0"/>
+    									<a:ext cx="2679700" cy="901700"/>
+    								</a:xfrm>
+    								<a:prstGeom prst="rect">
+    									<a:avLst/>
+    								</a:prstGeom>
+    								<a:noFill/>
+    								<a:ln w="9525">
+    									<a:noFill/>
+    									<a:miter lim="800000"/>
+    									<a:headEnd/>
+    									<a:tailEnd/>
+    								</a:ln>
+    							</pic:spPr>
+    						</pic:pic>
+    					</a:graphicData>
+    				</a:graphic>
+    			</wp:inline>
+    		</w:drawing>
+    	</w:r>
+    </w:p>
+
+    '''                            
 
 def search(document,search):
     '''Search a document for a regex, return '''
     results = False
     searchre = re.compile(search)
     for element in document.iter():
-        if element.tag == namespace+'t':
+        if element.tag == wordnamespace+'t':
             if element.text:
                 if searchre.match(element.text):
                     results = True
@@ -157,7 +255,7 @@ def replace(document,search,replace):
     newdocument = document
     searchre = re.compile(search)
     for element in newdocument.iter():
-        if element.tag == namespace+'t':
+        if element.tag == wordnamespace+'t':
             if element.text:
                 if searchre.search(element.text):
                     element.text = re.sub(search,replace,element.text)
@@ -170,21 +268,60 @@ def getdocumenttext(document):
     # Get each elements text attribute
     contents = ''
     for element in document.iter():
-        if element.tag == namespace+'t':
+        if element.tag == wordnamespace+'t':
             if element.text:
                 contents = contents+element.text+'\n'
     return contents        
+
+def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
+    '''Makes document properties. '''
+    #OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
+    docprops=etree.fromstring('''<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></cp:coreProperties>''')    
+    #BAD 
+    #docprops = makeelement('coreProperties',tagnamespace=propsnamespace,tagattributes=propertiesnamespaces)
+    docprops.append(makeelement('title',tagtext=title,tagnamespace=propsdcnamespace))
+    docprops.append(makeelement('subject',tagtext=subject,tagnamespace=propsdcnamespace))
+    docprops.append(makeelement('creator',tagtext=creator,tagnamespace=propsdcnamespace))
+    docprops.append(makeelement('keywords',tagtext=','.join(keywords),tagnamespace=propsnamespace))    
+    if not lastmodifiedby:
+        lastmodifiedby = creator
+    docprops.append(makeelement('lastModifiedBy',tagtext=lastmodifiedby,tagnamespace=propsnamespace))
+    docprops.append(makeelement('revision',tagtext='1',tagnamespace=propsnamespace))
+    docprops.append(makeelement('category',tagtext='Examples',tagnamespace=propsnamespace))
+    docprops.append(makeelement('description',tagtext='Examples',tagnamespace=propsdcnamespace))
+    # Z is zero time. Also called GMT or UTC. 
+    '''<dcterms:created xsi:type="dcterms:W3CDTF">2009-12-30T21:13:00Z</dcterms:created>
+	<dcterms:modified xsi:type="dcterms:W3CDTF">2009-12-30T21:15:00Z</dcterms:modified>
+	'''
+    currentime = time.strftime('%Y-%m-%dT-%H:%M:%SZ')
+    # BAD
+    #docprops.append(makeelement('created',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=datenamespace,attributenamespace=xsinamespace))
+    #docprops.append(makeelement('modified',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=datenamespace,attributenamespace=xsinamespace))
+    return docprops
+
+'''
+BAD
+
+ns0=core-props
+
+<ns0:coreproperties xmlns:ns0="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" ns0:dcterms="http://purl.org/dc/terms/" ns0:dcmitype="http://purl.org/dc/dcmitype/" ns0:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" ns0:dc="http://purl.org/dc/elements/1.1/" ns0:xsi="http://www.w3.org/2001/XMLSchema-instance">
     
-def savedocx(document,newfilename):
+'''
+
+def savedocx(document,properties,newfilename):
     '''Save a modified document'''
-    documentstring = etree.tostring(document, pretty_print=True)
     newfile = zipfile.ZipFile(newfilename,mode='w')
+    # Write our generated document
+    documentstring = etree.tostring(document, pretty_print=True)
     newfile.writestr('word/document.xml',documentstring)
+    # And it's properties
+    propertiesstring = etree.tostring(properties, pretty_print=True)
+    newfile.writestr('docProps/core.xml',propertiesstring)
     # Add support files
     for xmlfile in [ 
     '[Content_Types].xml',
     '_rels/.rels',
-    'docProps/core.xml',
+    #'docProps/core.xml',
     'docProps/thumbnail.jpeg',
     'docProps/app.xml',
     'word/webSettings.xml',

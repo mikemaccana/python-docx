@@ -27,4 +27,12 @@ def testparagraph():
     testpara = paragraph('paratext',style='BodyText')
     assert testpara.tag == '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p'
     pass
-
+    
+def testtable():
+    '''Ensure tables make sense'''
+    testtable = table([['A1','A2'],['B1','B2'],['C1','C2']])
+    ns = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
+    #print testtable
+    #assert testtable.xpath('/'+ns+':tr[2]/'+ns+':tc[2]/'+ns+':p/'+ns+':r/'+ns+':t').text == 'C2'
+    print testtable.xpath('/'+ns+':tr[2]')
+    pass

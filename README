@@ -14,6 +14,7 @@ The docx module has the following features:
 •	Paragraphs
 •	Bullets
 •	Numbered lists
+•	Set document properties (author, company, etc)
 •	Multiple levels of headings
 •	Tables
 
@@ -23,14 +24,13 @@ Thanks to the awesomeness of the lxml module, we can:
 •	Search and replace
 •	Extract plain text of document
 •	Add and delete items anywhere within the document
+•	Change document properties
 •	Run xpath queries against particular locations in the document - useful for retrieving data from user-completed templates.
 
-Ideas / To Do
--------------
-•	Document properties modification
-•	Unit tests
+Ideas & To Do List
+------------------
+•	Images
 •	Document health checks
-•	Search and replace
 •   Egg
 •   Conversion support
 

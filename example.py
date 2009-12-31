@@ -9,7 +9,7 @@ if __name__ == '__main__':
     document = newdocument()
     
     # This location is where most document content lives 
-    docbody = document.xpath('/w:document/w:body', namespaces=wordnamespaces)[0]
+    docbody = document.xpath('/w:document/w:body', namespaces=namespaces)[0]
     
     # Append two headings
     docbody.append(heading('''Welcome to Python's docx module''',1)  )   
@@ -46,6 +46,7 @@ if __name__ == '__main__':
     ## Fetch all the text out of the document we just created        
     #print getdocumenttext(document)
     #print etree.tostring(document, pretty_print=True)
+    properties = docproperties('Python docx demo','A practical example of making docx from Python','Mike MacCana',['python','Office Open XML','Word'])
 
     # Save our document
-    savedocx(document,'Welcome to the Python docx module.docx')
+    savedocx(document,properties,'Welcome to the Python docx module.docx')

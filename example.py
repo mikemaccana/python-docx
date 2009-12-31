@@ -40,7 +40,10 @@ if __name__ == '__main__':
     # Search and replace 
     document = replace(document,'the','the goshdarned')
 
-    docbody.append(heading('Ideas? Questions? Want to chat?',2))
+    # Add a pagebreak
+    docbody.append(pagebreak(type='page', orient='portrait'))
+
+    docbody.append(heading('Ideas? Questions? Want to contribute?',2))
     docbody.append(paragraph('''Email <python.docx@librelist.com>'''))
     
     ## Fetch all the text out of the document we just created        

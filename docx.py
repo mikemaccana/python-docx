@@ -67,14 +67,50 @@ def makeelement(tagname,tagtext=None,tagnamespace=getns(docns,'w'),tagattributes
     if tagtext:
         newelement.text = tagtext    
     return newelement
-    
 
-def paragraph(paratext,style='BodyText'):
+def pagebreak(type='page', orient='portrait'):
+    '''Insert a break, default 'page'.
+    See http://openxmldeveloper.org/forums/thread/4075.aspx
+    Return our page break element.'''
+    # Need to enumerate different types of page breaks.
+    if type not in ['page', 'section']:
+            raiseError('Page break style "%s" not implemented.' % type)
+
+    pagebreak = makeelement('p')
+    if type == 'page':
+        run = makeelement('r')
+        br = makeelement('br',tagattributes={'type':type})
+
+        run.append(br)
+        pagebreak.append(run)
+
+    elif type == 'section':
+        pPr = makeelement('pPr')
+        sectPr = makeelement('sectPr')
+        if orient == 'portrait':
+            pgSz = makeelement('pgSz',tagattributes={'w':'12240','h':'15840'})
+        elif orient == 'landscape':
+            pgSz = makeelement('pgSz',tagattributes={'h':'12240','w':'15840', 'orient':'landscape'})
+
+        sectPr.append(pgSz)
+        pPr.append(sectPr)
+        pagebreak.append(pPr)
+
+    return pagebreak    
+
+def paragraph(paratext,style='BodyText',breakbefore=False):
     '''Make a new paragraph element, containing a run, and some text. 
     Return the paragraph element.'''
     # Make our elements
     paragraph = makeelement('p')
-    run = makeelement('r')
+    run = makeelement('r')    
+
+    # Insert lastRenderedPageBreak for assistive technologies like
+    # document narrators to know when a page break occurred.
+    if breakbefore:
+        lastRenderedPageBreak = makeelement('lastRenderedPageBreak')
+        run.append(lastRenderedPageBreak)
+    
     text = makeelement('t',tagtext=paratext)
     pPr = makeelement('pPr')
     pStyle = makeelement('pStyle',tagattributes={'val':style})

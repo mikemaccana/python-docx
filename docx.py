@@ -13,7 +13,7 @@ import re
 import time
 
 # Namespaces used for document.xml
-namespaces = {
+docns = {
     'mv':'urn:schemas-microsoft-com:mac:vml',
     'mo':'http://schemas.microsoft.com/office/mac/office/2008/main',
     've':'http://schemas.openxmlformats.org/markup-compatibility/2006',
@@ -30,7 +30,7 @@ namespaces = {
     }
 
 # Namespaces used for document properties (core.xml)
-propertiesnamespaces={
+propns={
 'cp':"http://schemas.openxmlformats.org/package/2006/metadata/core-properties", 
 'dc':"http://purl.org/dc/elements/1.1/", 
 'dcterms':"http://purl.org/dc/terms/",
@@ -38,22 +38,9 @@ propertiesnamespaces={
 'xsi':"http://www.w3.org/2001/XMLSchema-instance",
 }
 
-def namespace(nsdict,prefix):
-    '''Get a namespacedict to search, a namespace prefix to look for, return a formatted namespace'''
+def getns(nsdict,prefix):
+    '''Given a dict to search, a namespace prefix to look for, return a formatted namespace'''
     return '{'+nsdict[prefix]+'}'
-
-# Almost all text elements use this namespace
-wordnamespace = '{'+namespaces['w']+'}'  
-# Pictures use these
-worddrawnamespace = '{'+namespaces['wp']+'}'  
-drawnamespace  = '{'+namespaces['a']+'}' 
-picnamespace  = '{'+namespaces['pic']+'}' 
-
-
-propsnamespace = '{'+propertiesnamespaces['cp']+'}'  
-propsdcnamespace = '{'+propertiesnamespaces['dc']+'}'  
-datenamespace = '{'+propertiesnamespaces['dcterms']+'}'  
-xsinamespace = '{'+propertiesnamespaces['xsi']+'}'
 
 def opendocx(file):
     '''Open a docx file, return a document XML tree'''
@@ -63,14 +50,14 @@ def opendocx(file):
     return document
 
 def newdocument():
-    document = makeelement('document',tagattributes=namespaces)
+    document = makeelement('document',tagattributes=docns)
     document.append(makeelement('body'))
     '''<w:document xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" 
     xmlns:v="urn:schemas-microsoft-com:vml" 
     xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" ve:Ignorable="mv" ve:PreserveAttributes="mv:*">'''
     return document
 
-def makeelement(tagname,tagtext=None,tagnamespace=wordnamespace,tagattributes=None,attributenamespace=None):
+def makeelement(tagname,tagtext=None,tagnamespace=getns(docns,'w'),tagattributes=None,attributenamespace=None):
     '''Create an element & return it'''  
     newelement = etree.Element(tagnamespace+tagname)
     # Add attributes with namespaces
@@ -182,10 +169,10 @@ def picture(filename):
     newrelationship = makeelement('Relationship',tagattributes={'Id':resourceid,'Type':'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'},Target=filename)
     newpara = makeelement('deleteme',style='BodyText')
     makeelement('drawing')
-    makeelement('inline',tagattributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},tagnamespace=worddrawnamespace)
-    makeelement('graphic',tagnamespace=drawnamespace)
-    makeelement('graphicData',tagnamespace=drawnamespace)
-    makeelement('pic',tagnamespace=drawnamespace)
+    makeelement('inline',tagattributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},tagnamespace=getns(docns,'wp'))
+    makeelement('graphic',tagnamespace=getns(docns,'a'))
+    makeelement('graphicData',tagnamespace=getns(docns,'a'))
+    makeelement('pic',tagnamespace=getns(docns,'a'))
     
     '''
 
@@ -244,7 +231,7 @@ def search(document,search):
     results = False
     searchre = re.compile(search)
     for element in document.iter():
-        if element.tag == wordnamespace+'t':
+        if element.tag == getns(docns,'w')+'t':
             if element.text:
                 if searchre.match(element.text):
                     results = True
@@ -255,7 +242,7 @@ def replace(document,search,replace):
     newdocument = document
     searchre = re.compile(search)
     for element in newdocument.iter():
-        if element.tag == wordnamespace+'t':
+        if element.tag == getns(docns,'w')+'t':
             if element.text:
                 if searchre.search(element.text):
                     element.text = re.sub(search,replace,element.text)
@@ -268,7 +255,7 @@ def getdocumenttext(document):
     # Get each elements text attribute
     contents = ''
     for element in document.iter():
-        if element.tag == wordnamespace+'t':
+        if element.tag == getns(docns,'w')+'t':
             if element.text:
                 contents = contents+element.text+'\n'
     return contents        
@@ -278,25 +265,25 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     #OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
     docprops=etree.fromstring('''<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></cp:coreProperties>''')    
     #BAD 
-    #docprops = makeelement('coreProperties',tagnamespace=propsnamespace,tagattributes=propertiesnamespaces)
-    docprops.append(makeelement('title',tagtext=title,tagnamespace=propsdcnamespace))
-    docprops.append(makeelement('subject',tagtext=subject,tagnamespace=propsdcnamespace))
-    docprops.append(makeelement('creator',tagtext=creator,tagnamespace=propsdcnamespace))
-    docprops.append(makeelement('keywords',tagtext=','.join(keywords),tagnamespace=propsnamespace))    
+    #docprops = makeelement('coreProperties',tagnamespace=getns(propns,'cp'),tagattributes=propertiesnamespaces)
+    docprops.append(makeelement('title',tagtext=title,tagnamespace=getns(propns,'dc')))
+    docprops.append(makeelement('subject',tagtext=subject,tagnamespace=getns(propns,'dc')))
+    docprops.append(makeelement('creator',tagtext=creator,tagnamespace=getns(propns,'dc')))
+    docprops.append(makeelement('keywords',tagtext=','.join(keywords),tagnamespace=getns(propns,'cp')))    
     if not lastmodifiedby:
         lastmodifiedby = creator
-    docprops.append(makeelement('lastModifiedBy',tagtext=lastmodifiedby,tagnamespace=propsnamespace))
-    docprops.append(makeelement('revision',tagtext='1',tagnamespace=propsnamespace))
-    docprops.append(makeelement('category',tagtext='Examples',tagnamespace=propsnamespace))
-    docprops.append(makeelement('description',tagtext='Examples',tagnamespace=propsdcnamespace))
+    docprops.append(makeelement('lastModifiedBy',tagtext=lastmodifiedby,tagnamespace=getns(propns,'cp')))
+    docprops.append(makeelement('revision',tagtext='1',tagnamespace=getns(propns,'cp')))
+    docprops.append(makeelement('category',tagtext='Examples',tagnamespace=getns(propns,'cp')))
+    docprops.append(makeelement('description',tagtext='Examples',tagnamespace=getns(propns,'dc')))
     # Z is zero time. Also called GMT or UTC. 
     '''<dcterms:created xsi:type="dcterms:W3CDTF">2009-12-30T21:13:00Z</dcterms:created>
 	<dcterms:modified xsi:type="dcterms:W3CDTF">2009-12-30T21:15:00Z</dcterms:modified>
 	'''
     currentime = time.strftime('%Y-%m-%dT-%H:%M:%SZ')
     # BAD
-    #docprops.append(makeelement('created',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=datenamespace,attributenamespace=xsinamespace))
-    #docprops.append(makeelement('modified',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=datenamespace,attributenamespace=xsinamespace))
+    #docprops.append(makeelement('created',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=getns(propns,'dcterms'),attributenamespace=getns(propns,'xsi')))
+    #docprops.append(makeelement('modified',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=getns(propns,'dcterms'),attributenamespace=getns(propns,'xsi')))
     return docprops
 
 '''

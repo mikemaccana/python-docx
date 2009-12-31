@@ -9,7 +9,7 @@ if __name__ == '__main__':
     document = newdocument()
     
     # This location is where most document content lives 
-    docbody = document.xpath('/w:document/w:body', namespaces=namespaces)[0]
+    docbody = document.xpath('/w:document/w:body', namespaces=docns)[0]
     
     # Append two headings
     docbody.append(heading('''Welcome to Python's docx module''',1)  )   

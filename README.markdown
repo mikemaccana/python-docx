@@ -1,3 +1,8 @@
+Python docx
+===========
+
+## Introduction
+
 The docx module reads and writes Microsoft Office Word 2007 docx files.
 
 These are referred to as 'WordML', 'Office Open XML' and 'Open XML' by Microsoft.
@@ -8,31 +13,31 @@ The module was created when I was looking for a Python support for MS Word .doc 
 
 The docx module has the following features:
 
-Making documents
-----------------
+### Making documents
+
 The docx module has the following features:
-•	Paragraphs
-•	Bullets
-•	Numbered lists
-•	Set document properties (author, company, etc)
-•	Multiple levels of headings
-•	Tables
+- Paragraphs
+- Bullets
+- Numbered lists
+- Set document properties (author, company, etc)
+- Multiple levels of headings
+- Tables
 
-Editing documents
------------------
+### Editing documents
+
 Thanks to the awesomeness of the lxml module, we can:
-•	Search and replace
-•	Extract plain text of document
-•	Add and delete items anywhere within the document
-•	Change document properties
-•	Run xpath queries against particular locations in the document - useful for retrieving data from user-completed templates.
+- Search and replace
+- Extract plain text of document
+- Add and delete items anywhere within the document
+- Change document properties
+- Run xpath queries against particular locations in the document - useful for retrieving data from user-completed templates.
 
-Ideas & To Do List
-------------------
-•	Images
-•	Document health checks
-•   Egg
-•   Conversion support
+### Ideas & To Do List
+
+- Images
+- Document health checks
+- Egg
+- Markdown conversion support
 
 Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
 

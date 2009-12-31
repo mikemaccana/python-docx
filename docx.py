@@ -12,7 +12,7 @@ import zipfile
 import re
 import time
 
-# Namespaces used for document.xml
+# Namespaces used for the test (document.xml)
 docns = {
     'mv':'urn:schemas-microsoft-com:mac:vml',
     'mo':'http://schemas.microsoft.com/office/mac/office/2008/main',
@@ -31,12 +31,12 @@ docns = {
 
 # Namespaces used for document properties (core.xml)
 propns={
-'cp':"http://schemas.openxmlformats.org/package/2006/metadata/core-properties", 
-'dc':"http://purl.org/dc/elements/1.1/", 
-'dcterms':"http://purl.org/dc/terms/",
-'dcmitype':"http://purl.org/dc/dcmitype/",
-'xsi':"http://www.w3.org/2001/XMLSchema-instance",
-}
+    'cp':"http://schemas.openxmlformats.org/package/2006/metadata/core-properties", 
+    'dc':"http://purl.org/dc/elements/1.1/", 
+    'dcterms':"http://purl.org/dc/terms/",
+    'dcmitype':"http://purl.org/dc/dcmitype/",
+    'xsi':"http://www.w3.org/2001/XMLSchema-instance",
+    }
 
 def getns(nsdict,prefix):
     '''Given a dict to search, a namespace prefix to look for, return a formatted namespace'''
@@ -52,9 +52,6 @@ def opendocx(file):
 def newdocument():
     document = makeelement('document',tagattributes=docns)
     document.append(makeelement('body'))
-    '''<w:document xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" 
-    xmlns:v="urn:schemas-microsoft-com:vml" 
-    xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" ve:Ignorable="mv" ve:PreserveAttributes="mv:*">'''
     return document
 
 def makeelement(tagname,tagtext=None,tagnamespace=getns(docns,'w'),tagattributes=None,attributenamespace=None):
@@ -162,7 +159,7 @@ def table(contents):
     return table                 
 
 def picture(filename):
-    '''Create a pragraph containing an image'''
+    '''Create a pragraph containing an image - FIXME - not implemented yet'''
     # Word uses paragraphs to contain images
     # http://openxmldeveloper.org/articles/462.aspx
     resourceid = rId5
@@ -173,58 +170,7 @@ def picture(filename):
     makeelement('graphic',tagnamespace=getns(docns,'a'))
     makeelement('graphicData',tagnamespace=getns(docns,'a'))
     makeelement('pic',tagnamespace=getns(docns,'a'))
-    
-    '''
-
-    		<w:drawing>
-    			<wp:inline distT="0" distB="0" distL="0" distR="0">
-    				<wp:extent cx="2679700" cy="901700"/>
-    				<wp:effectExtent l="0" t="0" r="0" b="0"/>
-    				<wp:docPr id="7" name="Picture 7" descr="omepage"/>
-    				<wp:cNvGraphicFramePr>
-    					<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
-    				</wp:cNvGraphicFramePr>
-    				<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-    					<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
-    						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
-    							<pic:nvPicPr>
-    								<pic:cNvPr id="0" name="Picture 7" descr="omepage"/>
-    								<pic:cNvPicPr>
-    									<a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
-    								</pic:cNvPicPr>
-    							</pic:nvPicPr>
-    							<pic:blipFill>
-    								<a:blip r:embed="rId5"/>
-    								<a:srcRect/>
-    								<a:stretch>
-    									<a:fillRect/>
-    								</a:stretch>
-    							</pic:blipFill>
-    							<pic:spPr bwMode="auto">
-    								<a:xfrm>
-    									<a:off x="0" y="0"/>
-    									<a:ext cx="2679700" cy="901700"/>
-    								</a:xfrm>
-    								<a:prstGeom prst="rect">
-    									<a:avLst/>
-    								</a:prstGeom>
-    								<a:noFill/>
-    								<a:ln w="9525">
-    									<a:noFill/>
-    									<a:miter lim="800000"/>
-    									<a:headEnd/>
-    									<a:tailEnd/>
-    								</a:ln>
-    							</pic:spPr>
-    						</pic:pic>
-    					</a:graphicData>
-    				</a:graphic>
-    			</wp:inline>
-    		</w:drawing>
-    	</w:r>
-    </w:p>
-
-    '''                            
+                          
 
 def search(document,search):
     '''Search a document for a regex, return '''
@@ -262,10 +208,26 @@ def getdocumenttext(document):
 
 def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     '''Makes document properties. '''
-    #OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
-    docprops=etree.fromstring('''<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></cp:coreProperties>''')    
-    #BAD 
-    #docprops = makeelement('coreProperties',tagnamespace=getns(propns,'cp'),tagattributes=propertiesnamespaces)
+    # OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
+    # FIXME: creating the coreProperties base element doesn't seem to be working - probably me needing to
+    # know more about namespaces, so import from a string.
+    docprops=etree.fromstring('''<cp:coreProperties 
+    xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
+    xmlns:dc="http://purl.org/dc/elements/1.1/" 
+    xmlns:dcterms="http://purl.org/dc/terms/" 
+    xmlns:dcmitype="http://purl.org/dc/dcmitype/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    </cp:coreProperties>''')    
+    # BAD - trying to create the element normally
+    # docprops = makeelement('coreProperties',tagnamespace=getns(propns,'cp'),tagattributes=propns,attributenamespace=getns(propns,'cp'))
+    # generates this:
+    '''<ns0:coreProperties 
+    xmlns:ns0="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
+    ns0:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
+    ns0:dc="http://purl.org/dc/elements/1.1/" 
+    ns0:dcterms="http://purl.org/dc/terms/" 
+    ns0:dcmitype="http://purl.org/dc/dcmitype/"    
+    ns0:xsi="http://www.w3.org/2001/XMLSchema-instance">'''
     docprops.append(makeelement('title',tagtext=title,tagnamespace=getns(propns,'dc')))
     docprops.append(makeelement('subject',tagtext=subject,tagnamespace=getns(propns,'dc')))
     docprops.append(makeelement('creator',tagtext=creator,tagnamespace=getns(propns,'dc')))
@@ -276,24 +238,13 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     docprops.append(makeelement('revision',tagtext='1',tagnamespace=getns(propns,'cp')))
     docprops.append(makeelement('category',tagtext='Examples',tagnamespace=getns(propns,'cp')))
     docprops.append(makeelement('description',tagtext='Examples',tagnamespace=getns(propns,'dc')))
-    # Z is zero time. Also called GMT or UTC. 
-    '''<dcterms:created xsi:type="dcterms:W3CDTF">2009-12-30T21:13:00Z</dcterms:created>
-	<dcterms:modified xsi:type="dcterms:W3CDTF">2009-12-30T21:15:00Z</dcterms:modified>
-	'''
-    currentime = time.strftime('%Y-%m-%dT-%H:%M:%SZ')
-    # BAD
+    currenttime = time.strftime('%Y-%m-%dT-%H:%M:%SZ')
+    # FIXME - creating these items manually also fails - but we can live without them for now.
     #docprops.append(makeelement('created',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=getns(propns,'dcterms'),attributenamespace=getns(propns,'xsi')))
     #docprops.append(makeelement('modified',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=getns(propns,'dcterms'),attributenamespace=getns(propns,'xsi')))
     return docprops
 
-'''
-BAD
 
-ns0=core-props
-
-<ns0:coreproperties xmlns:ns0="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" ns0:dcterms="http://purl.org/dc/terms/" ns0:dcmitype="http://purl.org/dc/dcmitype/" ns0:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" ns0:dc="http://purl.org/dc/elements/1.1/" ns0:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    
-'''
 
 def savedocx(document,properties,newfilename):
     '''Save a modified document'''
@@ -308,7 +259,6 @@ def savedocx(document,properties,newfilename):
     for xmlfile in [ 
     '[Content_Types].xml',
     '_rels/.rels',
-    #'docProps/core.xml',
     'docProps/thumbnail.jpeg',
     'docProps/app.xml',
     'word/webSettings.xml',

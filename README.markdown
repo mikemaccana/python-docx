@@ -34,6 +34,12 @@ Thanks to the awesomeness of the lxml module, we can:
 - Change document properties
 - Run xpath queries against particular locations in the document - useful for retrieving data from user-completed templates.
 
+### Getting started
+
+- Use **easy_install** to fetch the **lxml** module
+- Download the files above
+- Open **example.py** which creates and modifies a sample docx document. 
+
 ### Ideas & To Do List
 
 - Images
@@ -41,7 +47,8 @@ Thanks to the awesomeness of the lxml module, we can:
 - Egg
 - Markdown conversion support
 
-Licensed under the MIT license: http://www.opensource.org/licenses/mit-license.php
+Licensed under the [MIT license](http://www.opensource.org/licenses/mit-license.php)
+Short version: this code is copyrighted to me (Mike MacCana), I give you permission to do what you want with it except remove my name from the credits. See the MIT license for specific terms.
 
-Ideas? Questions? Want to chat?
-Email <python.docx@librelist.com>
+### Contact
+The Python docx mailing list at <python.docx@librelist.com>

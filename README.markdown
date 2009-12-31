@@ -23,6 +23,7 @@ Features for making documents include:
 - Set document properties (author, company, etc)
 - Multiple levels of headings
 - Tables
+- Section and page breaks
 
 ### Editing documents
 

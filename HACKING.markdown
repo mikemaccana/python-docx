@@ -5,6 +5,29 @@ Adding Features
 
 - The LXML tutorial at http://codespeak.net/lxml/tutorial.html covers the basics of XML etrees, which we create append and insert to make XML documents
 - The OpenXML WordML specs and videos at http://openxmldeveloper.org (if you're stuck)
+- Learning about XML namespaces http://www.w3schools.com/XML/xml_namespaces.asp
+- The Namespaces section of http://diveintopython3.org/xml.html
+
+# A note about namespaces and LXML
+
+LXML doesn't use namespace prefixes. It just uses the actual namespaces, and wants you to set a namespace on each tag. For example, rather than making an element with the 'w' namespace prefix, you'd make an element with the '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}' prefix. 
+
+To make this easier:
+
+- The most common namespace, '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}' (prefix 'w') is automatically added by makeelement()
+- You can specify other namespaces with getns(), which maps the prefixes Word files use to the actual namespaces, eg:
+	makeelement('coreProperties',tagnamespace=getns(propns,'cp'))
+
+There's also a cool sideeffect - you can ignore setting all 'xmlns' attributes, since there's no need. Eg, this in word:
+	<cp:coreProperties 
+	xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
+	xmlns:dc="http://purl.org/dc/elements/1.1/" 
+	xmlns:dcterms="http://purl.org/dc/terms/" 
+	xmlns:dcmitype="http://purl.org/dc/dcmitype/" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	</cp:coreProperties>
+  
+	docprops = makeelement('coreProperties',tagnamespace=getns(propns,'cp'))
 
 # Coding Style 
 

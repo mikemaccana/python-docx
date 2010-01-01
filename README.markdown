@@ -7,7 +7,9 @@ The docx module reads and writes Microsoft Office Word 2007 docx files.
 
 These are referred to as 'WordML', 'Office Open XML' and 'Open XML' by Microsoft.
 
-They can be opened in Microsoft Office 2007, Microsoft Mac Office 2008, OpenOffice.org 2.2, and Apple iWork 08.
+They can be opened in Microsoft Office 2007, Microsoft Mac Office 2008, Google Docx, OpenOffice.org 2.2, and Apple iWork 08.
+
+They also validate as well formed XML at http://validator.w3.org/check
 
 The module was created when I was looking for a Python support for MS Word .doc files, but could only find various hacks involving COM automation, calling .net or Java, or automating OpenOffice or MS Office.
 

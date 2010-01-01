@@ -2,9 +2,8 @@
 '''
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
 
-Part of Python's docx module - 
-
-MIT licensed - see 
+Part of Python's docx module - http://github.com/mikemaccana/python-docx
+See LICENSE for licensing information.
 '''
 
 from lxml import etree
@@ -245,25 +244,7 @@ def getdocumenttext(document):
 def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     '''Makes document properties. '''
     # OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
-    # FIXME: creating the coreProperties base element doesn't seem to be working - probably me needing to
-    # know more about namespaces, so import from a string.
-    docprops=etree.fromstring('''<cp:coreProperties 
-    xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
-    xmlns:dc="http://purl.org/dc/elements/1.1/" 
-    xmlns:dcterms="http://purl.org/dc/terms/" 
-    xmlns:dcmitype="http://purl.org/dc/dcmitype/" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    </cp:coreProperties>''')    
-    # BAD - trying to create the element normally
-    # docprops = makeelement('coreProperties',tagnamespace=getns(propns,'cp'),tagattributes=propns,attributenamespace=getns(propns,'cp'))
-    # generates this:
-    '''<ns0:coreProperties 
-    xmlns:ns0="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
-    ns0:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
-    ns0:dc="http://purl.org/dc/elements/1.1/" 
-    ns0:dcterms="http://purl.org/dc/terms/" 
-    ns0:dcmitype="http://purl.org/dc/dcmitype/"    
-    ns0:xsi="http://www.w3.org/2001/XMLSchema-instance">'''
+    docprops = makeelement('coreProperties',tagnamespace=getns(propns,'cp'))    
     docprops.append(makeelement('title',tagtext=title,tagnamespace=getns(propns,'dc')))
     docprops.append(makeelement('subject',tagtext=subject,tagnamespace=getns(propns,'dc')))
     docprops.append(makeelement('creator',tagtext=creator,tagnamespace=getns(propns,'dc')))
@@ -275,9 +256,15 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     docprops.append(makeelement('category',tagtext='Examples',tagnamespace=getns(propns,'cp')))
     docprops.append(makeelement('description',tagtext='Examples',tagnamespace=getns(propns,'dc')))
     currenttime = time.strftime('%Y-%m-%dT-%H:%M:%SZ')
-    # FIXME - creating these items manually also fails - but we can live without them for now.
-    #docprops.append(makeelement('created',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=getns(propns,'dcterms'),attributenamespace=getns(propns,'xsi')))
-    #docprops.append(makeelement('modified',tagattributes={'type':'dcterms:W3CDTF'},tagtext=currentime,tagnamespace=getns(propns,'dcterms'),attributenamespace=getns(propns,'xsi')))
+    # FIXME - creating these items manually fails - but we can live without them for now.
+    '''	What we're going for:
+    <dcterms:created xsi:type="dcterms:W3CDTF">2010-01-01T21:07:00Z</dcterms:created>
+    <dcterms:modified xsi:type="dcterms:W3CDTF">2010-01-01T21:20:00Z</dcterms:modified>
+    currenttime'''
+    #docprops.append(makeelement('created',tagnamespace=getns(propns,'dcterms'),
+    #tagattributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace=getns(propns,'xsi')))
+    #docprops.append(makeelement('modified',tagnamespace=getns(propns,'dcterms'),
+    #tagattributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace=getns(propns,'xsi')))
     return docprops
 
 

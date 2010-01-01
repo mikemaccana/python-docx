@@ -238,7 +238,7 @@ def getdocumenttext(document):
     for element in document.iter():
         if element.tag == getns(docns,'w')+'t':
             if element.text:
-                contents = contents+element.text+'\n'
+                contents = contents+element.text
     return contents        
 
 def docproperties(title,subject,creator,keywords,lastmodifiedby=None):

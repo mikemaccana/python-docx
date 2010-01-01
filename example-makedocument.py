@@ -1,6 +1,8 @@
 #!/usr/bin/env python2.6
 '''
-Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
+This file makes an docx (Office 2007) file from scratch, showing off most of python-docx's features.
+
+If you need to make documents from scratch, use this file as a basis for your work.
 
 Part of Python's docx module - http://github.com/mikemaccana/python-docx
 See LICENSE for licensing information.
@@ -8,13 +10,13 @@ See LICENSE for licensing information.
 from docx import *
 
 if __name__ == '__main__':        
-    #document = opendocx('Hello world.docx')
+    # Make a new document tree - this is the main part of a Word document
     document = newdocument()
     
-    # This location is where most document content lives 
+    # This xpath location is where most interesting content lives 
     docbody = document.xpath('/w:document/w:body', namespaces=docns)[0]
     
-    # Append two headings
+    # Append two headings and a paragraph
     docbody.append(heading('''Welcome to Python's docx module''',1)  )   
     docbody.append(heading('Make and edit docx in 200 lines of pure Python',2))
     docbody.append(paragraph('The module was created when I was looking for a Python support for MS Word .doc files on PyPI and Stackoverflow. Unfortunately, the only solutions I could find used:'))
@@ -49,9 +51,6 @@ if __name__ == '__main__':
     docbody.append(heading('Ideas? Questions? Want to contribute?',2))
     docbody.append(paragraph('''Email <python.docx@librelist.com>'''))
     
-    ## Fetch all the text out of the document we just created        
-    #print getdocumenttext(document)
-    #print etree.tostring(document, pretty_print=True)
     properties = docproperties('Python docx demo','A practical example of making docx from Python','Mike MacCana',['python','Office Open XML','Word'])
 
     # Save our document

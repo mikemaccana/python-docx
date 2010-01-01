@@ -61,6 +61,3 @@ If you have idea, or would like to add functionality contact the Python docx mai
 
 Licensed under the [MIT license](http://www.opensource.org/licenses/mit-license.php)
 Short version: this code is copyrighted to me (Mike MacCana), I give you permission to do what you want with it except remove my name from the credits. See the LICENSE file for specific terms.
-
-
-### Contact

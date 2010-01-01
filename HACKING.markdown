@@ -16,9 +16,11 @@ To make this easier:
 
 - The most common namespace, '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}' (prefix 'w') is automatically added by makeelement()
 - You can specify other namespaces with getns(), which maps the prefixes Word files use to the actual namespaces, eg:
+
 	makeelement('coreProperties',tagnamespace=getns(propns,'cp'))
 
-There's also a cool sideeffect - you can ignore setting all 'xmlns' attributes, since there's no need. Eg, this in word:
+There's also a cool sideeffect - you can ignore setting all 'xmlns' attributes, since there's no need. Eg, making the equivalent of this from a Word file:
+
 	<cp:coreProperties 
 	xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
 	xmlns:dc="http://purl.org/dc/elements/1.1/" 
@@ -26,6 +28,8 @@ There's also a cool sideeffect - you can ignore setting all 'xmlns' attributes, 
 	xmlns:dcmitype="http://purl.org/dc/dcmitype/" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	</cp:coreProperties>
+
+Is done with the following:
   
 	docprops = makeelement('coreProperties',tagnamespace=getns(propns,'cp'))
 

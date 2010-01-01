@@ -49,7 +49,7 @@ def opendocx(file):
     return document
 
 def newdocument():
-    document = makeelement('document',tagattributes=docns)
+    document = makeelement('document')
     document.append(makeelement('body'))
     return document
 

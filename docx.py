@@ -10,6 +10,7 @@ from lxml import etree
 import zipfile
 import re
 import time
+import os
 
 # All Word prefixes / namespace matches used in document.xml & core.xml
 # LXML doesn't actually use prefixes (just the real namespace) , but these
@@ -248,32 +249,9 @@ def picture():
     inline.append(graphic)
     drawing = makeelement('drawing')
     drawing.append(inline)
+    drawing = etree.fromstring('''<w:drawing xmlns:w='{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'/>''')
     return drawing
-    '''
-    <w:drawing>
-    	<wp:inline distT="0" distB="0" distL="0" distR="0">
-    		<wp:extent cx="5486400" cy="3429000"/>
-    		<wp:effectExtent l="25400" t="0" r="0" b="0"/>
-    		<wp:docPr id="1" name="Picture 0" descr="aero_glow_v2_1920x1200.png"/>
-    		<wp:cNvGraphicFramePr>
-    			<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
-    		<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-    			<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
-    				<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
-    					<pic:nvPicPr>
-    						<pic:cNvPr id="0" name="aero_glow_v2_1920x1200.png"/>
-    						<pic:cNvPicPr/>
-    					<pic:blipFill>
-    						<a:blip r:embed="rId5"/>
-    						<a:stretch>
-    							<a:fillRect/>
-    					<pic:spPr>
-    						<a:xfrm>
-    							<a:off x="0" y="0"/>
-    							<a:ext cx="5486400" cy="3429000"/>
-    						<a:prstGeom prst="rect">
-    							<a:avLst/>
-    '''
+    
 
 
 def search(document,search):
@@ -354,32 +332,21 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
 
 
 
-def savedocx(document,properties,newfilename):
+def savedocx(document,properties,docxfilename):
     '''Save a modified document'''
-    newfile = zipfile.ZipFile(newfilename,mode='w')
+    docxfile = zipfile.ZipFile(docxfilename,mode='w')
     # Write our generated document
     documentstring = etree.tostring(document, pretty_print=True)
-    newfile.writestr('word/document.xml',documentstring)
+    docxfile.writestr('word/document.xml',documentstring)
     # And it's properties
     propertiesstring = etree.tostring(properties, pretty_print=True)
-    newfile.writestr('docProps/core.xml',propertiesstring)
+    docxfile.writestr('docProps/core.xml',propertiesstring)
     # Add support files
-    for xmlfile in [ 
-    '[Content_Types].xml',
-    '_rels/.rels',
-    'docProps/thumbnail.jpeg',
-    'docProps/app.xml',
-    'word/webSettings.xml',
-    'word/_rels/document.xml.rels',
-    'word/styles.xml',
-    'word/numbering.xml',
-    'word/theme/',
-    'word/theme/theme1.xml',
-    #'word/media/image1.png',
-    'word/settings.xml',
-    'word/fontTable.xml']:
-        newfile.write('template/'+xmlfile,xmlfile)
-    print 'Saved new file to: '+newfilename
+    for dirpath,dirnames,filenames in os.walk('template'):
+        for filename in filenames:
+            templatefile = os.path.join(dirpath,filename)
+            docxfile.write(templatefile,templatefile.replace('template',''))
+    print 'Saved new file to: '+docxfilename
     return
     
 

@@ -3,7 +3,7 @@ Adding Features
 
 # Recommended reading
 
-- The LXML tutorial at http://codespeak.net/lxml/tutorial.html covers the basics of XML etrees, which we create append and insert to make XML documents
+- The LXML tutorial at http://codespeak.net/lxml/tutorial.html covers the basics of XML etrees, which we create, append and insert to make XML documents. LXML also provides XPath, which we use to specify locations in the document. 
 - The OpenXML WordML specs and videos at http://openxmldeveloper.org (if you're stuck)
 - Learning about XML namespaces http://www.w3schools.com/XML/xml_namespaces.asp
 - The Namespaces section of http://diveintopython3.org/xml.html

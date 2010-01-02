@@ -47,17 +47,17 @@ def newdocument():
     document.append(makeelement('body'))
     return document
 
-def makeelement(tagname,tagtext=None,nsprefix='w',tagattributes=None,attributenamespace=None):
+def makeelement(tagname,tagtext=None,nsprefix='w',attributes=None,attributenamespace=None):
     '''Create an element & return it''' 
     namespace = '{'+nsprefixes[nsprefix]+'}'
     newelement = etree.Element(namespace+tagname)
     # Add attributes with namespaces
-    if tagattributes:
+    if attributes:
         # If they haven't bothered setting attribute namespace, use the same one as the tag
         if not attributenamespace:
             attributenamespace = namespace    
-        for tagattribute in tagattributes:
-            newelement.set(attributenamespace+tagattribute, tagattributes[tagattribute])
+        for tagattribute in attributes:
+            newelement.set(attributenamespace+tagattribute, attributes[tagattribute])
     if tagtext:
         newelement.text = tagtext    
     return newelement
@@ -73,7 +73,7 @@ def pagebreak(type='page', orient='portrait'):
     pagebreak = makeelement('p')
     if type == 'page':
         run = makeelement('r')
-        br = makeelement('br',tagattributes={'type':type})
+        br = makeelement('br',attributes={'type':type})
 
         run.append(br)
         pagebreak.append(run)
@@ -82,9 +82,9 @@ def pagebreak(type='page', orient='portrait'):
         pPr = makeelement('pPr')
         sectPr = makeelement('sectPr')
         if orient == 'portrait':
-            pgSz = makeelement('pgSz',tagattributes={'w':'12240','h':'15840'})
+            pgSz = makeelement('pgSz',attributes={'w':'12240','h':'15840'})
         elif orient == 'landscape':
-            pgSz = makeelement('pgSz',tagattributes={'h':'12240','w':'15840', 'orient':'landscape'})
+            pgSz = makeelement('pgSz',attributes={'h':'12240','w':'15840', 'orient':'landscape'})
 
         sectPr.append(pgSz)
         pPr.append(sectPr)
@@ -107,7 +107,7 @@ def paragraph(paratext,style='BodyText',breakbefore=False):
     
     text = makeelement('t',tagtext=paratext)
     pPr = makeelement('pPr')
-    pStyle = makeelement('pStyle',tagattributes={'val':style})
+    pStyle = makeelement('pStyle',attributes={'val':style})
     pPr.append(pStyle)
 
                 
@@ -124,7 +124,7 @@ def heading(headingtext,headinglevel):
     # Make our elements
     paragraph = makeelement('p')
     pr = makeelement('pPr')
-    pStyle = makeelement('pStyle',tagattributes={'val':'Heading'+str(headinglevel)})    
+    pStyle = makeelement('pStyle',attributes={'val':'Heading'+str(headinglevel)})    
     run = makeelement('r')
     text = makeelement('t',tagtext=headingtext)
     # Add the text the run, and the run to the paragraph
@@ -142,29 +142,29 @@ def table(contents):
     columns = len(contents[0][0])    
     # Table properties
     tableprops = makeelement('tblPr')
-    tablestyle = makeelement('tblStyle',tagattributes={'val':'ColorfulGrid-Accent1'})
-    tablewidth = makeelement('tblW',tagattributes={'w':'0','type':'auto'})
-    tablelook = makeelement('tblLook',tagattributes={'val':'0400'})
+    tablestyle = makeelement('tblStyle',attributes={'val':'ColorfulGrid-Accent1'})
+    tablewidth = makeelement('tblW',attributes={'w':'0','type':'auto'})
+    tablelook = makeelement('tblLook',attributes={'val':'0400'})
     for tableproperty in [tablestyle,tablewidth,tablelook]:
         tableprops.append(tableproperty)
     table.append(tableprops)    
     # Table Grid    
     tablegrid = makeelement('tblGrid')
     for _ in range(columns):
-        tablegrid.append(makeelement('gridCol',tagattributes={'gridCol':'2390'}))
+        tablegrid.append(makeelement('gridCol',attributes={'gridCol':'2390'}))
     table.append(tablegrid)     
     # Heading Row    
     row = makeelement('tr')
     rowprops = makeelement('trPr')
-    cnfStyle = makeelement('cnfStyle',tagattributes={'val':'000000100000'})
+    cnfStyle = makeelement('cnfStyle',attributes={'val':'000000100000'})
     rowprops.append(cnfStyle)
     row.append(rowprops)
     for heading in contents[0]:
         cell = makeelement('tc')  
         # Cell properties  
         cellprops = makeelement('tcPr')
-        cellwidth = makeelement('tcW',tagattributes={'w':'2390','type':'dxa'})
-        cellstyle = makeelement('shd',tagattributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
+        cellwidth = makeelement('tcW',attributes={'w':'2390','type':'dxa'})
+        cellstyle = makeelement('shd',attributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
         cellprops.append(cellwidth)
         cellprops.append(cellstyle)
         cell.append(cellprops)        
@@ -179,7 +179,7 @@ def table(contents):
             cell = makeelement('tc')
             # Properties
             cellprops = makeelement('tcPr')
-            cellwidth = makeelement('tcW',tagattributes={'type':'dxa'})
+            cellwidth = makeelement('tcW',attributes={'type':'dxa'})
             cellprops.append(cellwidth)
             cell.append(cellprops)
             # Paragraph (Content)
@@ -193,29 +193,29 @@ def picture():
     # Word uses paragraphs to contain images
     # http://openxmldeveloper.org/articles/462.aspx
     #resourceid = rId5
-    #newrelationship = makeelement('Relationship',tagattributes={'Id':resourceid,'Type':'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'},Target=filename)
+    #newrelationship = makeelement('Relationship',attributes={'Id':resourceid,'Type':'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'},Target=filename)
     
     # Now make drawing element
     #newpara = makeelement('deleteme',style='BodyText')
 
     
     blipfill = makeelement('blipFill',nsprefix='a')
-    blipfill.append(makeelement('blip',nsprefix='a',tagattributes={'embed':'rId5'}))
+    blipfill.append(makeelement('blip',nsprefix='a',attributes={'embed':'rId5'}))
     stretch = makeelement('stretch',nsprefix='a')
     stretch.append(makeelement('fillRect',nsprefix='a'))
     blipfill.append(stretch)
 
     sppr = makeelement('spPr',nsprefix='pic')
     xfrm = makeelement('xfrm',nsprefix='a')
-    xfrm.append(makeelement('off',nsprefix='a',tagattributes={'x':'0','y':'0'}))
-    xfrm.append(makeelement('ext',nsprefix='a',tagattributes={'cx':'5486400','cy':'3429000'}))
-    prstgeom = makeelement('prstGeom',nsprefix='a',tagattributes={'prst':'rect'})
+    xfrm.append(makeelement('off',nsprefix='a',attributes={'x':'0','y':'0'}))
+    xfrm.append(makeelement('ext',nsprefix='a',attributes={'cx':'5486400','cy':'3429000'}))
+    prstgeom = makeelement('prstGeom',nsprefix='a',attributes={'prst':'rect'})
     prstgeom.append(makeelement('avLst',nsprefix='a'))
     sppr.append(xfrm)
     sppr.append(prstgeom)
 
     nvpicpr = makeelement('nvPicPr',nsprefix='a')
-    cnvpr = makeelement('cNvPr',nsprefix='a',tagattributes={'id':'0','name':'aero_glow_v2_1920x1200.png'})
+    cnvpr = makeelement('cNvPr',nsprefix='a',attributes={'id':'0','name':'aero_glow_v2_1920x1200.png'})
     cnvpicpr = makeelement('cNvPicPr')
     nvpicpr.append(cnvpicpr)
     nvpicpr.append(cnvpr)
@@ -226,21 +226,21 @@ def picture():
     pic.append(nvpicpr)
 
 
-    graphicdata = makeelement('graphicData',nsprefix='a',tagattributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
+    graphicdata = makeelement('graphicData',nsprefix='a',attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
     graphicdata.append(pic)
 
     graphic = makeelement('graphic',nsprefix='a')
     graphic.append(graphicdata)
 
     framepr = makeelement('cNvGraphicFramePr',nsprefix='a')
-    framelocks = makeelement('graphicFrameLocks',nsprefix='a',tagattributes={'noChangeAspect':'1'})
+    framelocks = makeelement('graphicFrameLocks',nsprefix='a',attributes={'noChangeAspect':'1'})
     framepr.append(framelocks)
 
     makeelement('drawing')
-    inline = makeelement('inline',tagattributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
-    extent = makeelement('extent',nsprefix='a',tagattributes={'cx':'5486400','cy':'3429000'})
-    effectextent = makeelement('effectExtent',nsprefix='a',tagattributes={'l':'25400','t':'0','r':'0','b':'0'})
-    docpr = makeelement('docPr',nsprefix='a',tagattributes={'id':'1','name':'Picture 0','descr':'aero_glow_v2_1920x1200.png'})
+    inline = makeelement('inline',attributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
+    extent = makeelement('extent',nsprefix='a',attributes={'cx':'5486400','cy':'3429000'})
+    effectextent = makeelement('effectExtent',nsprefix='a',attributes={'l':'25400','t':'0','r':'0','b':'0'})
+    docpr = makeelement('docPr',nsprefix='a',attributes={'id':'1','name':'Picture 0','descr':'aero_glow_v2_1920x1200.png'})
     inline.append(extent)
     inline.append(effectextent)
     inline.append(docpr)
@@ -347,9 +347,9 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     <dcterms:modified xsi:type="dcterms:W3CDTF">2010-01-01T21:20:00Z</dcterms:modified>
     currenttime'''
     #docprops.append(makeelement('created',nsprefix='dcterms',
-    #tagattributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace='xsi'))
+    #attributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace='xsi'))
     #docprops.append(makeelement('modified',nsprefix='dcterms',
-    #tagattributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace='xsi'))
+    #attributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace='xsi'))
     return docprops
 
 

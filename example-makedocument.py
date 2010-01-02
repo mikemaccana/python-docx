@@ -14,7 +14,7 @@ if __name__ == '__main__':
     document = newdocument()
     
     # This xpath location is where most interesting content lives 
-    docbody = document.xpath('/w:document/w:body', namespaces=docns)[0]
+    docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
     
     # Append two headings and a paragraph
     docbody.append(heading('''Welcome to Python's docx module''',1)  )   
@@ -41,6 +41,9 @@ if __name__ == '__main__':
     docbody.append(paragraph('Thanks to the awesomeness of the lxml module, we can:'))
     for point in ['Search and replace','Extract plain text of document','Add and delete items anywhere within the document']:
         docbody.append(paragraph(point,style='ListBullet'))
+        
+    # Add an image (beta)
+    #docbody.append(picture())
  
     # Search and replace 
     document = replace(document,'the','the goshdarned')

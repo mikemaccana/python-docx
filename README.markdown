@@ -3,7 +3,7 @@ Python docx
 
 ## Introduction
 
-The docx module reads and writes Microsoft Office Word 2007 docx files.
+The docx module creates, reads and writes Microsoft Office Word 2007 docx files.
 
 These are referred to as 'WordML', 'Office Open XML' and 'Open XML' by Microsoft.
 

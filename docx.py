@@ -341,11 +341,11 @@ def savedocx(document,properties,docxfilename):
     # And it's properties
     propertiesstring = etree.tostring(properties, pretty_print=True)
     docxfile.writestr('docProps/core.xml',propertiesstring)
-    # Add support files
+    # Add & compress support files
     for dirpath,dirnames,filenames in os.walk('template'):
         for filename in filenames:
-            templatefile = os.path.join(dirpath,filename)
-            docxfile.write(templatefile,templatefile.replace('template',''))
+            templatefile = os.path.join(dirpath,filename)            
+            docxfile.write(templatefile,templatefile.replace('template',''), zipfile.ZIP_DEFLATED)
     print 'Saved new file to: '+docxfilename
     return
     

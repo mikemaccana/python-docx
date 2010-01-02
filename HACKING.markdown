@@ -45,14 +45,23 @@ Basically just look at what's there. But if you need something more specific:
 
 ## If Word complains about files:
 
-- Your zip file or XML file has a problem
+First, determine whether Word can recover the files:
+- If Word cannot recover the file, you most likely have a problem with you zip file
+- If Word can recover the file, you most likely have a problem with your XML
+
+### Common Zipfile issues
+
 - Ensure the same file isn't included twice in your zip archive. Zip supports this, Word doesn't.
+- Ensure that all media files have an entry for their file type in [Content_Types].xml
+
+### Common XML issues
+
 - Ensure the _rels, docProps, word, etc directories are in the top level of your zip file.
 - Check your namespaces - on both the tags, and the attributes
 - Check capitalization of tag names
 - Ensure you're not missing any attributes
 
-## One common debugging technique we've used before
+#### One common debugging technique we've used before
 
 - Re-save the document in Word will produced a fixed version of the file
 - Unzip and grabbing the serialized XML out of the fixed file

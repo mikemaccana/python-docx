@@ -41,7 +41,8 @@ Thanks to the awesomeness of the lxml module, we can:
 
 - Use **easy_install** to fetch the **lxml** module
 - Download the files above
-- Open **example.py** which creates and modifies a sample docx document. 
+- Open **example-makedocument.py** which creates and modifies a sample docx document. 
+- If you just want to extract the text from a Word file, check out **example-extracttext.py** 
 
 ### Ideas & To Do List
 

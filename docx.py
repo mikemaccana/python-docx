@@ -231,15 +231,31 @@ def replace(document,search,replace):
 
 
 def getdocumenttext(document):
-    '''Get the contents of all text elements in the tree'''
-    # Recursively get all elements beneath tree
-    # Get each elements text attribute
-    contents = ''
+    '''Return the raw text of a document, as a list of paragraphs.'''
+    paratextlist=[]   
+        
+    # Compile a list of all paragraph (p) elements
+    paralist = []
     for element in document.iter():
-        if element.tag == getns(docns,'w')+'t':
-            if element.text:
-                contents = contents+element.text
-    return contents        
+        # Find p (paragraph) elements
+        if element.tag == getns(docns,'w')+'p':
+            paralist.append(element)
+    
+    # Since a single sentence might be spread over multiple text elements, iterate through each 
+    # paragraph, appending all text (t) children to that paragraphs text.     
+    for para in paralist:      
+        paratext=u''  
+        # Loop through each paragraph
+        for element in para.iter():
+            # Find t (text) elements
+            if element.tag == getns(docns,'w')+'t':
+                if element.text:
+                    paratext = paratext+element.text
+
+        # Add our completed paragraph text to the list of paragraph text    
+        if not len(paratext) == 0:
+            paratextlist.append(paratext)                    
+    return paratextlist        
 
 def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     '''Makes document properties. '''

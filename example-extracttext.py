@@ -17,4 +17,16 @@ if __name__ == '__main__':
         print('''  example-extracttext.py 'My Office 2007 document.docx' ''')    
         exit()
     ## Fetch all the text out of the document we just created        
-    print getdocumenttext(document)
+    paratextlist = getdocumenttext(document)    
+
+    # Note that if using shell redirection &>, 1> 2> etc) Python tries to 
+    # change the unicode into ASCII and fails - even with a UTF-8 $LANG
+    # As a workaround, create our own ASCII copy of the list.
+    asciiparatextlist = []
+    for paratext in paratextlist:
+        asciiparatextlist.append(paratext.encode("ascii", "backslashreplace"))
+    
+    ## Print our documnts test with two newlines under each paragraph
+    print '\n\n'.join(asciiparatextlist)
+    
+        

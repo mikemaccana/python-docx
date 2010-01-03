@@ -55,6 +55,7 @@ if __name__ == '__main__':
     docbody.append(paragraph('''Email <python.docx@librelist.com>'''))
     
     properties = docproperties('Python docx demo','A practical example of making docx from Python','Mike MacCana',['python','Office Open XML','Word'])
-
+    contenttypes = contenttypes()
+    
     # Save our document
-    savedocx(document,properties,'Welcome to the Python docx module.docx')
+    savedocx(document,properties,contenttypes,'Welcome to the Python docx module.docx')

@@ -16,6 +16,7 @@ import os
 # LXML doesn't actually use prefixes (just the real namespace) , but these
 # make it easier to copy Word output more easily. 
 nsprefixes = {
+    # Text Content
     'mv':'urn:schemas-microsoft-com:mac:vml',
     'mo':'http://schemas.microsoft.com/office/mac/office/2008/main',
     've':'http://schemas.openxmlformats.org/markup-compatibility/2006',
@@ -26,6 +27,7 @@ nsprefixes = {
     'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
     'w10':'urn:schemas-microsoft-com:office:word',
     'wne':'http://schemas.microsoft.com/office/word/2006/wordml',
+    # Drawing
     'wp':'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
     'a':'http://schemas.openxmlformats.org/drawingml/2006/main',
     'pic':'http://schemas.openxmlformats.org/drawingml/2006/picture',
@@ -34,6 +36,8 @@ nsprefixes = {
     'dcterms':"http://purl.org/dc/terms/",
     'dcmitype':"http://purl.org/dc/dcmitype/",
     'xsi':"http://www.w3.org/2001/XMLSchema-instance",
+    # Content Types (we're just making up our own namespaces here to save time)
+    'ct':'http://schemas.openxmlformats.org/package/2006/content-types',
     }
 
 def opendocx(file):
@@ -50,7 +54,11 @@ def newdocument():
 
 def makeelement(tagname,tagtext=None,nsprefix='w',attributes=None,attributenamespace=None):
     '''Create an element & return it''' 
-    namespace = '{'+nsprefixes[nsprefix]+'}'
+    if nsprefix:
+        namespace = '{'+nsprefixes[nsprefix]+'}'
+    else:
+        # For when namespace = None
+        namespace = ''
     newelement = etree.Element(namespace+tagname)
     # Add attributes with namespaces
     if attributes:
@@ -69,16 +77,13 @@ def pagebreak(type='page', orient='portrait'):
     Return our page break element.'''
     # Need to enumerate different types of page breaks.
     if type not in ['page', 'section']:
-            raiseError('Page break style "%s" not implemented.' % type)
-
+        raiseError('Page break style "%s" not implemented.' % type)
     pagebreak = makeelement('p')
     if type == 'page':
         run = makeelement('r')
         br = makeelement('br',attributes={'type':type})
-
         run.append(br)
         pagebreak.append(run)
-
     elif type == 'section':
         pPr = makeelement('pPr')
         sectPr = makeelement('sectPr')
@@ -86,11 +91,9 @@ def pagebreak(type='page', orient='portrait'):
             pgSz = makeelement('pgSz',attributes={'w':'12240','h':'15840'})
         elif orient == 'landscape':
             pgSz = makeelement('pgSz',attributes={'h':'12240','w':'15840', 'orient':'landscape'})
-
         sectPr.append(pgSz)
         pPr.append(sectPr)
         pagebreak.append(pPr)
-
     return pagebreak    
 
 def paragraph(paratext,style='BodyText',breakbefore=False):
@@ -99,18 +102,16 @@ def paragraph(paratext,style='BodyText',breakbefore=False):
     # Make our elements
     paragraph = makeelement('p')
     run = makeelement('r')    
-
+    
     # Insert lastRenderedPageBreak for assistive technologies like
     # document narrators to know when a page break occurred.
     if breakbefore:
         lastRenderedPageBreak = makeelement('lastRenderedPageBreak')
-        run.append(lastRenderedPageBreak)
-    
+        run.append(lastRenderedPageBreak)    
     text = makeelement('t',tagtext=paratext)
     pPr = makeelement('pPr')
     pStyle = makeelement('pStyle',attributes={'val':style})
     pPr.append(pStyle)
-
                 
     # Add the text the run, and the run to the paragraph
     run.append(text)    
@@ -119,6 +120,53 @@ def paragraph(paratext,style='BodyText',breakbefore=False):
     # Return the combined paragraph
     return paragraph
 
+def contenttypes():
+    types = makeelement('Types',nsprefix='ct')
+    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/styles.xml',
+    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml'}))
+    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/webSettings.xml',
+    'ContentType':'/word/webSettings.xml'}))
+    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/docProps/core.xml',
+    'ContentType':'application/vnd.openxmlformats-package.core-properties+xml'}))
+    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/settings.xml',
+    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml'}))
+
+    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/numbering.xml',
+    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml'}))
+    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/theme/theme1.xml',
+    'ContentType':'application/vnd.openxmlformats-officedocument.theme+xml'}))
+    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/document.xml',
+    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'}))
+
+    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/fontTable.xml',
+    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml'}))
+    
+
+    
+    types = etree.fromstring('''<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+    	<Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>
+    	<Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/>
+    </Types>''')
+
+    parts = {
+        '/docProps/core.xml':'application/vnd.openxmlformats-package.core-properties+xml',
+        '/docProps/app.xml':'application/vnd.openxmlformats-officedocument.extended-properties+xml',
+        '/word/document.xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml',
+        '/word/settings.xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml',
+        '/word/numbering.xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml',
+        '/word/styles.xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml',
+        '/word/webSettings.xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml'
+        }
+    for part in parts:
+        types.append(makeelement('Override',nsprefix=None,attributes={'PartName':part,'ContentType':parts[part]}))
+
+    # Add support for filetypes
+    filetypes = {'rels':'application/vnd.openxmlformats-package.relationships+xml','xml':'application/xml','jpeg':'image/jpeg','gif':'image/gif','png':'image/png'}
+    for extension in filetypes:
+        types.append(makeelement('Default',nsprefix=None,attributes={'Extension':extension,'ContentType':filetypes[extension]}))
+
+
+    return types
 
 def heading(headingtext,headinglevel):
     '''Make a new heading, return the heading element'''
@@ -340,7 +388,7 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
 
 
 
-def savedocx(document,properties,docxfilename):
+def savedocx(document,properties,contenttypes,docxfilename):
     '''Save a modified document'''
     docxfile = zipfile.ZipFile(docxfilename,mode='w')
     # Write our generated document
@@ -348,7 +396,13 @@ def savedocx(document,properties,docxfilename):
     docxfile.writestr('word/document.xml',documentstring)
     # And it's properties
     propertiesstring = etree.tostring(properties, pretty_print=True)
-    docxfile.writestr('docProps/core.xml',propertiesstring)
+    docxfile.writestr('docProps/core.xml',propertiesstring)    
+    # And it's content types
+    contenttypesstring = etree.tostring(contenttypes, pretty_print=True)
+    print contenttypesstring
+    docxfile.writestr('[Content_Types].xml',contenttypesstring)
+    
+    
     # Add & compress support files
     for dirpath,dirnames,filenames in os.walk('template'):
         for filename in filenames:

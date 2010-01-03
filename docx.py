@@ -12,7 +12,7 @@ import re
 import time
 import os
 
-# All Word prefixes / namespace matches used in document.xml & core.xml
+# All Word prefixes / namespace matches used in document.xml & core.xml.
 # LXML doesn't actually use prefixes (just the real namespace) , but these
 # make it easier to copy Word output more easily. 
 nsprefixes = {
@@ -197,11 +197,10 @@ def picture():
     #newrelationship = makeelement('Relationship',attributes={'Id':resourceid,'Type':'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'},Target=filename)
     
     # Now make drawing element
-    #newpara = makeelement('deleteme',style='BodyText')
 
     
     blipfill = makeelement('blipFill',nsprefix='a')
-    blipfill.append(makeelement('blip',nsprefix='a',attributes={'embed':'rId5'}))
+    blipfill.append(makeelement('blip',nsprefix='a',attributes={'embed':'rId7'}))
     stretch = makeelement('stretch',nsprefix='a')
     stretch.append(makeelement('fillRect',nsprefix='a'))
     blipfill.append(stretch)
@@ -209,7 +208,7 @@ def picture():
     sppr = makeelement('spPr',nsprefix='pic')
     xfrm = makeelement('xfrm',nsprefix='a')
     xfrm.append(makeelement('off',nsprefix='a',attributes={'x':'0','y':'0'}))
-    xfrm.append(makeelement('ext',nsprefix='a',attributes={'cx':'5486400','cy':'3429000'}))
+    xfrm.append(makeelement('ext',nsprefix='a',attributes={'cx':'2672715','cy':'900430'}))
     prstgeom = makeelement('prstGeom',nsprefix='a',attributes={'prst':'rect'})
     prstgeom.append(makeelement('avLst',nsprefix='a'))
     sppr.append(xfrm)
@@ -226,7 +225,6 @@ def picture():
     pic.append(sppr)
     pic.append(nvpicpr)
 
-
     graphicdata = makeelement('graphicData',nsprefix='a',attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
     graphicdata.append(pic)
 
@@ -241,7 +239,7 @@ def picture():
     inline = makeelement('inline',attributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
     extent = makeelement('extent',nsprefix='a',attributes={'cx':'5486400','cy':'3429000'})
     effectextent = makeelement('effectExtent',nsprefix='a',attributes={'l':'25400','t':'0','r':'0','b':'0'})
-    docpr = makeelement('docPr',nsprefix='a',attributes={'id':'1','name':'Picture 0','descr':'aero_glow_v2_1920x1200.png'})
+    docpr = makeelement('docPr',nsprefix='a',attributes={'id':'1','name':'Picture 0','descr':'image1.png'})
     inline.append(extent)
     inline.append(effectextent)
     inline.append(docpr)
@@ -249,8 +247,18 @@ def picture():
     inline.append(graphic)
     drawing = makeelement('drawing')
     drawing.append(inline)
-    drawing = etree.fromstring('''<w:drawing xmlns:w='{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'/>''')
-    return drawing
+    #drawing = etree.fromstring('''<w:drawing xmlns:w='{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'/>''')
+    
+    
+    paragraph = makeelement('p')
+    pr = makeelement('pPr')
+    run = makeelement('r')
+    # Add the text the run, and the run to the paragraph
+    run.append(drawing)
+    paragraph.append(pr)   
+    paragraph.append(run)    
+    
+    return paragraph
     
 
 
@@ -344,8 +352,10 @@ def savedocx(document,properties,docxfilename):
     # Add & compress support files
     for dirpath,dirnames,filenames in os.walk('template'):
         for filename in filenames:
-            templatefile = os.path.join(dirpath,filename)            
-            docxfile.write(templatefile,templatefile.replace('template',''), zipfile.ZIP_DEFLATED)
+            templatefile = os.path.join(dirpath,filename)
+            archivename = templatefile.lstrip('/template/')   
+            print 'Saving: '+archivename          
+            docxfile.write(templatefile, archivename, zipfile.ZIP_DEFLATED)
     print 'Saved new file to: '+docxfilename
     return
     

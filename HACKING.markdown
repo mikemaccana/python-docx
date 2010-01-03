@@ -53,6 +53,7 @@ First, determine whether Word can recover the files:
 
 - Ensure the same file isn't included twice in your zip archive. Zip supports this, Word doesn't.
 - Ensure that all media files have an entry for their file type in [Content_Types].xml
+- Ensure that files in zip file file have leading '/'s removed. 
 
 ### Common XML issues
 

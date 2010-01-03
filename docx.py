@@ -121,34 +121,13 @@ def paragraph(paratext,style='BodyText',breakbefore=False):
     return paragraph
 
 def contenttypes():
-    types = makeelement('Types',nsprefix='ct')
-    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/styles.xml',
-    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml'}))
-    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/webSettings.xml',
-    'ContentType':'/word/webSettings.xml'}))
-    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/docProps/core.xml',
-    'ContentType':'application/vnd.openxmlformats-package.core-properties+xml'}))
-    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/settings.xml',
-    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml'}))
-
-    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/numbering.xml',
-    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml'}))
-    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/theme/theme1.xml',
-    'ContentType':'application/vnd.openxmlformats-officedocument.theme+xml'}))
-    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/document.xml',
-    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'}))
-
-    types.append(makeelement('Override',nsprefix=None,attributes={'PartName':'/word/fontTable.xml',
-    'ContentType':'application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml'}))
-    
-
-    
-    types = etree.fromstring('''<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-    	<Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>
-    	<Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/>
-    </Types>''')
+    # FIXME - doesn't quite work...read from string as temp hack...
+    #types = makeelement('Types',nsprefix='ct')
+    types = etree.fromstring('''<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"></Types>''')
 
     parts = {
+        '/word/theme/theme1.xml':'application/vnd.openxmlformats-officedocument.theme+xml',
+        '/word/fontTable.xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml',
         '/docProps/core.xml':'application/vnd.openxmlformats-package.core-properties+xml',
         '/docProps/app.xml':'application/vnd.openxmlformats-officedocument.extended-properties+xml',
         '/word/document.xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml',

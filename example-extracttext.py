@@ -27,6 +27,6 @@ if __name__ == '__main__':
         asciiparatextlist.append(paratext.encode("ascii", "backslashreplace"))
     
     ## Print our documnts test with two newlines under each paragraph
-    print '\n\n'.join(asciiparatextlist)
+    print '\n\n'.join(paratextlist)
     
         

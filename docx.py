@@ -320,7 +320,7 @@ def getdocumenttext(document):
     paralist = []
     for element in document.iter():
         # Find p (paragraph) elements
-        if element.tag == 'w'+'p':
+        if element.tag == '{'+nsprefixes['w']+'}p':
             paralist.append(element)
     
     # Since a single sentence might be spread over multiple text elements, iterate through each 
@@ -330,7 +330,7 @@ def getdocumenttext(document):
         # Loop through each paragraph
         for element in para.iter():
             # Find t (text) elements
-            if element.tag == 'w'+'t':
+            if element.tag == '{'+nsprefixes['w']+'}t':
                 if element.text:
                     paratext = paratext+element.text
 

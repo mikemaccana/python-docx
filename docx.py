@@ -224,16 +224,18 @@ def table(contents):
         table.append(row)   
     return table                 
 
-def picture():
+def picture(picname,pixelwidth,pixelheight):
     '''Create a pragraph containing an image'''
     # http://openxmldeveloper.org/articles/462.aspx
+
+    # OpenXML measures on-screen objects in emus
+    emuperpixel = 12667
+    width = str(pixelwidth * emuperpixel)
+    height = str(pixelheight * emuperpixel)
     
-    width = '2672715'
-    height = '900430'
     picid = '2'
     picdescription = 'This is a test description'
     picrelid = 'rId5'
-    picname = 'image1.png'
     
     # There are 3 main elements inside a picture
     # 1. The Blipfill - specifies how the image fills the picture area (stretch, tile, etc.)

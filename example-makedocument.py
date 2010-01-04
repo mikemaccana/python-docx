@@ -42,8 +42,8 @@ if __name__ == '__main__':
     for point in ['Search and replace','Extract plain text of document','Add and delete items anywhere within the document']:
         docbody.append(paragraph(point,style='ListBullet'))
         
-    # Add an image (beta)
-    docbody.append(picture())
+    # Add an image
+    docbody.append(picture('image1.png',211,71))
  
     # Search and replace 
     document = replace(document,'the','the goshdarned')

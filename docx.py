@@ -62,9 +62,17 @@ def makeelement(tagname,tagtext=None,nsprefix='w',attributes=None,attributenames
     newelement = etree.Element(namespace+tagname)
     # Add attributes with namespaces
     if attributes:
-        # If they haven't bothered setting attribute namespace, use the same one as the tag
+        # If they haven't bothered setting attribute namespace, use an empty string
+        # (equivalent of no namespace)
         if not attributenamespace:
-            attributenamespace = namespace    
+            # Quick hack: it seems every element that has a 'w' nsprefix for its tag uses the same prefix for it's attributes  
+            if nsprefix == 'w':
+                attributenamespace = namespace
+            else:
+                attributenamespace = ''
+        else:
+            attributenamespace = '{'+nsprefixes[nsprefix]+'}'
+                    
         for tagattribute in attributes:
             newelement.set(attributenamespace+tagattribute, attributes[tagattribute])
     if tagtext:
@@ -284,6 +292,58 @@ def picture():
     run.append(drawing)
     paragraph.append(pr)   
     paragraph.append(run)    
+    
+    '''
+    <w:r xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    >
+		<w:drawing>
+			<wp:inline distT="0" distB="0" distL="0" distR="0">
+				<wp:extent cx="2672715" cy="900430"/>
+				<wp:effectExtent l="25400" t="0" r="0" b="0"/>
+				<wp:docPr id="2" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
+				<wp:cNvGraphicFramePr>
+					<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+				</wp:cNvGraphicFramePr>
+				<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+					<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+							<pic:nvPicPr>
+								<pic:cNvPr id="0" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
+								<pic:cNvPicPr>
+									<a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
+								</pic:cNvPicPr>
+							</pic:nvPicPr>
+							<pic:blipFill>
+								<a:blip r:embed="rId5"/>
+								<a:srcRect/>
+								<a:stretch>
+									<a:fillRect/>
+								</a:stretch>
+							</pic:blipFill>
+							<pic:spPr bwMode="auto">
+								<a:xfrm>
+									<a:off x="0" y="0"/>
+									<a:ext cx="2672715" cy="900430"/>
+								</a:xfrm>
+								<a:prstGeom prst="rect">
+									<a:avLst/>
+								</a:prstGeom>
+								<a:noFill/>
+								<a:ln w="9525">
+									<a:noFill/>
+									<a:miter lim="800000"/>
+									<a:headEnd/>
+									<a:tailEnd/>
+								</a:ln>
+							</pic:spPr>
+						</pic:pic>
+					</a:graphicData>
+				</a:graphic>
+			</wp:inline>
+		</w:drawing>
+	</w:r>
+    '''
     
     return paragraph
     

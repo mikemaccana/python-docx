@@ -284,15 +284,12 @@ def picture():
     drawing = makeelement('drawing')
     drawing.append(inline)    
     
-    paragraph = makeelement('p')
-    run = makeelement('r')
     # Add the text the run, and the run to the paragraph
-    run.append(drawing)
-    paragraph.append(run)    
+    '''Getting rid of the string, step by step...'''
+    paragraph = makeelement('p')
     
-    paragraph = etree.fromstring('''
-    <w:p w:rsidR="00922AB3" w:rsidRDefault="004E0CB5"  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-    	<w:r w:rsidRPr="004E0CB5">
+    precut = etree.fromstring('''
+    	<w:r w:rsidRPr="004E0CB5" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
     		<w:drawing>
     			<wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
     				<wp:extent cx="2672715" cy="900430"/>
@@ -339,11 +336,15 @@ def picture():
     			</wp:inline>
     		</w:drawing>
     	</w:r>
-    	<w:r>
-    		<w:br w:type="page"/>
-    	</w:r>
-    </w:p>
     ''')
+    paragraph.append(precut)
+    #run = makeelement('r')
+
+    
+    
+    #run.append(drawing)
+    #paragraph.append(run)    
+    
     return paragraph
     
 

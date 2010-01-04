@@ -39,14 +39,20 @@ Basically just look at what's there. But if you need something more specific:
 
 - Functional - every function should take some inputs, return something, and not use any globals.
 - Google style - http://code.google.com/p/soc/wiki/PythonStyleGuide
-- Unit tests are handled with nose / coverage
+
+# Unit Testing
+
+After adding code, open **tests/test_docx.py** and add a test that calls your function and checks its output.
+
+- Use **easy_install** to fetch the **nose** and **coverage** modules
+- Run **nosetests --with-coverage** to run all the doctests. These should all pass.
 
 # Tips
 
 ## If Word complains about files:
 
 First, determine whether Word can recover the files:
-- If Word cannot recover the file, you most likely have a problem with you zip file
+- If Word cannot recover the file, you most likely have a problem with your zip file
 - If Word can recover the file, you most likely have a problem with your XML
 
 ### Common Zipfile issues
@@ -61,6 +67,7 @@ First, determine whether Word can recover the files:
 - Check your namespaces - on both the tags, and the attributes
 - Check capitalization of tag names
 - Ensure you're not missing any attributes
+- If images or other embedded content is shown with a large red X, your relationships file is missing data.
 
 #### One common debugging technique we've used before
 

@@ -57,6 +57,7 @@ if __name__ == '__main__':
     properties = docproperties('Python docx demo','A practical example of making docx from Python','Mike MacCana',['python','Office Open XML','Word'])
     contenttypes = contenttypes()
     websettings = websettings()
+    wordrelationships = wordrelationships()
     
     # Save our document
-    savedocx(document,properties,contenttypes,websettings,'Welcome to the Python docx module.docx')
+    savedocx(document,properties,contenttypes,websettings,wordrelationships,'Welcome to the Python docx module.docx')

@@ -9,6 +9,7 @@ See LICENSE for licensing information.
 from lxml import etree
 import Image
 import zipfile
+import shutil
 import re
 import time
 import os
@@ -229,9 +230,12 @@ def picture(picname,picdescription,pixelwidth=None,pixelheight=None):
     '''Create a pragraph containing an image'''
     # http://openxmldeveloper.org/articles/462.aspx
 
+    # Copy the file into the media dir
+    shutil.copyfile(picname, 'template/word/media/'+picname)
+
     # Check if the user has specified a specific size
     if not pixelwidth or not pixelheight:
-        # Get info from the picture itself
+        # If not, get info from the picture itself
         pixelwidth,pixelheight = Image.open(picname).size[0:2]
 
     # OpenXML measures on-screen objects in English Metric Units
@@ -399,13 +403,45 @@ def websettings():
     web.append(makeelement('allowPNG'))
     web.append(makeelement('doNotSaveAsSingleFile'))
     return web
+    
+def wordrelationships():
+    '''Generate a Word relationships files'''
+    relationships = makeelement('Relationships',nsprefix='r')    
+    reltypes = {
+    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering':'numbering.xml',
+    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles':'styles.xml',
+    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings':'settings.xml',
+    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings':'webSettings.xml',
+    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image':'media/image1.png',
+    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable':'fontTable.xml',
+    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme':'theme/theme1.xml',
+    }
+    count = 1
+    for reltype in reltypes:
+        relationships.append(makeelement('Relationship',attributes={'Id':'rId'+str(count),'Type':reltype,'Target':reltypes[reltype]},nsprefix=None))
+        count += 1
+    #relationships = etree.fromstring(
+    '''<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+                    <Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/>
+                    <Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/>
+                    <Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>
+                    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
+                    <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+                    <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
+                    <Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>
+            </Relationships>'''
+    #)
+    return relationships    
 
-def savedocx(document,properties,contenttypes,websettings,docxfilename):
+def savedocx(document,properties,contenttypes,websettings,wordrelationships,docxfilename):
     '''Save a modified document'''
     docxfile = zipfile.ZipFile(docxfilename,mode='w')
     # Serialize our trees into out zip file
-    treesandfiles = {document:'word/document.xml',properties:'docProps/core.xml',contenttypes:'[Content_Types].xml',websettings:'word/webSettings.xml'}
+    treesandfiles = {document:'word/document.xml',properties:'docProps/core.xml',contenttypes:'[Content_Types].xml',websettings:'word/webSettings.xml',
+    #wordrelationships:'word/rels_/document.xml.rels'
+    }
     for tree in treesandfiles:
+        print 'Saving: '+treesandfiles[tree]    
         treestring = etree.tostring(tree, pretty_print=True)
         docxfile.writestr(treesandfiles[tree],treestring)
     

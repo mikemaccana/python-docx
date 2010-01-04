@@ -40,7 +40,7 @@ Thanks to the awesomeness of the lxml module, we can:
 ### Getting started
 
 - Just [download python docx](http://github.com/mikemaccana/python-docx/tarball/master).
-- Use **easy_install** to fetch the **lxml** module
+- Use **easy_install** to fetch the **lxml** and **PIL** modules
 - Open **example-makedocument.py** which creates and modifies a sample docx document.
 
 Congratulations, you just made a Word document!

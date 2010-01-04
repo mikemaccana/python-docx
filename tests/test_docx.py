@@ -17,7 +17,7 @@ def testnewdocument():
 
 def testmakeelement():
     '''Ensure custom elements get created'''
-    testelement = makeelement('testname',tagattributes={'testattribute':'testvalue'},tagtext='testtagtext')
+    testelement = makeelement('testname',attributes={'testattribute':'testvalue'},tagtext='testtagtext')
     assert testelement.tag == '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}testname'
     assert testelement.attrib == {'{http://schemas.openxmlformats.org/wordprocessingml/2006/main}testattribute': 'testvalue'}
     assert testelement.text == 'testtagtext'
@@ -32,7 +32,4 @@ def testtable():
     '''Ensure tables make sense'''
     testtable = table([['A1','A2'],['B1','B2'],['C1','C2']])
     ns = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
-    #print testtable
-    #assert testtable.xpath('/'+ns+':tr[2]/'+ns+':tc[2]/'+ns+':p/'+ns+':r/'+ns+':t').text == 'C2'
-    print testtable.xpath('/'+ns+':tr[2]')
-    pass
+    assert testtable.xpath('/ns0:tbl/ns0:tr[2]/ns0:tc[2]/ns0:p/ns0:r/ns0:t',namespaces={'ns0':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})[0].text == 'B2'

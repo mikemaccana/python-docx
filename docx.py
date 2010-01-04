@@ -289,8 +289,7 @@ def picture():
     paragraph = makeelement('p')
     
     precut = etree.fromstring('''
-    	<w:r w:rsidRPr="004E0CB5" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-    		<w:drawing>
+    		<w:drawing xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
     			<wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
     				<wp:extent cx="2672715" cy="900430"/>
     				<wp:effectExtent l="25400" t="0" r="0" b="0"/>
@@ -335,15 +334,14 @@ def picture():
     				</a:graphic>
     			</wp:inline>
     		</w:drawing>
-    	</w:r>
     ''')
-    paragraph.append(precut)
-    #run = makeelement('r')
-
+    run = makeelement('r')
+    paragraph.append(run)
+    run.append(precut)
     
     
     #run.append(drawing)
-    #paragraph.append(run)    
+        
     
     return paragraph
     

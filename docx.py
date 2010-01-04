@@ -41,6 +41,8 @@ nsprefixes = {
     'xsi':"http://www.w3.org/2001/XMLSchema-instance",
     # Content Types (we're just making up our own namespaces here to save time)
     'ct':'http://schemas.openxmlformats.org/package/2006/content-types',
+    # Package Relationships (we're just making up our own namespaces here to save time)
+    'pr':'http://schemas.openxmlformats.org/package/2006/relationships'
     }
 
 def opendocx(file):
@@ -407,31 +409,28 @@ def websettings():
     
 def wordrelationships():
     '''Generate a Word relationships files'''
-    relationships = makeelement('Relationships',nsprefix='r')    
-    reltypes = {
-    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering':'numbering.xml',
-    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles':'styles.xml',
-    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings':'settings.xml',
-    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings':'webSettings.xml',
-    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image':'media/image1.png',
-    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable':'fontTable.xml',
-    'http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme':'theme/theme1.xml',
-    }
-    count = 1
-    for reltype in reltypes:
-        relationships.append(makeelement('Relationship',attributes={'Id':'rId'+str(count),'Type':reltype,'Target':reltypes[reltype]},nsprefix=None))
-        count += 1
-    relationships = etree.fromstring('''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-        	<Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/>
-        	<Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/>
-        	<Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>
-        	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
-        	<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
-        	<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
-        	<Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>
-        </Relationships>'''
+    # FIXME: using string hack instead of making element
+    #relationships = makeelement('Relationships',nsprefix='pr')    
+    relationships = etree.fromstring(
+    '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">      	
+        </Relationships>'''    
     )
+
+    reltypes = [
+    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering','numbering.xml'],
+    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles','styles.xml'],
+    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings','settings.xml'],
+    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings','webSettings.xml'],
+    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/image','media/image1.png'],
+    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable','fontTable.xml'],
+    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme','theme/theme1.xml'],
+    ]
+    count = 0
+    for reltype in reltypes:
+        relationships.append(makeelement('Relationship',attributes={'Id':'rId'+str(count+1),
+        'Type':reltype[0],'Target':reltype[1]},nsprefix=None))
+        count += 1
     return relationships    
 
 def savedocx(document,properties,contenttypes,websettings,wordrelationships,docxfilename):

@@ -261,11 +261,6 @@ def picture():
     pic.append(sppr)
     pic.append(nvpicpr)
 
-    graphicdata = makeelement('graphicData',nsprefix='a',attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
-    graphicdata.append(pic)
-
-    graphic = makeelement('graphic',nsprefix='a')
-    graphic.append(graphicdata)
 
 
     makeelement('drawing')'''
@@ -275,9 +270,7 @@ def picture():
 
     
     precut = etree.fromstring('''
-    				<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-    					<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
-    						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+    						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
     							<pic:nvPicPr>
     								<pic:cNvPr id="0" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
     								<pic:cNvPicPr>
@@ -308,34 +301,16 @@ def picture():
     								</a:ln>
     							</pic:spPr>
     						</pic:pic>
-    					</a:graphicData>
-    				</a:graphic>
     ''')
-    # Make element, add it's children
-    '''
-    <wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
-		<wp:extent cx="2672715" cy="900430"/>
-		<wp:effectExtent l="25400" t="0" r="0" b="0"/>
-		<wp:docPr id="2" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
-		<wp:cNvGraphicFramePr>
-			<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
-		</wp:cNvGraphicFramePr>
-    '''
-    
-    '''
-    BAD
-    <ns0:inline xmlns:ns0="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distR="0" distL="0" distB="0">
-      <ns0:extent cy="3429000" cx="5486400"/>
-      <ns0:effectExtent r="0" b="0" l="25400" t="0"/>
-      <ns0:docPr id="2" name="Picture 1"/>
-      <ns0:cNvGraphicFramePr>
-        <ns0:graphicFrameLocks xmlns:ns0="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
-      </ns0:cNvGraphicFramePr>
-    </ns0:inline>
-    '''
     
     width = '2672715'
     height = '900430'
+
+    # Make element, add its children
+    graphicdata = makeelement('graphicData',nsprefix='a',attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
+    graphicdata.append(precut)
+    graphic = makeelement('graphic',nsprefix='a')
+    graphic.append(graphicdata)
 
     framelocks = makeelement('graphicFrameLocks',nsprefix='a',attributes={'noChangeAspect':'1'})    
     framepr = makeelement('cNvGraphicFramePr',nsprefix='wp')
@@ -351,7 +326,7 @@ def picture():
     inline.append(docpr)
     inline.append(framepr)
     print etree.tostring(inline,pretty_print=True)
-    inline.append(precut)
+    inline.append(graphic)
     drawing = makeelement('drawing')
     drawing.append(inline)
     run = makeelement('r')

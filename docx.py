@@ -228,48 +228,33 @@ def picture():
     '''Create a pragraph containing an image - FIXME - not implemented yet'''
     # Word uses paragraphs to contain images
     # http://openxmldeveloper.org/articles/462.aspx
-    #resourceid = rId5
-    #newrelationship = makeelement('Relationship',attributes={'Id':resourceid,'Type':'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'},Target=filename)
     
-    # Now make drawing element
-    '''
+    width = '2672715'
+    height = '900430'
+    picid = '2'
+    picdescription = 'This is a test description'
+    picrelid = 'rId5'
+    picname = 'image1.png'
     
+    # There are 3 main elements inside a picture
+    # 1. The Blipfill
     blipfill = makeelement('blipFill',nsprefix='pic')
-    blipfill.append(makeelement('blip',nsprefix='a',attributes={'embed':'rId7'}))
+    blipfill.append(makeelement('blip',nsprefix='a',attrnsprefix='r',attributes={'embed':picrelid}))
     stretch = makeelement('stretch',nsprefix='a')
     stretch.append(makeelement('fillRect',nsprefix='a'))
+    blipfill.append(makeelement('srcRect',nsprefix='a'))
     blipfill.append(stretch)
-
-    sppr = makeelement('spPr',nsprefix='pic')
-    xfrm = makeelement('xfrm',nsprefix='a')
-    xfrm.append(makeelement('off',nsprefix='a',attributes={'x':'0','y':'0'}))
-    xfrm.append(makeelement('ext',nsprefix='a',attributes={'cx':'2672715','cy':'900430'}))
-    prstgeom = makeelement('prstGeom',nsprefix='a',attributes={'prst':'rect'})
-    prstgeom.append(makeelement('avLst',nsprefix='a'))
-    sppr.append(xfrm)
-    sppr.append(prstgeom)
-
+    
+    # 2. The nvpicpr 
     nvpicpr = makeelement('nvPicPr',nsprefix='pic')
-    # FIXme: why id 2?
-    cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'2','name':'image1.png'})
+    cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'0','name':'Picture 1','descr':"http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"})
     cnvpicpr = makeelement('cNvPicPr',nsprefix='pic')
+    cnvpicpr.append(makeelement('picLocks',nsprefix='a',attributes={'noChangeAspect':'1','noChangeArrowheads':'1'}))
     nvpicpr.append(cnvpicpr)
     nvpicpr.append(cnvpr)
     
-
-    pic.append(blipfill)
-    pic.append(sppr)
-    pic.append(nvpicpr)
-
-
-
-    makeelement('drawing')'''
-    
-    # Add the text the run, and the run to the paragraph
-    '''Getting rid of the string, step by step...'''
-
-    
-    precut1 = etree.fromstring('''
+    # Temp hack - use a precut string till above works
+    nvpicpr = etree.fromstring('''
     							<pic:nvPicPr xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
     								<pic:cNvPr id="0" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
     								<pic:cNvPicPr>
@@ -277,44 +262,25 @@ def picture():
     								</pic:cNvPicPr>
     							</pic:nvPicPr>
     							''')
-    precut2 = etree.fromstring('''
-    							<pic:blipFill xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-    								<a:blip r:embed="rId5" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
-    								<a:srcRect/>
-    								<a:stretch>
-    									<a:fillRect/>
-    								</a:stretch>
-    							</pic:blipFill>
-    							''')
-    precut3 = etree.fromstring('''    							
-    							<pic:spPr bwMode="auto" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-    								<a:xfrm>
-    									<a:off x="0" y="0"/>
-    									<a:ext cx="2672715" cy="900430"/>
-    								</a:xfrm>
-    								<a:prstGeom prst="rect">
-    									<a:avLst/>
-    								</a:prstGeom>
-    								<a:noFill/>
-    								<a:ln w="9525">
-    									<a:noFill/>
-    									<a:miter lim="800000"/>
-    									<a:headEnd/>
-    									<a:tailEnd/>
-    								</a:ln>
-    							</pic:spPr>
-    ''')
-    
-    width = '2672715'
-    height = '900430'
 
-    # Make element, then add its children
+    # 3. The sppr
+    sppr = makeelement('spPr',nsprefix='pic',attributes={'bwMode':'auto'})
+    xfrm = makeelement('xfrm',nsprefix='a')
+    xfrm.append(makeelement('off',nsprefix='a',attributes={'x':'0','y':'0'}))
+    xfrm.append(makeelement('ext',nsprefix='a',attributes={'cx':width,'cy':height}))
+    prstgeom = makeelement('prstGeom',nsprefix='a',attributes={'prst':'rect'})
+    prstgeom.append(makeelement('avLst',nsprefix='a'))
+    sppr.append(xfrm)
+    sppr.append(prstgeom)
     
+    # Add our 3 parts to the picture element
     pic = makeelement('pic',nsprefix='pic')    
-    pic.append(precut1)
-    pic.append(precut2)
-    pic.append(precut3)
+    pic.append(nvpicpr)
+    pic.append(blipfill)
+    pic.append(sppr)
     
+    # Now make the supporting elements
+    # The following sequence is just: make element, then add its children
     graphicdata = makeelement('graphicData',nsprefix='a',attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
     graphicdata.append(pic)
     graphic = makeelement('graphic',nsprefix='a')
@@ -323,9 +289,8 @@ def picture():
     framelocks = makeelement('graphicFrameLocks',nsprefix='a',attributes={'noChangeAspect':'1'})    
     framepr = makeelement('cNvGraphicFramePr',nsprefix='wp')
     framepr.append(framelocks)
-    # Can add descr if need be
-    # Todo: why 2?
-    docpr = makeelement('docPr',nsprefix='wp',attributes={'id':'2','name':'Picture 1'})
+    # Can add  if need be
+    docpr = makeelement('docPr',nsprefix='wp',attributes={'id':picid,'name':'Picture 1','descr':picdescription})
     effectextent = makeelement('effectExtent',nsprefix='wp',attributes={'l':'25400','t':'0','r':'0','b':'0'})
     extent = makeelement('extent',nsprefix='wp',attributes={'cx':width,'cy':height})
     inline = makeelement('inline',attributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
@@ -333,7 +298,6 @@ def picture():
     inline.append(effectextent)
     inline.append(docpr)
     inline.append(framepr)
-    print etree.tostring(inline,pretty_print=True)
     inline.append(graphic)
     drawing = makeelement('drawing')
     drawing.append(inline)

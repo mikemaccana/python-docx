@@ -7,6 +7,7 @@ See LICENSE for licensing information.
 '''
 
 from lxml import etree
+import Image
 import zipfile
 import re
 import time
@@ -224,17 +225,23 @@ def table(contents):
         table.append(row)   
     return table                 
 
-def picture(picname,pixelwidth,pixelheight):
+def picture(picname,picdescription,pixelwidth=None,pixelheight=None):
     '''Create a pragraph containing an image'''
     # http://openxmldeveloper.org/articles/462.aspx
 
-    # OpenXML measures on-screen objects in emus
+    # Check if the user has specified a specific size
+    if not pixelwidth or not pixelheight:
+        # Get info from the picture itself
+        pixelwidth,pixelheight = Image.open(picname).size[0:2]
+
+    # OpenXML measures on-screen objects in English Metric Units
+    # 1cm = 36000 EMUs            
     emuperpixel = 12667
     width = str(pixelwidth * emuperpixel)
     height = str(pixelheight * emuperpixel)
     
     picid = '2'
-    picdescription = 'This is a test description'
+    
     picrelid = 'rId5'
     
     # There are 3 main elements inside a picture

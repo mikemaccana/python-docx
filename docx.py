@@ -9,6 +9,7 @@ See LICENSE for licensing information.
 from lxml import etree
 import Image
 import zipfile
+import zlib
 import shutil
 import re
 import time
@@ -420,22 +421,29 @@ def wordrelationships():
     for reltype in reltypes:
         relationships.append(makeelement('Relationship',attributes={'Id':'rId'+str(count),'Type':reltype,'Target':reltypes[reltype]},nsprefix=None))
         count += 1
-    #relationships = etree.fromstring(
-    '''<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-                    <Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/>
-                    <Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/>
-                    <Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>
-                    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
-                    <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
-                    <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
-                    <Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>
-            </Relationships>'''
-    #)
+    relationships = etree.fromstring('''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">	
+    	<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
+
+    	<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+
+    	<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
+
+    	<Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/>
+
+    	<Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/>
+
+    	<Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>
+
+    	<Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>	
+
+    </Relationships>'''
+    )
     return relationships    
 
 def savedocx(document,properties,contenttypes,websettings,wordrelationships,docxfilename):
     '''Save a modified document'''
-    docxfile = zipfile.ZipFile(docxfilename,mode='w')
+    docxfile = zipfile.ZipFile(docxfilename,mode='w',compression=8)
     # Serialize our trees into out zip file
     treesandfiles = {document:'word/document.xml',properties:'docProps/core.xml',contenttypes:'[Content_Types].xml',websettings:'word/webSettings.xml',
     #wordrelationships:'word/rels_/document.xml.rels'
@@ -451,7 +459,7 @@ def savedocx(document,properties,contenttypes,websettings,wordrelationships,docx
             templatefile = os.path.join(dirpath,filename)
             archivename = templatefile.lstrip('/template/')   
             print 'Saving: '+archivename          
-            docxfile.write(templatefile, archivename, zipfile.ZIP_DEFLATED)
+            docxfile.write(templatefile, archivename)
     print 'Saved new file to: '+docxfilename
     return
     

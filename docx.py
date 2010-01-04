@@ -225,8 +225,7 @@ def table(contents):
     return table                 
 
 def picture():
-    '''Create a pragraph containing an image - FIXME - not implemented yet'''
-    # Word uses paragraphs to contain images
+    '''Create a pragraph containing an image'''
     # http://openxmldeveloper.org/articles/462.aspx
     
     width = '2672715'
@@ -237,7 +236,7 @@ def picture():
     picname = 'image1.png'
     
     # There are 3 main elements inside a picture
-    # 1. The Blipfill
+    # 1. The Blipfill - specifies how the image fills the picture area (stretch, tile, etc.)
     blipfill = makeelement('blipFill',nsprefix='pic')
     blipfill.append(makeelement('blip',nsprefix='a',attrnsprefix='r',attributes={'embed':picrelid}))
     stretch = makeelement('stretch',nsprefix='a')
@@ -245,14 +244,14 @@ def picture():
     blipfill.append(makeelement('srcRect',nsprefix='a'))
     blipfill.append(stretch)
     
-    # 2. The nvpicpr 
+    # 2. The non visual picture properties 
     nvpicpr = makeelement('nvPicPr',nsprefix='pic')
     cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'0','name':'Picture 1','descr':"http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"})
     cnvpicpr = makeelement('cNvPicPr',nsprefix='pic')
     cnvpicpr.append(makeelement('picLocks',nsprefix='a',attributes={'noChangeAspect':'1','noChangeArrowheads':'1'}))
     nvpicpr.append(cnvpicpr)
     nvpicpr.append(cnvpr)
-    
+
     # Temp hack - use a precut string till above works
     nvpicpr = etree.fromstring('''
     							<pic:nvPicPr xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
@@ -263,7 +262,7 @@ def picture():
     							</pic:nvPicPr>
     							''')
 
-    # 3. The sppr
+    # 3. The Shape properties
     sppr = makeelement('spPr',nsprefix='pic',attributes={'bwMode':'auto'})
     xfrm = makeelement('xfrm',nsprefix='a')
     xfrm.append(makeelement('off',nsprefix='a',attributes={'x':'0','y':'0'}))
@@ -305,13 +304,7 @@ def picture():
     run.append(drawing)
     paragraph = makeelement('p')
     paragraph.append(run)
-    
-    
-    #run.append(drawing)
-        
-    
     return paragraph
-    
 
 
 def search(document,search):

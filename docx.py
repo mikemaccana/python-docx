@@ -365,22 +365,21 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     #attributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace='xsi'))
     return docprops
 
+def websettings():
+    '''Generate websettings'''
+    web = makeelement('webSettings')
+    web.append(makeelement('allowPNG'))
+    web.append(makeelement('doNotSaveAsSingleFile'))
+    return web
 
-
-def savedocx(document,properties,contenttypes,docxfilename):
+def savedocx(document,properties,contenttypes,websettings,docxfilename):
     '''Save a modified document'''
     docxfile = zipfile.ZipFile(docxfilename,mode='w')
-    # Write our generated document
-    documentstring = etree.tostring(document, pretty_print=True)
-    docxfile.writestr('word/document.xml',documentstring)
-    # And it's properties
-    propertiesstring = etree.tostring(properties, pretty_print=True)
-    docxfile.writestr('docProps/core.xml',propertiesstring)    
-    # And it's content types
-    contenttypesstring = etree.tostring(contenttypes, pretty_print=True)
-    print contenttypesstring
-    docxfile.writestr('[Content_Types].xml',contenttypesstring)
-    
+    # Serialize our trees into out zip file
+    treesandfiles = {document:'word/document.xml',properties:'docProps/core.xml',contenttypes:'[Content_Types].xml',websettings:'word/webSettings.xml'}
+    for tree in treesandfiles:
+        treestring = etree.tostring(tree, pretty_print=True)
+        docxfile.writestr(treesandfiles[tree],treestring)
     
     # Add & compress support files
     for dirpath,dirnames,filenames in os.walk('template'):

@@ -256,7 +256,7 @@ def picture():
     nvpicpr.append(cnvpicpr)
     nvpicpr.append(cnvpr)
     
-    pic = makeelement('pic',nsprefix='pic')
+
     pic.append(blipfill)
     pic.append(sppr)
     pic.append(nvpicpr)
@@ -269,22 +269,25 @@ def picture():
     '''Getting rid of the string, step by step...'''
 
     
-    precut = etree.fromstring('''
-    						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-    							<pic:nvPicPr>
+    precut1 = etree.fromstring('''
+    							<pic:nvPicPr xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
     								<pic:cNvPr id="0" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
     								<pic:cNvPicPr>
     									<a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
     								</pic:cNvPicPr>
     							</pic:nvPicPr>
-    							<pic:blipFill>
+    							''')
+    precut2 = etree.fromstring('''
+    							<pic:blipFill xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
     								<a:blip r:embed="rId5" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
     								<a:srcRect/>
     								<a:stretch>
     									<a:fillRect/>
     								</a:stretch>
     							</pic:blipFill>
-    							<pic:spPr bwMode="auto">
+    							''')
+    precut3 = etree.fromstring('''    							
+    							<pic:spPr bwMode="auto" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
     								<a:xfrm>
     									<a:off x="0" y="0"/>
     									<a:ext cx="2672715" cy="900430"/>
@@ -300,15 +303,20 @@ def picture():
     									<a:tailEnd/>
     								</a:ln>
     							</pic:spPr>
-    						</pic:pic>
     ''')
     
     width = '2672715'
     height = '900430'
 
-    # Make element, add its children
+    # Make element, then add its children
+    
+    pic = makeelement('pic',nsprefix='pic')    
+    pic.append(precut1)
+    pic.append(precut2)
+    pic.append(precut3)
+    
     graphicdata = makeelement('graphicData',nsprefix='a',attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
-    graphicdata.append(precut)
+    graphicdata.append(pic)
     graphic = makeelement('graphic',nsprefix='a')
     graphic.append(graphicdata)
 

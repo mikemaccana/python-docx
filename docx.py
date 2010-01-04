@@ -280,16 +280,13 @@ def picture():
     inline.append(effectextent)
     inline.append(docpr)
     inline.append(framepr)
-    inline.append(graphic)
-    drawing = makeelement('drawing')
-    drawing.append(inline)    
+    inline.append(graphic)    
     
     # Add the text the run, and the run to the paragraph
     '''Getting rid of the string, step by step...'''
-    paragraph = makeelement('p')
+
     
     precut = etree.fromstring('''
-    		<w:drawing xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
     			<wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
     				<wp:extent cx="2672715" cy="900430"/>
     				<wp:effectExtent l="25400" t="0" r="0" b="0"/>
@@ -333,11 +330,14 @@ def picture():
     					</a:graphicData>
     				</a:graphic>
     			</wp:inline>
-    		</w:drawing>
     ''')
+    # Make element, add it's children
+    drawing = makeelement('drawing')
+    drawing.append(precut)
     run = makeelement('r')
+    run.append(drawing)
+    paragraph = makeelement('p')
     paragraph.append(run)
-    run.append(precut)
     
     
     #run.append(drawing)

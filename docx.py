@@ -232,7 +232,7 @@ def picture():
     #newrelationship = makeelement('Relationship',attributes={'Id':resourceid,'Type':'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'},Target=filename)
     
     # Now make drawing element
-
+    '''
     
     blipfill = makeelement('blipFill',nsprefix='pic')
     blipfill.append(makeelement('blip',nsprefix='a',attributes={'embed':'rId7'}))
@@ -267,33 +267,14 @@ def picture():
     graphic = makeelement('graphic',nsprefix='a')
     graphic.append(graphicdata)
 
-    framepr = makeelement('cNvGraphicFramePr',nsprefix='wp')
-    framelocks = makeelement('graphicFrameLocks',nsprefix='a',attributes={'noChangeAspect':'1'})
-    framepr.append(framelocks)
 
-    makeelement('drawing')
-    inline = makeelement('inline',attributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
-    extent = makeelement('extent',nsprefix='wp',attributes={'cx':'5486400','cy':'3429000'})
-    effectextent = makeelement('effectExtent',nsprefix='wp',attributes={'l':'25400','t':'0','r':'0','b':'0'})
-    docpr = makeelement('docPr',nsprefix='wp',attributes={'id':'1','name':'Picture 0','descr':'image1.png'})
-    inline.append(extent)
-    inline.append(effectextent)
-    inline.append(docpr)
-    inline.append(framepr)
-    inline.append(graphic)    
+    makeelement('drawing')'''
     
     # Add the text the run, and the run to the paragraph
     '''Getting rid of the string, step by step...'''
 
     
     precut = etree.fromstring('''
-    			<wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
-    				<wp:extent cx="2672715" cy="900430"/>
-    				<wp:effectExtent l="25400" t="0" r="0" b="0"/>
-    				<wp:docPr id="2" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
-    				<wp:cNvGraphicFramePr>
-    					<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
-    				</wp:cNvGraphicFramePr>
     				<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
     					<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
     						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
@@ -329,11 +310,50 @@ def picture():
     						</pic:pic>
     					</a:graphicData>
     				</a:graphic>
-    			</wp:inline>
     ''')
     # Make element, add it's children
+    '''
+    <wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+		<wp:extent cx="2672715" cy="900430"/>
+		<wp:effectExtent l="25400" t="0" r="0" b="0"/>
+		<wp:docPr id="2" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
+		<wp:cNvGraphicFramePr>
+			<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+		</wp:cNvGraphicFramePr>
+    '''
+    
+    '''
+    BAD
+    <ns0:inline xmlns:ns0="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distR="0" distL="0" distB="0">
+      <ns0:extent cy="3429000" cx="5486400"/>
+      <ns0:effectExtent r="0" b="0" l="25400" t="0"/>
+      <ns0:docPr id="2" name="Picture 1"/>
+      <ns0:cNvGraphicFramePr>
+        <ns0:graphicFrameLocks xmlns:ns0="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+      </ns0:cNvGraphicFramePr>
+    </ns0:inline>
+    '''
+    
+    width = '2672715'
+    height = '900430'
+
+    framelocks = makeelement('graphicFrameLocks',nsprefix='a',attributes={'noChangeAspect':'1'})    
+    framepr = makeelement('cNvGraphicFramePr',nsprefix='wp')
+    framepr.append(framelocks)
+    # Can add descr if need be
+    # Todo: why 2?
+    docpr = makeelement('docPr',nsprefix='wp',attributes={'id':'2','name':'Picture 1'})
+    effectextent = makeelement('effectExtent',nsprefix='wp',attributes={'l':'25400','t':'0','r':'0','b':'0'})
+    extent = makeelement('extent',nsprefix='wp',attributes={'cx':width,'cy':height})
+    inline = makeelement('inline',attributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
+    inline.append(extent)
+    inline.append(effectextent)
+    inline.append(docpr)
+    inline.append(framepr)
+    print etree.tostring(inline,pretty_print=True)
+    inline.append(precut)
     drawing = makeelement('drawing')
-    drawing.append(precut)
+    drawing.append(inline)
     run = makeelement('r')
     run.append(drawing)
     paragraph = makeelement('p')

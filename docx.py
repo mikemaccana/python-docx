@@ -52,7 +52,7 @@ def newdocument():
     document.append(makeelement('body'))
     return document
 
-def makeelement(tagname,tagtext=None,nsprefix='w',attributes=None,attributenamespace=None):
+def makeelement(tagname,tagtext=None,nsprefix='w',attributes=None,attrnsprefix=None):
     '''Create an element & return it''' 
     if nsprefix:
         namespace = '{'+nsprefixes[nsprefix]+'}'
@@ -64,14 +64,14 @@ def makeelement(tagname,tagtext=None,nsprefix='w',attributes=None,attributenames
     if attributes:
         # If they haven't bothered setting attribute namespace, use an empty string
         # (equivalent of no namespace)
-        if not attributenamespace:
+        if not attrnsprefix:
             # Quick hack: it seems every element that has a 'w' nsprefix for its tag uses the same prefix for it's attributes  
             if nsprefix == 'w':
                 attributenamespace = namespace
             else:
                 attributenamespace = ''
         else:
-            attributenamespace = '{'+nsprefixes[nsprefix]+'}'
+            attributenamespace = '{'+nsprefixes[attrnsprefix]+'}'
                     
         for tagattribute in attributes:
             newelement.set(attributenamespace+tagattribute, attributes[tagattribute])
@@ -234,7 +234,7 @@ def picture():
     # Now make drawing element
 
     
-    blipfill = makeelement('blipFill',nsprefix='a')
+    blipfill = makeelement('blipFill',nsprefix='pic')
     blipfill.append(makeelement('blip',nsprefix='a',attributes={'embed':'rId7'}))
     stretch = makeelement('stretch',nsprefix='a')
     stretch.append(makeelement('fillRect',nsprefix='a'))
@@ -249,9 +249,10 @@ def picture():
     sppr.append(xfrm)
     sppr.append(prstgeom)
 
-    nvpicpr = makeelement('nvPicPr',nsprefix='a')
-    cnvpr = makeelement('cNvPr',nsprefix='a',attributes={'id':'0','name':'aero_glow_v2_1920x1200.png'})
-    cnvpicpr = makeelement('cNvPicPr')
+    nvpicpr = makeelement('nvPicPr',nsprefix='pic')
+    # FIXme: why id 2?
+    cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'2','name':'image1.png'})
+    cnvpicpr = makeelement('cNvPicPr',nsprefix='pic')
     nvpicpr.append(cnvpicpr)
     nvpicpr.append(cnvpr)
     
@@ -266,85 +267,83 @@ def picture():
     graphic = makeelement('graphic',nsprefix='a')
     graphic.append(graphicdata)
 
-    framepr = makeelement('cNvGraphicFramePr',nsprefix='a')
+    framepr = makeelement('cNvGraphicFramePr',nsprefix='wp')
     framelocks = makeelement('graphicFrameLocks',nsprefix='a',attributes={'noChangeAspect':'1'})
     framepr.append(framelocks)
 
     makeelement('drawing')
     inline = makeelement('inline',attributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
-    extent = makeelement('extent',nsprefix='a',attributes={'cx':'5486400','cy':'3429000'})
-    effectextent = makeelement('effectExtent',nsprefix='a',attributes={'l':'25400','t':'0','r':'0','b':'0'})
-    docpr = makeelement('docPr',nsprefix='a',attributes={'id':'1','name':'Picture 0','descr':'image1.png'})
+    extent = makeelement('extent',nsprefix='wp',attributes={'cx':'5486400','cy':'3429000'})
+    effectextent = makeelement('effectExtent',nsprefix='wp',attributes={'l':'25400','t':'0','r':'0','b':'0'})
+    docpr = makeelement('docPr',nsprefix='wp',attributes={'id':'1','name':'Picture 0','descr':'image1.png'})
     inline.append(extent)
     inline.append(effectextent)
     inline.append(docpr)
     inline.append(framepr)
     inline.append(graphic)
     drawing = makeelement('drawing')
-    drawing.append(inline)
-    #drawing = etree.fromstring('''<w:drawing xmlns:w='{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'/>''')
-    
+    drawing.append(inline)    
     
     paragraph = makeelement('p')
-    pr = makeelement('pPr')
     run = makeelement('r')
     # Add the text the run, and the run to the paragraph
     run.append(drawing)
-    paragraph.append(pr)   
     paragraph.append(run)    
     
-    '''
-    <w:r xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
-xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-    >
-		<w:drawing>
-			<wp:inline distT="0" distB="0" distL="0" distR="0">
-				<wp:extent cx="2672715" cy="900430"/>
-				<wp:effectExtent l="25400" t="0" r="0" b="0"/>
-				<wp:docPr id="2" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
-				<wp:cNvGraphicFramePr>
-					<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
-				</wp:cNvGraphicFramePr>
-				<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-					<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
-						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
-							<pic:nvPicPr>
-								<pic:cNvPr id="0" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
-								<pic:cNvPicPr>
-									<a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
-								</pic:cNvPicPr>
-							</pic:nvPicPr>
-							<pic:blipFill>
-								<a:blip r:embed="rId5"/>
-								<a:srcRect/>
-								<a:stretch>
-									<a:fillRect/>
-								</a:stretch>
-							</pic:blipFill>
-							<pic:spPr bwMode="auto">
-								<a:xfrm>
-									<a:off x="0" y="0"/>
-									<a:ext cx="2672715" cy="900430"/>
-								</a:xfrm>
-								<a:prstGeom prst="rect">
-									<a:avLst/>
-								</a:prstGeom>
-								<a:noFill/>
-								<a:ln w="9525">
-									<a:noFill/>
-									<a:miter lim="800000"/>
-									<a:headEnd/>
-									<a:tailEnd/>
-								</a:ln>
-							</pic:spPr>
-						</pic:pic>
-					</a:graphicData>
-				</a:graphic>
-			</wp:inline>
-		</w:drawing>
-	</w:r>
-    '''
-    
+    paragraph = etree.fromstring('''
+    <w:p w:rsidR="00922AB3" w:rsidRDefault="004E0CB5"  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    	<w:r w:rsidRPr="004E0CB5">
+    		<w:drawing>
+    			<wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
+    				<wp:extent cx="2672715" cy="900430"/>
+    				<wp:effectExtent l="25400" t="0" r="0" b="0"/>
+    				<wp:docPr id="2" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
+    				<wp:cNvGraphicFramePr>
+    					<a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+    				</wp:cNvGraphicFramePr>
+    				<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+    					<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+    						<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+    							<pic:nvPicPr>
+    								<pic:cNvPr id="0" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
+    								<pic:cNvPicPr>
+    									<a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
+    								</pic:cNvPicPr>
+    							</pic:nvPicPr>
+    							<pic:blipFill>
+    								<a:blip r:embed="rId5" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/>
+    								<a:srcRect/>
+    								<a:stretch>
+    									<a:fillRect/>
+    								</a:stretch>
+    							</pic:blipFill>
+    							<pic:spPr bwMode="auto">
+    								<a:xfrm>
+    									<a:off x="0" y="0"/>
+    									<a:ext cx="2672715" cy="900430"/>
+    								</a:xfrm>
+    								<a:prstGeom prst="rect">
+    									<a:avLst/>
+    								</a:prstGeom>
+    								<a:noFill/>
+    								<a:ln w="9525">
+    									<a:noFill/>
+    									<a:miter lim="800000"/>
+    									<a:headEnd/>
+    									<a:tailEnd/>
+    								</a:ln>
+    							</pic:spPr>
+    						</pic:pic>
+    					</a:graphicData>
+    				</a:graphic>
+    			</wp:inline>
+    		</w:drawing>
+    	</w:r>
+    	<w:r>
+    		<w:br w:type="page"/>
+    	</w:r>
+    </w:p>
+    ''')
     return paragraph
     
 
@@ -419,10 +418,11 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     <dcterms:created xsi:type="dcterms:W3CDTF">2010-01-01T21:07:00Z</dcterms:created>
     <dcterms:modified xsi:type="dcterms:W3CDTF">2010-01-01T21:20:00Z</dcterms:modified>
     currenttime'''
-    #docprops.append(makeelement('created',nsprefix='dcterms',
-    #attributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace='xsi'))
-    #docprops.append(makeelement('modified',nsprefix='dcterms',
-    #attributes={'type':'dcterms:W3CDTF'},tagtext='2010-01-01T21:07:00Z',attributenamespace='xsi'))
+    edittimes = {'created':'2010-01-01T21:07:00Z','modified':'2010-01-01T21:07:00Z'}
+    for edit in edittimes:
+        #docprops.append(makeelement(edit,nsprefix='dcterms',attrnsprefix='xsi',
+        #attributes={'type':'W3CDTF'},tagtext=edittimes[edit]))
+        pass
     return docprops
 
 def websettings():

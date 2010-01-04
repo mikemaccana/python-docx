@@ -43,7 +43,7 @@ if __name__ == '__main__':
         docbody.append(paragraph(point,style='ListBullet'))
         
     # Add an image (beta)
-    #docbody.append(picture())
+    docbody.append(picture())
  
     # Search and replace 
     document = replace(document,'the','the goshdarned')

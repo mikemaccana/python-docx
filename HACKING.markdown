@@ -19,9 +19,9 @@ LXML doesn't use namespace prefixes. It just uses the actual namespaces, and wan
 To make this easier:
 
 - The most common namespace, '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}' (prefix 'w') is automatically added by makeelement()
-- You can specify other namespaces with getns(), which maps the prefixes Word files use to the actual namespaces, eg:
+- You can specify other namespaces with 'nsprefix', which maps the prefixes Word files use to the actual namespaces, eg:
 
-	makeelement('coreProperties',tagnamespace=getns(propns,'cp'))
+	makeelement('coreProperties',nsprefix='cp')
 
 There's also a cool sideeffect - you can ignore setting all 'xmlns' attributes, since there's no need. Eg, making the equivalent of this from a Word file:
 
@@ -35,7 +35,9 @@ There's also a cool sideeffect - you can ignore setting all 'xmlns' attributes, 
 
 Is done with the following:
   
-	docprops = makeelement('coreProperties',tagnamespace=getns(propns,'cp'))
+	docprops = makeelement('coreProperties',nsprefix='cp')
+
+We only need to specify the 'cp' prefix because that's what this element uses. The other 'xmlns' attributes are used to specify the prefixes for child elements. We don't need to specify them here because each child element will have its namespace specified when we make that child.
 
 # Coding Style 
 
@@ -49,7 +51,11 @@ Basically just look at what's there. But if you need something more specific:
 After adding code, open **tests/test_docx.py** and add a test that calls your function and checks its output.
 
 - Use **easy_install** to fetch the **nose** and **coverage** modules
-- Run **nosetests --with-coverage** to run all the doctests. These should all pass.
+- Run 
+
+   nosetests --with-coverage 
+
+to run all the doctests. They should all pass.
 
 # Tips
 

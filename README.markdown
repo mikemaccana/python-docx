@@ -7,9 +7,9 @@ The docx module creates, reads and writes Microsoft Office Word 2007 docx files.
 
 These are referred to as 'WordML', 'Office Open XML' and 'Open XML' by Microsoft.
 
-They can be opened in Microsoft Office 2007, Microsoft Mac Office 2008, Google Docs, OpenOffice.org 3, and Apple iWork 08.
+These documents can be opened in Microsoft Office 2007 / 2010, Microsoft Mac Office 2008, Google Docs, OpenOffice.org 3, and Apple iWork 08.
 
-They also validate as well formed XML at http://validator.w3.org/check
+They also [validate as well formed XML](http://validator.w3.org/check)
 
 The module was created when I was looking for a Python support for MS Word .doc files, but could only find various hacks involving COM automation, calling .net or Java, or automating OpenOffice or MS Office.
 
@@ -42,22 +42,30 @@ Thanks to the awesomeness of the lxml module, we can:
 
 - Just [download python docx](http://github.com/mikemaccana/python-docx/tarball/master).
 - Use **easy_install** to fetch the **lxml** and **PIL** modules
-- Run **example-makedocument.py** which creates and modifies a sample docx document.
-- Run **example-extracttext.py 'Some word file.docx' 'new file.txt'** to extract the text content from a document.
+- Run 
+
+    example-makedocument.py
+
+to creates and modifies a sample docx document.
 
 Congratulations, you just made a Word document!
- 
-If you just want to extract the text from a Word file, check out **example-extracttext.py** 
+
+If you just want to extract the text from a Word file, run: 
+
+    example-extracttext.py 'Some word file.docx' 'new file.txt' 
 
 ### Ideas & To Do List
 
+- Further improvements to image handling
 - Document health checks
 - Egg
 - Markdown conversion support
 
-### Authors & Contact
+### We love forks & changes!
 
-If you have idea, or would like to add functionality contact the Python docx mailing list at <python.docx@librelist.com>
+Check out the [HACKING](HACKING.markdown) to add your own changes!
+
+The Python docx mailing list at <python.docx@librelist.com>, and is low-traffic.
 
 - Mike MacCana - main developer
 - Marcin Wielgoszewski - support for breaks & document narrators in paragraphs

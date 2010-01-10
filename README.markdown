@@ -26,7 +26,7 @@ Features for making documents include:
 - Multiple levels of headings
 - Tables
 - Section and page breaks
-- Images (preliminary support)
+- Images
 
 ### Editing documents
 

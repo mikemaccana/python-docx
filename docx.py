@@ -431,7 +431,7 @@ def wordrelationships():
 
 def savedocx(document,properties,contenttypes,websettings,wordrelationships,docxfilename):
     '''Save a modified document'''
-    docxfile = zipfile.ZipFile(docxfilename,mode='w',compression=8)
+    docxfile = zipfile.ZipFile(docxfilename,mode='w',compression=zipfile.ZIP_DEFLATED)
     # Serialize our trees into out zip file
     treesandfiles = {document:'word/document.xml',properties:'docProps/core.xml',contenttypes:'[Content_Types].xml',websettings:'word/webSettings.xml',
     wordrelationships:'word/_rels/document.xml.rels'

@@ -23,7 +23,17 @@ To make this easier:
 
 	makeelement('coreProperties',nsprefix='cp')
 
-There's also a cool sideeffect - you can ignore setting all 'xmlns' attributes, since there's no need. Eg, making the equivalent of this from a Word file:
+will generate:
+
+    <ns0:coreProperties xmlns:ns0="http://schemas.openxmlformats.org/package/2006/metadata/core-properties">
+
+which is the same as what Word generates:
+
+    <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties">
+
+The namespace prefixes are different, but that's irrelevant as the namespaces themselves are the same.
+
+There's also a cool sideeffect - you can ignore setting 'xmlns' attributes that aren't used directly in the current element, since there's no need. Eg, you can make the equivalent of this from a Word file:
 
 	<cp:coreProperties 
 	xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 
@@ -33,7 +43,7 @@ There's also a cool sideeffect - you can ignore setting all 'xmlns' attributes, 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	</cp:coreProperties>
 
-Is done with the following:
+With the following code:
   
 	docprops = makeelement('coreProperties',nsprefix='cp')
 

@@ -40,6 +40,8 @@ Thanks to the awesomeness of the lxml module, we can:
 
 ### Getting started
 
+## Making a Document
+
 - Just [download python docx](http://github.com/mikemaccana/python-docx/tarball/master).
 - Use **easy_install** to fetch the **lxml** and **PIL** modules. 
 - Then run: 
@@ -47,6 +49,8 @@ Thanks to the awesomeness of the lxml module, we can:
 <pre>example-makedocument.py</pre>
 
 Congratulations, you just made and then modified a Word document!
+
+## Extracting Text from a Document
 
 If you just want to extract the text from a Word file, run: 
 

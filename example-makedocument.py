@@ -10,6 +10,9 @@ See LICENSE for licensing information.
 from docx import *
 
 if __name__ == '__main__':        
+    # Default set of relationshipships - these are the minimum components of a document
+    relationships = relationshiplist()
+
     # Make a new document tree - this is the main part of a Word document
     document = newdocument()
     
@@ -43,21 +46,23 @@ if __name__ == '__main__':
         docbody.append(paragraph(point,style='ListBullet'))
         
     # Add an image
-    docbody.append(picture('image1.png','This is a test description'))
+    relationships,picpara = picture(relationships,'image1.png','This is a test description')
+    docbody.append(picpara)
  
     # Search and replace 
-    document = replace(document,'the','the goshdarned')
+    document = replace(docbody,'the','the goshdarned')
 
     # Add a pagebreak
     docbody.append(pagebreak(type='page', orient='portrait'))
 
     docbody.append(heading('Ideas? Questions? Want to contribute?',2))
     docbody.append(paragraph('''Email <python.docx@librelist.com>'''))
-    
+
+    # Create our properties, contenttypes, and othr support files
     properties = docproperties('Python docx demo','A practical example of making docx from Python','Mike MacCana',['python','Office Open XML','Word'])
     contenttypes = contenttypes()
     websettings = websettings()
-    wordrelationships = wordrelationships()
+    wordrelationships = wordrelationships(relationships)
     
     # Save our document
     savedocx(document,properties,contenttypes,websettings,wordrelationships,'Welcome to the Python docx module.docx')

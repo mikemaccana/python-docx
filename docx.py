@@ -224,15 +224,16 @@ def table(contents):
         table.append(row)   
     return table                 
 
-def picture(picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspect=True,nochangearrowheads=True):
-    '''Create a pragraph containing an image'''
+def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspect=True,nochangearrowheads=True):
+    '''Take a relationshiplist, picture file name, and return a paragraph containing the image
+    and an updated relationshiplist'''
     # http://openxmldeveloper.org/articles/462.aspx
 
     '''Create an image. Size may be specified, otherwise it will based on the pixel size of image. Return a paragraph containing the picture'''
     # Copy the file into the media dir
     shutil.copyfile(picname, 'template/word/media/'+picname)
 
-    # Check if the user has specified a specific size
+    # Check if the user has specified a size
     if not pixelwidth or not pixelheight:
         # If not, get info from the picture itself
         pixelwidth,pixelheight = Image.open(picname).size[0:2]
@@ -243,9 +244,10 @@ def picture(picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspe
     width = str(pixelwidth * emuperpixel)
     height = str(pixelheight * emuperpixel)   
     
-    # This info is currently set statically, but should be generated dynamically in future 
+    # Set relationship ID to the first available  
     picid = '2'    
-    picrelid = 'rId7'
+    picrelid = 'rId'+str(len(relationshiplist)+1)
+    relationshiplist.append(['http://schemas.openxmlformats.org/officeDocument/2006/relationships/image','media/'+picname])
     
     # There are 3 main elements inside a picture
     # 1. The Blipfill - specifies how the image fills the picture area (stretch, tile, etc.)
@@ -291,7 +293,6 @@ def picture(picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspe
     framelocks = makeelement('graphicFrameLocks',nsprefix='a',attributes={'noChangeAspect':'1'})    
     framepr = makeelement('cNvGraphicFramePr',nsprefix='wp')
     framepr.append(framelocks)
-    # Can add  if need be
     docpr = makeelement('docPr',nsprefix='wp',attributes={'id':picid,'name':'Picture 1','descr':picdescription})
     effectextent = makeelement('effectExtent',nsprefix='wp',attributes={'l':'25400','t':'0','r':'0','b':'0'})
     extent = makeelement('extent',nsprefix='wp',attributes={'cx':width,'cy':height})
@@ -307,7 +308,7 @@ def picture(picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspe
     run.append(drawing)
     paragraph = makeelement('p')
     paragraph.append(run)
-    return paragraph
+    return relationshiplist,paragraph
 
 
 def search(document,search):
@@ -390,30 +391,33 @@ def websettings():
     web.append(makeelement('allowPNG'))
     web.append(makeelement('doNotSaveAsSingleFile'))
     return web
-    
-def wordrelationships():
-    '''Generate a Word relationships files'''
-    # FIXME: using string hack instead of making element
-    #relationships = makeelement('Relationships',nsprefix='pr')    
-    '''<ns0:Relationships xmlns:ns0="http://schemas.openxmlformats.org/package/2006/relationships">'''
-    relationships = etree.fromstring(
-    '''<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">      	
-        </Relationships>'''    
-    )
 
-    reltypes = [
+def relationshiplist():
+    relationshiplist = [
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering','numbering.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles','styles.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings','settings.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings','webSettings.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable','fontTable.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme','theme/theme1.xml'],
-    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/image','media/image1.png'],
     ]
     count = 0
-    for reltype in reltypes:
+    return relationshiplist
+    
+def wordrelationships(relationshiplist):
+    '''Generate a Word relationships file'''
+    # Default list of relationships
+    # FIXME: using string hack instead of making element
+    #relationships = makeelement('Relationships',nsprefix='pr')    
+    relationships = etree.fromstring(
+    '''<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">      	
+        </Relationships>'''    
+    )
+    count = 0
+    for relationship in relationshiplist:
+        # Relationship IDs (rId) start at 1.
         relationships.append(makeelement('Relationship',attributes={'Id':'rId'+str(count+1),
-        'Type':reltype[0],'Target':reltype[1]},nsprefix=None))
+        'Type':relationship[0],'Target':relationship[1]},nsprefix=None))
         count += 1
     return relationships    
 

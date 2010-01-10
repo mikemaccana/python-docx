@@ -137,7 +137,6 @@ def contenttypes():
     # FIXME - doesn't quite work...read from string as temp hack...
     #types = makeelement('Types',nsprefix='ct')
     types = etree.fromstring('''<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"></Types>''')
-
     parts = {
         '/word/theme/theme1.xml':'application/vnd.openxmlformats-officedocument.theme+xml',
         '/word/fontTable.xml':'application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml',
@@ -151,13 +150,10 @@ def contenttypes():
         }
     for part in parts:
         types.append(makeelement('Override',nsprefix=None,attributes={'PartName':part,'ContentType':parts[part]}))
-
     # Add support for filetypes
     filetypes = {'rels':'application/vnd.openxmlformats-package.relationships+xml','xml':'application/xml','jpeg':'image/jpeg','gif':'image/gif','png':'image/png'}
     for extension in filetypes:
         types.append(makeelement('Default',nsprefix=None,attributes={'Extension':extension,'ContentType':filetypes[extension]}))
-
-
     return types
 
 def heading(headingtext,headinglevel):
@@ -175,7 +171,6 @@ def heading(headingtext,headinglevel):
     paragraph.append(run)    
     # Return the combined paragraph
     return paragraph   
-
 
 def table(contents):
     '''Get a list of lists, return a table'''
@@ -233,6 +228,7 @@ def picture(picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspe
     '''Create a pragraph containing an image'''
     # http://openxmldeveloper.org/articles/462.aspx
 
+    '''Create an image. Size may be specified, otherwise it will based on the pixel size of image. Return a paragraph containing the picture'''
     # Copy the file into the media dir
     shutil.copyfile(picname, 'template/word/media/'+picname)
 
@@ -245,11 +241,11 @@ def picture(picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspe
     # 1cm = 36000 EMUs            
     emuperpixel = 12667
     width = str(pixelwidth * emuperpixel)
-    height = str(pixelheight * emuperpixel)
+    height = str(pixelheight * emuperpixel)   
     
-    picid = '2'
-    
-    picrelid = 'rId5'
+    # This info is currently set statically, but should be generated dynamically in future 
+    picid = '2'    
+    picrelid = 'rId7'
     
     # There are 3 main elements inside a picture
     # 1. The Blipfill - specifies how the image fills the picture area (stretch, tile, etc.)
@@ -340,14 +336,12 @@ def replace(document,search,replace):
 def getdocumenttext(document):
     '''Return the raw text of a document, as a list of paragraphs.'''
     paratextlist=[]   
-        
     # Compile a list of all paragraph (p) elements
     paralist = []
     for element in document.iter():
         # Find p (paragraph) elements
         if element.tag == '{'+nsprefixes['w']+'}p':
-            paralist.append(element)
-    
+            paralist.append(element)    
     # Since a single sentence might be spread over multiple text elements, iterate through each 
     # paragraph, appending all text (t) children to that paragraphs text.     
     for para in paralist:      
@@ -358,7 +352,6 @@ def getdocumenttext(document):
             if element.tag == '{'+nsprefixes['w']+'}t':
                 if element.text:
                     paratext = paratext+element.text
-
         # Add our completed paragraph text to the list of paragraph text    
         if not len(paratext) == 0:
             paratextlist.append(paratext)                    
@@ -413,9 +406,9 @@ def wordrelationships():
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles','styles.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings','settings.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings','webSettings.xml'],
-    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/image','media/image1.png'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable','fontTable.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme','theme/theme1.xml'],
+    ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/image','media/image1.png'],
     ]
     count = 0
     for reltype in reltypes:

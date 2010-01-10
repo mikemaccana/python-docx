@@ -20,7 +20,7 @@ To make this easier:
 
 - The most common namespace, '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}' (prefix 'w') is automatically added by makeelement()
 - You can specify other namespaces with 'nsprefix', which maps the prefixes Word files use to the actual namespaces, eg:
-
+` `
 	makeelement('coreProperties',nsprefix='cp')
 
 will generate:
@@ -62,8 +62,8 @@ After adding code, open **tests/test_docx.py** and add a test that calls your fu
 
 - Use **easy_install** to fetch the **nose** and **coverage** modules
 - Run 
-
-   nosetests --with-coverage 
+` `
+	nosetests --with-coverage 
 
 to run all the doctests. They should all pass.
 

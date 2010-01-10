@@ -261,14 +261,9 @@ def picture(picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspe
     blipfill.append(stretch)
     
     # 2. The non visual picture properties 
-    #nvpicpr = makeelement('nvPicPr',nsprefix='pic')
-    #cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'0','name':'Picture 1','descr':"http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"}) 
-    # Temp hack - use a precut string till above works
-    nvpicpr = etree.fromstring('''
-    							<pic:nvPicPr xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-    								<pic:cNvPr id="0" name="Picture 1" descr="http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"/>
-    							</pic:nvPicPr>
-    							''')    
+    nvpicpr = makeelement('nvPicPr',nsprefix='pic')
+    cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'0','name':'Picture 1','descr':"http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"}) 
+    nvpicpr.append(cnvpr) 
     cnvpicpr = makeelement('cNvPicPr',nsprefix='pic')                           
     cnvpicpr.append(makeelement('picLocks',nsprefix='a',attributes={'noChangeAspect':str(int(nochangeaspect)),
     'noChangeArrowheads':str(int(nochangearrowheads))}))

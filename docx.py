@@ -229,7 +229,7 @@ def table(contents):
         table.append(row)   
     return table                 
 
-def picture(picname,picdescription,pixelwidth=None,pixelheight=None):
+def picture(picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspect=True,nochangearrowheads=True):
     '''Create a pragraph containing an image'''
     # http://openxmldeveloper.org/articles/462.aspx
 
@@ -264,7 +264,8 @@ def picture(picname,picdescription,pixelwidth=None,pixelheight=None):
     nvpicpr = makeelement('nvPicPr',nsprefix='pic')
     cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'0','name':'Picture 1','descr':"http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"})
     cnvpicpr = makeelement('cNvPicPr',nsprefix='pic')
-    cnvpicpr.append(makeelement('picLocks',nsprefix='a',attributes={'noChangeAspect':'1','noChangeArrowheads':'1'}))
+    cnvpicpr.append(makeelement('picLocks',nsprefix='a',attributes={'noChangeAspect':str(int(nochangeaspect)),
+    'noChangeArrowheads':str(int(nochangearrowheads))}))
     nvpicpr.append(cnvpicpr)
     nvpicpr.append(cnvpr)
 
@@ -411,9 +412,9 @@ def wordrelationships():
     '''Generate a Word relationships files'''
     # FIXME: using string hack instead of making element
     #relationships = makeelement('Relationships',nsprefix='pr')    
+    '''<ns0:Relationships xmlns:ns0="http://schemas.openxmlformats.org/package/2006/relationships">'''
     relationships = etree.fromstring(
-    '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">      	
+    '''<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">      	
         </Relationships>'''    
     )
 

@@ -42,11 +42,11 @@ Thanks to the awesomeness of the lxml module, we can:
 
 - Just [download python docx](http://github.com/mikemaccana/python-docx/tarball/master).
 - Use **easy_install** to fetch the **lxml** and **PIL** modules
-- Run 
+- Run: 
 
     example-makedocument.py
 
-to creates and modifies a sample docx document.
+to create and modify a sample docx document.
 
 Congratulations, you just made a Word document!
 
@@ -65,11 +65,9 @@ If you just want to extract the text from a Word file, run:
 
 Check out the [HACKING](HACKING.markdown) to add your own changes!
 
-The Python docx mailing list at <python.docx@librelist.com>, and is low-traffic.
+### Want to talk? Need help?
 
-- Mike MacCana - main developer
-- Marcin Wielgoszewski - support for breaks & document narrators in paragraphs
-- Everyone on the github commit list!
+Email <python.docx@librelist.com>.
 
 ### License
 

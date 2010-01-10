@@ -3,10 +3,14 @@ Adding Features
 
 # Recommended reading
 
-- The LXML tutorial at http://codespeak.net/lxml/tutorial.html covers the basics of XML etrees, which we create, append and insert to make XML documents. LXML also provides XPath, which we use to specify locations in the document. 
-- The OpenXML WordML specs and videos at http://openxmldeveloper.org (if you're stuck)
-- Learning about XML namespaces http://www.w3schools.com/XML/xml_namespaces.asp
-- The Namespaces section of http://diveintopython3.org/xml.html
+- The [LXML tutorial](http://codespeak.net/lxml/tutorial.html) covers the basics of XML etrees, which we create, append and insert to make XML documents. LXML also provides XPath, which we use to specify locations in the document. 
+- The [OpenXML WordML specs and videos](http://openxmldeveloper.org) (if you're stuck)
+- Learning about [XML namespaces](http://www.w3schools.com/XML/xml_namespaces.asp)
+- The [Namespaces section of Dive into Python](http://diveintopython3.org/xml.html)
+
+# How can I contribute?
+
+Fork the project on github, then send the main project a [pull request](http://github.com/guides/pull-requests). The project will then accept your pull (in most cases), which will show your changes part of the changelog for the main project, along with you name and picture.
 
 # A note about namespaces and LXML
 
@@ -38,7 +42,7 @@ Is done with the following:
 Basically just look at what's there. But if you need something more specific:
 
 - Functional - every function should take some inputs, return something, and not use any globals.
-- Google style - http://code.google.com/p/soc/wiki/PythonStyleGuide
+- [Google Python Style Guide style](http://code.google.com/p/soc/wiki/PythonStyleGuide)
 
 # Unit Testing
 

@@ -26,6 +26,7 @@ Features for making documents include:
 - Multiple levels of headings
 - Tables
 - Section and page breaks
+- Images (preliminary support)
 
 ### Editing documents
 
@@ -41,7 +42,8 @@ Thanks to the awesomeness of the lxml module, we can:
 
 - Just [download python docx](http://github.com/mikemaccana/python-docx/tarball/master).
 - Use **easy_install** to fetch the **lxml** and **PIL** modules
-- Open **example-makedocument.py** which creates and modifies a sample docx document.
+- Run **example-makedocument.py** which creates and modifies a sample docx document.
+- Run **example-extracttext.py 'Some word file.docx' 'new file.txt'** to extract the text content from a document.
 
 Congratulations, you just made a Word document!
  
@@ -49,7 +51,6 @@ If you just want to extract the text from a Word file, check out **example-extra
 
 ### Ideas & To Do List
 
-- Images
 - Document health checks
 - Egg
 - Markdown conversion support
@@ -60,6 +61,7 @@ If you have idea, or would like to add functionality contact the Python docx mai
 
 - Mike MacCana - main developer
 - Marcin Wielgoszewski - support for breaks & document narrators in paragraphs
+- Everyone on the github commit list!
 
 ### License
 

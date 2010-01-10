@@ -42,13 +42,11 @@ Thanks to the awesomeness of the lxml module, we can:
 
 - Just [download python docx](http://github.com/mikemaccana/python-docx/tarball/master).
 - Use **easy_install** to fetch the **lxml** and **PIL** modules
-- Run: 
+Then run: 
 
     example-makedocument.py
 
-to create and modify a sample docx document.
-
-Congratulations, you just made a Word document!
+Congratulations, you just made and then modified a Word document!
 
 If you just want to extract the text from a Word file, run: 
 

@@ -42,6 +42,7 @@ Thanks to the awesomeness of the lxml module, we can:
 
 - Just [download python docx](http://github.com/mikemaccana/python-docx/tarball/master).
 - Use **easy_install** to fetch the **lxml** and **PIL** modules
+
 Then run: 
 
     example-makedocument.py

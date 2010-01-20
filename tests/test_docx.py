@@ -20,7 +20,8 @@ def teardown_module():
 
 def testsearchandreplace():
     '''Ensure search and replace functions work'''
-    assert False # something is fishy w/search and replace at the moment
+    # Need to add tests
+    assert False 
     
 def testtextextraction():
     '''Ensure text can be pulled out of a document'''

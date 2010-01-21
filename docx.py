@@ -40,11 +40,13 @@ nsprefixes = {
     'wp':'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
     'a':'http://schemas.openxmlformats.org/drawingml/2006/main',
     'pic':'http://schemas.openxmlformats.org/drawingml/2006/picture',
+    # Properties (core and extended)
     'cp':"http://schemas.openxmlformats.org/package/2006/metadata/core-properties", 
     'dc':"http://purl.org/dc/elements/1.1/", 
     'dcterms':"http://purl.org/dc/terms/",
     'dcmitype':"http://purl.org/dc/dcmitype/",
     'xsi':"http://www.w3.org/2001/XMLSchema-instance",
+    'ep':'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties',
     # Content Types (we're just making up our own namespaces here to save time)
     'ct':'http://schemas.openxmlformats.org/package/2006/content-types',
     # Package Relationships (we're just making up our own namespaces here to save time)
@@ -385,6 +387,52 @@ def getdocumenttext(document):
     return paratextlist        
 
 def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
+    '''Create document properties (including both core properties and app properties). '''
+    # OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
+    coreprops = makeelement('coreProperties',nsprefix='cp')    
+    coreprops.append(makeelement('title',tagtext=title,nsprefix='dc'))
+    coreprops.append(makeelement('subject',tagtext=subject,nsprefix='dc'))
+    coreprops.append(makeelement('creator',tagtext=creator,nsprefix='dc'))
+    coreprops.append(makeelement('keywords',tagtext=','.join(keywords),nsprefix='cp'))    
+    if not lastmodifiedby:
+        lastmodifiedby = creator
+    coreprops.append(makeelement('lastModifiedBy',tagtext=lastmodifiedby,nsprefix='cp'))
+    coreprops.append(makeelement('revision',tagtext='1',nsprefix='cp'))
+    coreprops.append(makeelement('category',tagtext='Examples',nsprefix='cp'))
+    coreprops.append(makeelement('description',tagtext='Examples',nsprefix='dc'))
+    currenttime = time.strftime('%Y-%m-%dT%H:%M:%SZ')
+    # Document creation and modify times
+    # Prob here: we have an attribute who name uses one namespace, and that 
+    # attribute's value uses another namespace.
+    # We're creating the lement from a string as a workaround...
+    for doctime in ['created','modified']:
+        coreprops.append(etree.fromstring('''<dcterms:'''+doctime+''' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dcterms="http://purl.org/dc/terms/" xsi:type="dcterms:W3CDTF">'''+currenttime+'''</dcterms:'''+doctime+'''>'''))
+        pass
+
+    appprops = makeelement('Properties',nsprefix='ep')
+    props = {
+            'Template':'Normal.dotm',
+            'TotalTime':'6',
+            'Pages':'1',  
+            'Words':'83',   
+            'Characters':'475', 
+            'Application':'Microsoft Word 12.0.0',
+            'DocSecurity':'0',
+            'Lines':'12', 
+            'Paragraphs':'8',
+            'ScaleCrop':'false', 
+            'LinksUpToDate':'false', 
+            'CharactersWithSpaces':'583',  
+            'SharedDoc':'false',
+            'HyperlinksChanged':'false',
+            'AppVersion':'12.0000',    
+            }
+    for prop in props:
+        appprops.append(makeelement(prop,tagtext=props[prop],nsprefix=None))           
+    return coreprops,appprops
+
+        
+def olddocproperties(title,subject,creator,keywords,lastmodifiedby=None):
     '''Makes document properties. '''
     # OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
     docprops = makeelement('coreProperties',nsprefix=['cp','dc'])    
@@ -446,7 +494,7 @@ def wordrelationships(relationshiplist):
         count += 1
     return relationships    
 
-def savedocx(document,properties,contenttypes,websettings,wordrelationships,docxfilename):
+def savedocx(document,coreprops,appprops,contenttypes,websettings,wordrelationships,docxfilename):
     '''Save a modified document'''
     assert os.path.isdir(template_dir)
     docxfile = zipfile.ZipFile(docxfilename,mode='w',compression=zipfile.ZIP_DEFLATED)
@@ -457,7 +505,8 @@ def savedocx(document,properties,contenttypes,websettings,wordrelationships,docx
     
     # Serialize our trees into out zip file
     treesandfiles = {document:'word/document.xml',
-                     properties:'docProps/core.xml',
+                     coreprops:'docProps/core.xml',
+                     appprops:'docProps/app.xml',
                      contenttypes:'[Content_Types].xml',
                      websettings:'word/webSettings.xml',
                      wordrelationships:'word/_rels/document.xml.rels'}

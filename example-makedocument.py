@@ -68,11 +68,11 @@ if __name__ == '__main__':
     docbody.append(heading('Ideas? Questions? Want to contribute?',2))
     docbody.append(paragraph('''Email <python.docx@librelist.com>'''))
 
-    # Create our properties, contenttypes, and othr support files
-    properties = docproperties('Python docx demo','A practical example of making docx from Python','Mike MacCana',['python','Office Open XML','Word'])
+    # Create our properties, contenttypes, and other support files
+    coreprops,appprops = docproperties(title='Python docx demo',subject='A practical example of making docx from Python',creator='Mike MacCana',keywords=['python','Office Open XML','Word'])
     contenttypes = contenttypes()
     websettings = websettings()
     wordrelationships = wordrelationships(relationships)
     
     # Save our document
-    savedocx(document,properties,contenttypes,websettings,wordrelationships,'Welcome to the Python docx module.docx')
+    savedocx(document,coreprops,appprops,contenttypes,websettings,wordrelationships,'Welcome to the Python docx module.docx')

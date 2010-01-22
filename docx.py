@@ -9,7 +9,6 @@ See LICENSE for licensing information.
 from lxml import etree
 import Image
 import zipfile
-import zlib
 import shutil
 import re
 import time
@@ -401,7 +400,6 @@ def relationshiplist():
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable','fontTable.xml'],
     ['http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme','theme/theme1.xml'],
     ]
-    count = 0
     return relationshiplist
     
 def wordrelationships(relationshiplist):

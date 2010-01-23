@@ -22,7 +22,7 @@ Features for making documents include:
 - Paragraphs
 - Bullets
 - Numbered lists
-- Set document properties (author, company, etc)
+- Document properties (author, company, etc)
 - Multiple levels of headings
 - Tables
 - Section and page breaks
@@ -38,7 +38,7 @@ Thanks to the awesomeness of the lxml module, we can:
 - Change document properties
 - Run xpath queries against particular locations in the document - useful for retrieving data from user-completed templates.
 
-### Getting started
+# Getting started
 
 ## Making a Document
 

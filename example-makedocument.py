@@ -33,7 +33,7 @@ if __name__ == '__main__':
     docbody.append(paragraph('''The docx module has the following features:'''))
 
     # Add some bullets
-    for point in ['Paragraphs','Bullets','Numbered lists','Multiple levels of headings','Tables']:
+    for point in ['Paragraphs','Bullets','Numbered lists','Multiple levels of headings','Tables','Document Properties']:
         docbody.append(paragraph(point,style='ListBullet'))
 
     docbody.append(paragraph('Tables are just lists of lists, like this:'))

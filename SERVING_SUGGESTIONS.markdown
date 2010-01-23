@@ -4,10 +4,11 @@ Adding Features
 # Recommended reading
 
 - The [LXML tutorial](http://codespeak.net/lxml/tutorial.html) covers the basics of XML etrees, which we create, append and insert to make XML documents. LXML also provides XPath, which we use to specify locations in the document. 
-- The [OpenXML WordML specs and videos](http://openxmldeveloper.org) (if you're stuck)
+- The [OpenXML WordML specs and videos](http://openxmldeveloper.org) (if you're stuck). [The OpenXML ECMA spec in particular](http://www.ecma-international.org/publications/files/ECMA-ST/Office%20Open%20XML%201st%20edition%20Part%204%20(DOCX).zip) is the main file you care about.
+
 - Learning about [XML namespaces](http://www.w3schools.com/XML/xml_namespaces.asp)
 - The [Namespaces section of Dive into Python](http://diveintopython3.org/xml.html)
-- Microsoft's introduction to [the Office (2007) Open XML File Formats](http://msdn.microsoft.com/en-us/library/aa338205.aspx)
+- Microsoft's [introduction to the Office (2007) Open XML File Formats](http://msdn.microsoft.com/en-us/library/aa338205.aspx)
 
 # How can I contribute?
 

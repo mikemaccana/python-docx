@@ -76,8 +76,8 @@ def testunsupportedpagebreak():
 def testnewdocument():
     '''Test that a new document can be created'''
     document, docbody, relationships = simpledoc()
-    properties = docproperties('Python docx testnewdocument','A short example of making docx from Python','Alan Brooks',['python','Office Open XML','Word'])
-    savedocx(document, properties, contenttypes(), websettings(), wordrelationships(relationships), TEST_FILE)
+    coreprops = coreproperties('Python docx testnewdocument','A short example of making docx from Python','Alan Brooks',['python','Office Open XML','Word'])
+    savedocx(document, coreprops, appproperties(), contenttypes(), websettings(), wordrelationships(relationships), TEST_FILE)
 
 def testopendocx():
     '''Ensure an etree element is returned'''

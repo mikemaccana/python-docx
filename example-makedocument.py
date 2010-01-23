@@ -69,7 +69,8 @@ if __name__ == '__main__':
     docbody.append(paragraph('''Email <python.docx@librelist.com>'''))
 
     # Create our properties, contenttypes, and other support files
-    coreprops,appprops = docproperties(title='Python docx demo',subject='A practical example of making docx from Python',creator='Mike MacCana',keywords=['python','Office Open XML','Word'])
+    coreprops = coreproperties(title='Python docx demo',subject='A practical example of making docx from Python',creator='Mike MacCana',keywords=['python','Office Open XML','Word'])
+    appprops = appproperties()
     contenttypes = contenttypes()
     websettings = websettings()
     wordrelationships = wordrelationships(relationships)

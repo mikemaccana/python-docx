@@ -386,9 +386,9 @@ def getdocumenttext(document):
             paratextlist.append(paratext)                    
     return paratextlist        
 
-def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
-    '''Create document properties (including both core properties and app properties). '''
-    # OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
+def coreproperties(title,subject,creator,keywords,lastmodifiedby=None):
+    '''Create core properties (common document properties referred to in the 'Dublin Core' specification).
+    See appproperties() for other stuff.'''
     coreprops = makeelement('coreProperties',nsprefix='cp')    
     coreprops.append(makeelement('title',tagtext=title,nsprefix='dc'))
     coreprops.append(makeelement('subject',tagtext=subject,nsprefix='dc'))
@@ -408,8 +408,14 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     for doctime in ['created','modified']:
         coreprops.append(etree.fromstring('''<dcterms:'''+doctime+''' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dcterms="http://purl.org/dc/terms/" xsi:type="dcterms:W3CDTF">'''+currenttime+'''</dcterms:'''+doctime+'''>'''))
         pass
+    return coreprops
 
+def appproperties():
+    '''Create app-specific properties. See docproperties() for more common document properties.'''    
     appprops = makeelement('Properties',nsprefix='ep')
+    appprops = etree.fromstring(
+    '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"></Properties>''')
     props = {
             'Template':'Normal.dotm',
             'TotalTime':'6',
@@ -428,36 +434,9 @@ def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
             'AppVersion':'12.0000',    
             }
     for prop in props:
-        appprops.append(makeelement(prop,tagtext=props[prop],nsprefix=None))           
-    return coreprops,appprops
+        appprops.append(makeelement(prop,tagtext=props[prop],nsprefix=None))
+    return appprops
 
-        
-def olddocproperties(title,subject,creator,keywords,lastmodifiedby=None):
-    '''Makes document properties. '''
-    # OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
-    docprops = makeelement('coreProperties',nsprefix=['cp','dc'])    
-    docprops.append(makeelement('title',tagtext=title,nsprefix='dc'))
-    docprops.append(makeelement('subject',tagtext=subject,nsprefix='dc'))
-    docprops.append(makeelement('creator',tagtext=creator,nsprefix='dc'))
-    docprops.append(makeelement('keywords',tagtext=','.join(keywords),nsprefix='cp'))    
-    if not lastmodifiedby:
-        lastmodifiedby = creator
-    docprops.append(makeelement('lastModifiedBy',tagtext=lastmodifiedby,nsprefix='cp'))
-    docprops.append(makeelement('revision',tagtext='1',nsprefix='cp'))
-    docprops.append(makeelement('category',tagtext='Examples',nsprefix='cp'))
-    docprops.append(makeelement('description',tagtext='Examples',nsprefix='dc'))
-    currenttime = time.strftime('%Y-%m-%dT-%H:%M:%SZ')
-    # FIXME - creating these items manually fails - but we can live without them for now.
-    '''	What we're going for:
-    <dcterms:created xsi:type="dcterms:W3CDTF">2010-01-01T21:07:00Z</dcterms:created>
-    <dcterms:modified xsi:type="dcterms:W3CDTF">2010-01-01T21:20:00Z</dcterms:modified>
-    currenttime'''
-    edittimes = {'created':'2010-01-01T21:07:00Z','modified':'2010-01-01T21:07:00Z'}
-    for edit in edittimes:
-        #docprops.append(makeelement(edit,nsprefix='dcterms',attrnsprefix='xsi',
-        #attributes={'type':'W3CDTF'},tagtext=edittimes[edit]))
-        pass
-    return docprops
 
 def websettings():
     '''Generate websettings'''

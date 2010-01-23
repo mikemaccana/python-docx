@@ -2,18 +2,45 @@
 '''
 Test docx module
 '''
+import os
 import lxml
+from nose import with_setup
 from docx import *
 
+TEST_FILE = 'Short python-docx test.docx'
+
+def setup_func():
+    '''Set up test fixtures'''
+    testnewdocument()
+
+def teardown_func():
+    '''Tear down test fixtures'''
+    if TEST_FILE in os.listdir('.'):
+        os.remove(TEST_FILE)
+        
+def testnewdocument():
+    '''Test that a new document can be created'''
+    relationships = relationshiplist()
+    document = newdocument()
+    docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
+    docbody.append(heading('Heading 1',1)  )   
+    docbody.append(heading('Heading 2',2))
+    docbody.append(paragraph('Paragraph 1'))
+    for point in ['List Item 1','List Item 2','List Item 3']:
+        docbody.append(paragraph(point,style='ListNumber'))
+    docbody.append(paragraph('Paragraph 2')) 
+    docbody.append(table([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
+    docbody.append(paragraph('Paragraph 3'))
+    properties = docproperties('Python docx testnewdocument','A short example of making docx from Python','Alan Brooks',['python','Office Open XML','Word'])
+    savedocx(document, properties, contenttypes(), websettings(), wordrelationships(relationships), TEST_FILE)
+
+@with_setup(setup_func, teardown_func)
 def testopendocx():
     '''Ensure an etree element is returned'''
-    if isinstance(opendocx('Welcome to the Python docx module.docx'),lxml.etree._Element):
+    if isinstance(opendocx(TEST_FILE),lxml.etree._Element):
         pass
     else:
         assert False
-        
-def testnewdocument():
-    pass
 
 def testmakeelement():
     '''Ensure custom elements get created'''

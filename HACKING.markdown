@@ -4,12 +4,7 @@ Adding Features
 # Recommended reading
 
 - The [LXML tutorial](http://codespeak.net/lxml/tutorial.html) covers the basics of XML etrees, which we create, append and insert to make XML documents. LXML also provides XPath, which we use to specify locations in the document. 
-- The [OpenXML WordML specs and videos](http://openxmldeveloper.org) (if you're stuck). 
-
-<a href="http://www.ecma-international.org/publications/files/ECMA-ST/Office%20Open%20XML%201st%20edition%20Part%204%20(DOCX).zip">The OpenXML ECMA spec in particular</a> 
-
-is the main file you care about.
-
+- If you're stuck. check out the [OpenXML specs and videos](http://openxmldeveloper.org). In particular, the is [OpenXML ECMA spec] [] is well worth a read.
 - Learning about [XML namespaces](http://www.w3schools.com/XML/xml_namespaces.asp)
 - The [Namespaces section of Dive into Python](http://diveintopython3.org/xml.html)
 - Microsoft's [introduction to the Office (2007) Open XML File Formats](http://msdn.microsoft.com/en-us/library/aa338205.aspx)
@@ -105,3 +100,5 @@ First, determine whether Word can recover the files:
 - Use element.append(makelement()) to add that element to your tree
 - Open the doc in Word and see if it still works
 - Repeat the last three steps until you discover which element is causing the prob
+
+[OpenXML ECMA spec]: http://www.ecma-international.org/publications/files/ECMA-ST/Office%20Open%20XML%201st%20edition%20Part%204%20(DOCX).zip

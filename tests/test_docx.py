@@ -17,7 +17,17 @@ def teardown_func():
     '''Tear down test fixtures'''
     if TEST_FILE in os.listdir('.'):
         os.remove(TEST_FILE)
-        
+
+def testunsupportedpagebreak():
+    '''Ensure unsupported page break types are trapped'''
+    document = newdocument()
+    docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
+    try:
+        docbody.append(pagebreak(type='unsup'))
+    except ValyueError:
+        return # passed
+    assert False # failed
+
 def testnewdocument():
     '''Test that a new document can be created'''
     relationships = relationshiplist()
@@ -28,6 +38,7 @@ def testnewdocument():
     docbody.append(paragraph('Paragraph 1'))
     for point in ['List Item 1','List Item 2','List Item 3']:
         docbody.append(paragraph(point,style='ListNumber'))
+    docbody.append(pagebreak(type='page', orient='portrait'))
     docbody.append(paragraph('Paragraph 2')) 
     docbody.append(table([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
     docbody.append(paragraph('Paragraph 3'))

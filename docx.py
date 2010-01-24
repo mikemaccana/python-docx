@@ -88,8 +88,9 @@ def pagebreak(type='page', orient='portrait'):
     See http://openxmldeveloper.org/forums/thread/4075.aspx
     Return our page break element.'''
     # Need to enumerate different types of page breaks.
-    if type not in ['page', 'section']:
-        raiseError('Page break style "%s" not implemented.' % type)
+    validtypes = ['page', 'section']
+    if type not in validtypes:
+        raise ValueError('Page break style "%s" not implemented. Valid styles: %s.' % (type, validtypes))
     pagebreak = makeelement('p')
     if type == 'page':
         run = makeelement('r')

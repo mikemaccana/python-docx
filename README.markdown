@@ -9,7 +9,7 @@ These are referred to as 'WordML', 'Office Open XML' and 'Open XML' by Microsoft
 
 These documents can be opened in Microsoft Office 2007 / 2010, Microsoft Mac Office 2008, Google Docs, OpenOffice.org 3, and Apple iWork 08.
 
-They also [validate as well formed XML](http://validator.w3.org/check)
+They also [validate as well formed XML](http://validator.w3.org/check).
 
 The module was created when I was looking for a Python support for MS Word .doc files, but could only find various hacks involving COM automation, calling .net or Java, or automating OpenOffice or MS Office.
 

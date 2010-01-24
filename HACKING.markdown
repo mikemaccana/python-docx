@@ -33,7 +33,7 @@ which is the same as what Word generates:
 
 The namespace prefixes are different, but that's irrelevant as the namespaces themselves are the same.
 
-There's also a cool sideeffect - you can ignore setting 'xmlns' attributes that aren't used directly in the current element, since there's no need. Eg, you can make the equivalent of this from a Word file:
+There's also a cool side effect - you can ignore setting 'xmlns' attributes that aren't used directly in the current element, since there's no need. Eg, you can make the equivalent of this from a Word file:
 
 	<cp:coreProperties 
 	xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" 

@@ -18,13 +18,25 @@ def teardown_func():
     if TEST_FILE in os.listdir('.'):
         os.remove(TEST_FILE)
 
+@with_setup(setup_func, teardown_func)
+def testsearchandreplace():
+    '''Ensure search and replace functions work'''
+    assert False # something is fishy w/search and replace at the moment
+    
+@with_setup(setup_func, teardown_func)
+def testtextextraction():
+    '''Ensure text can be pulled out of a document'''
+    document = opendocx(TEST_FILE)
+    paratextlist = getdocumenttext(document)
+    assert len(paratextlist) > 0
+
 def testunsupportedpagebreak():
     '''Ensure unsupported page break types are trapped'''
     document = newdocument()
     docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
     try:
         docbody.append(pagebreak(type='unsup'))
-    except ValyueError:
+    except ValueError:
         return # passed
     assert False # failed
 
@@ -38,9 +50,13 @@ def testnewdocument():
     docbody.append(paragraph('Paragraph 1'))
     for point in ['List Item 1','List Item 2','List Item 3']:
         docbody.append(paragraph(point,style='ListNumber'))
-    docbody.append(pagebreak(type='page', orient='portrait'))
+    docbody.append(pagebreak(type='page'))
     docbody.append(paragraph('Paragraph 2')) 
     docbody.append(table([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
+    docbody.append(pagebreak(type='section', orient='portrait'))
+    relationships,picpara = picture(relationships,'image1.png','This is a test description')
+    docbody.append(picpara)
+    docbody.append(pagebreak(type='section', orient='landscape'))
     docbody.append(paragraph('Paragraph 3'))
     properties = docproperties('Python docx testnewdocument','A short example of making docx from Python','Alan Brooks',['python','Office Open XML','Word'])
     savedocx(document, properties, contenttypes(), websettings(), wordrelationships(relationships), TEST_FILE)

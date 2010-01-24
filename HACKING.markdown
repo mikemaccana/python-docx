@@ -10,7 +10,7 @@ Adding Features
 
 # How can I contribute?
 
-Fork the project on github, then send the main project a [pull request](http://github.com/guides/pull-requests). The project will then accept your pull (in most cases), which will show your changes part of the changelog for the main project, along with you name and picture.
+Fork the project on github, then send the main project a [pull request](http://github.com/guides/pull-requests). The project will then accept your pull (in most cases), which will show your changes part of the changelog for the main project, along with your name and picture.
 
 # A note about namespaces and LXML
 

@@ -9,21 +9,19 @@ from docx import *
 
 TEST_FILE = 'Short python-docx test.docx'
 
-def setup_func():
+def setup_module():
     '''Set up test fixtures'''
     testnewdocument()
 
-def teardown_func():
+def teardown_module():
     '''Tear down test fixtures'''
     if TEST_FILE in os.listdir('.'):
         os.remove(TEST_FILE)
 
-@with_setup(setup_func, teardown_func)
 def testsearchandreplace():
     '''Ensure search and replace functions work'''
     assert False # something is fishy w/search and replace at the moment
     
-@with_setup(setup_func, teardown_func)
 def testtextextraction():
     '''Ensure text can be pulled out of a document'''
     document = opendocx(TEST_FILE)
@@ -61,7 +59,6 @@ def testnewdocument():
     properties = docproperties('Python docx testnewdocument','A short example of making docx from Python','Alan Brooks',['python','Office Open XML','Word'])
     savedocx(document, properties, contenttypes(), websettings(), wordrelationships(relationships), TEST_FILE)
 
-@with_setup(setup_func, teardown_func)
 def testopendocx():
     '''Ensure an etree element is returned'''
     if isinstance(opendocx(TEST_FILE),lxml.etree._Element):

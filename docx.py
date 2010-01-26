@@ -15,8 +15,11 @@ import time
 import os
 from os.path import join
 
-# Record template directory's location
-TEMPLATE = join(os.path.dirname(__file__), 'template')
+# Record template directory's location which is just 'template' for a docx
+# developer or 'site-packages/docx-template' if you have installed docx
+template_dir = join(os.path.dirname(__file__),'docx-template') # installed
+if not os.path.isdir(template_dir):
+    template_dir = join(os.path.dirname(__file__),'template') # dev
 
 # All Word prefixes / namespace matches used in document.xml & core.xml.
 # LXML doesn't actually use prefixes (just the real namespace) , but these
@@ -235,7 +238,7 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
 
     '''Create an image. Size may be specified, otherwise it will based on the pixel size of image. Return a paragraph containing the picture'''
     # Copy the file into the media dir
-    shutil.copyfile(picname, join(TEMPLATE,'word','media',picname))
+    shutil.copyfile(picname, join(template_dir,'word','media',picname))
 
     # Check if the user has specified a size
     if not pixelwidth or not pixelheight:
@@ -264,7 +267,7 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
     
     # 2. The non visual picture properties 
     nvpicpr = makeelement('nvPicPr',nsprefix='pic')
-    cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'0','name':'Picture 1','descr':"http://github.com/mikemaccana/python-docx/raw/master/template/word/media/image1.png"}) 
+    cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'0','name':'Picture 1','descr':picname}) 
     nvpicpr.append(cnvpr) 
     cnvpicpr = makeelement('cNvPicPr',nsprefix='pic')                           
     cnvpicpr.append(makeelement('picLocks',nsprefix='a',attributes={'noChangeAspect':str(int(nochangeaspect)),
@@ -426,12 +429,12 @@ def wordrelationships(relationshiplist):
 
 def savedocx(document,properties,contenttypes,websettings,wordrelationships,docxfilename):
     '''Save a modified document'''
-    assert os.path.isdir(TEMPLATE)
+    assert os.path.isdir(template_dir)
     docxfile = zipfile.ZipFile(docxfilename,mode='w',compression=zipfile.ZIP_DEFLATED)
     
-    # Move to the parent of the template data path
+    # Move to the template data path
     prev_dir = os.path.abspath('.') # save previous working dir
-    os.chdir(join(TEMPLATE,'..'))
+    os.chdir(template_dir)
     
     # Serialize our trees into out zip file
     treesandfiles = {document:'word/document.xml',properties:'docProps/core.xml',contenttypes:'[Content_Types].xml',websettings:'word/webSettings.xml',
@@ -443,10 +446,10 @@ def savedocx(document,properties,contenttypes,websettings,wordrelationships,docx
         docxfile.writestr(treesandfiles[tree],treestring)
     
     # Add & compress support files
-    for dirpath,dirnames,filenames in os.walk('template'):
+    for dirpath,dirnames,filenames in os.walk('.'):
         for filename in filenames:
-            templatefile = os.path.join(dirpath,filename)
-            archivename = templatefile.lstrip('/template/')   
+            templatefile = join(dirpath,filename)
+            archivename = templatefile[2:]
             print 'Saving: '+archivename          
             docxfile.write(templatefile, archivename)
     print 'Saved new file to: '+docxfilename

@@ -449,8 +449,11 @@ def savedocx(document,properties,contenttypes,websettings,wordrelationships,docx
         docxfile.writestr(treesandfiles[tree],treestring)
     
     # Add & compress support files
+    files_to_ignore = ['.DS_Store'] # nuisance from some os's
     for dirpath,dirnames,filenames in os.walk('.'):
         for filename in filenames:
+            if filename in files_to_ignore:
+                continue
             templatefile = join(dirpath,filename)
             archivename = templatefile[2:]
             print 'Saving: '+archivename          

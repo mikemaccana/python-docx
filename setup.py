@@ -20,7 +20,6 @@ setup(name='docx',
           ('docx-template/_rels', glob('template/_rels/.*')),
           ('docx-template/docProps', glob('template/docProps/*.*')),
           ('docx-template/word', glob('template/word/*.xml')),
-          ('docx-template/word/media', glob('template/word/media/*.*')),
           ('docx-template/word/theme', glob('template/word/theme/*.*')),
           ],
       )

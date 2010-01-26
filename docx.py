@@ -236,9 +236,12 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
     and an updated relationshiplist'''
     # http://openxmldeveloper.org/articles/462.aspx
 
-    '''Create an image. Size may be specified, otherwise it will based on the pixel size of image. Return a paragraph containing the picture'''
+    '''Create an image. Size may be specified, otherwise it will based on the pixel size of image. Return a paragraph containing the picture'''  
     # Copy the file into the media dir
-    shutil.copyfile(picname, join(template_dir,'word','media',picname))
+    media_dir = join(template_dir,'word','media')
+    if not os.path.isdir(media_dir):
+        os.mkdir(media_dir)
+    shutil.copyfile(picname, join(media_dir,picname))
 
     # Check if the user has specified a size
     if not pixelwidth or not pixelheight:

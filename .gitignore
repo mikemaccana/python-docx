@@ -1,2 +1,4 @@
 .coverage
 *.pyc
+*.docx
+build

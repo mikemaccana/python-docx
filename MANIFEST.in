@@ -1,0 +1,6 @@
+include template/*
+include template/_rels/*
+include template/docProps/*
+include template/word/*
+include template/word/media/*
+include template/word/theme/*

@@ -13,6 +13,10 @@ import shutil
 import re
 import time
 import os
+from os.path import join
+
+# Record template directory's location
+TEMPLATE = join(os.path.dirname(__file__), 'template')
 
 # All Word prefixes / namespace matches used in document.xml & core.xml.
 # LXML doesn't actually use prefixes (just the real namespace) , but these
@@ -231,7 +235,7 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
 
     '''Create an image. Size may be specified, otherwise it will based on the pixel size of image. Return a paragraph containing the picture'''
     # Copy the file into the media dir
-    shutil.copyfile(picname, 'template/word/media/'+picname)
+    shutil.copyfile(picname, join(TEMPLATE,'word','media',picname))
 
     # Check if the user has specified a size
     if not pixelwidth or not pixelheight:
@@ -422,7 +426,13 @@ def wordrelationships(relationshiplist):
 
 def savedocx(document,properties,contenttypes,websettings,wordrelationships,docxfilename):
     '''Save a modified document'''
+    assert os.path.isdir(TEMPLATE)
     docxfile = zipfile.ZipFile(docxfilename,mode='w',compression=zipfile.ZIP_DEFLATED)
+    
+    # Move to the parent of the template data path
+    prev_dir = os.path.abspath('.') # save previous working dir
+    os.chdir(join(TEMPLATE,'..'))
+    
     # Serialize our trees into out zip file
     treesandfiles = {document:'word/document.xml',properties:'docProps/core.xml',contenttypes:'[Content_Types].xml',websettings:'word/webSettings.xml',
     wordrelationships:'word/_rels/document.xml.rels'
@@ -440,6 +450,7 @@ def savedocx(document,properties,contenttypes,websettings,wordrelationships,docx
             print 'Saving: '+archivename          
             docxfile.write(templatefile, archivename)
     print 'Saved new file to: '+docxfilename
+    os.chdir(prev_dir) # restore previous working dir
     return
     
 

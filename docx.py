@@ -322,11 +322,11 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
 
 
 def search(document,search):
-    '''Search a document for a regex, return '''
+    '''Search a document for a regex, return success / fail results'''
     results = False
     searchre = re.compile(search)
     for element in document.iter():
-        if element.tag == 'w'+'t':
+        if element.tag == nsprefixes['w']+'t':
             if element.text:
                 if searchre.match(element.text):
                     results = True
@@ -337,7 +337,7 @@ def replace(document,search,replace):
     newdocument = document
     searchre = re.compile(search)
     for element in newdocument.iter():
-        if element.tag == 'w'+'t':
+        if element.tag == nsprefixes['w']+'t':
             if element.text:
                 if searchre.search(element.text):
                     element.text = re.sub(search,replace,element.text)

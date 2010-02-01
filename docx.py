@@ -65,12 +65,19 @@ def newdocument():
 
 def makeelement(tagname,tagtext=None,nsprefix='w',attributes=None,attrnsprefix=None):
     '''Create an element & return it''' 
+    # Deal with list of nsprefix by making namespacemap
+    namespacemap = None
+    if type(nsprefix) == list:
+        namespacemap = {}
+        for prefix in nsprefix:
+            namespacemap[prefix] = nsprefixes[prefix]
+        nsprefix = nsprefix[0] # FIXME: rest of code below expects a single prefix
     if nsprefix:
         namespace = '{'+nsprefixes[nsprefix]+'}'
     else:
         # For when namespace = None
         namespace = ''
-    newelement = etree.Element(namespace+tagname)
+    newelement = etree.Element(namespace+tagname, nsmap=namespacemap)
     # Add attributes with namespaces
     if attributes:
         # If they haven't bothered setting attribute namespace, use an empty string
@@ -371,7 +378,7 @@ def getdocumenttext(document):
 def docproperties(title,subject,creator,keywords,lastmodifiedby=None):
     '''Makes document properties. '''
     # OpenXML uses the term 'core' to refer to the 'Dublin Core' specification used to make the properties.  
-    docprops = makeelement('coreProperties',nsprefix='cp')    
+    docprops = makeelement('coreProperties',nsprefix=['cp','dc'])    
     docprops.append(makeelement('title',tagtext=title,nsprefix='dc'))
     docprops.append(makeelement('subject',tagtext=subject,nsprefix='dc'))
     docprops.append(makeelement('creator',tagtext=creator,nsprefix='dc'))

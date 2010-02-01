@@ -231,12 +231,13 @@ def table(contents):
         table.append(row)   
     return table                 
 
-def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=None,nochangeaspect=True,nochangearrowheads=True):
+def picture(relationshiplist, picname, picdescription, pixelwidth=None,
+            pixelheight=None, nochangeaspect=True, nochangearrowheads=True):
     '''Take a relationshiplist, picture file name, and return a paragraph containing the image
     and an updated relationshiplist'''
     # http://openxmldeveloper.org/articles/462.aspx
-
-    '''Create an image. Size may be specified, otherwise it will based on the pixel size of image. Return a paragraph containing the picture'''  
+    # Create an image. Size may be specified, otherwise it will based on the
+    # pixel size of image. Return a paragraph containing the picture'''  
     # Copy the file into the media dir
     media_dir = join(template_dir,'word','media')
     if not os.path.isdir(media_dir):
@@ -257,7 +258,9 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
     # Set relationship ID to the first available  
     picid = '2'    
     picrelid = 'rId'+str(len(relationshiplist)+1)
-    relationshiplist.append(['http://schemas.openxmlformats.org/officeDocument/2006/relationships/image','media/'+picname])
+    relationshiplist.append([
+        'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image',
+        'media/'+picname])
     
     # There are 3 main elements inside a picture
     # 1. The Blipfill - specifies how the image fills the picture area (stretch, tile, etc.)
@@ -270,11 +273,13 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
     
     # 2. The non visual picture properties 
     nvpicpr = makeelement('nvPicPr',nsprefix='pic')
-    cnvpr = makeelement('cNvPr',nsprefix='pic',attributes={'id':'0','name':'Picture 1','descr':picname}) 
+    cnvpr = makeelement('cNvPr',nsprefix='pic',
+                        attributes={'id':'0','name':'Picture 1','descr':picname}) 
     nvpicpr.append(cnvpr) 
     cnvpicpr = makeelement('cNvPicPr',nsprefix='pic')                           
-    cnvpicpr.append(makeelement('picLocks',nsprefix='a',attributes={'noChangeAspect':str(int(nochangeaspect)),
-    'noChangeArrowheads':str(int(nochangearrowheads))}))
+    cnvpicpr.append(makeelement('picLocks', nsprefix='a', 
+                    attributes={'noChangeAspect':str(int(nochangeaspect)),
+                    'noChangeArrowheads':str(int(nochangearrowheads))}))
     nvpicpr.append(cnvpicpr)
         
     # 3. The Shape properties
@@ -295,7 +300,8 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
     
     # Now make the supporting elements
     # The following sequence is just: make element, then add its children
-    graphicdata = makeelement('graphicData',nsprefix='a',attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
+    graphicdata = makeelement('graphicData',nsprefix='a',
+        attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
     graphicdata.append(pic)
     graphic = makeelement('graphic',nsprefix='a')
     graphic.append(graphicdata)
@@ -303,10 +309,13 @@ def picture(relationshiplist,picname,picdescription,pixelwidth=None,pixelheight=
     framelocks = makeelement('graphicFrameLocks',nsprefix='a',attributes={'noChangeAspect':'1'})    
     framepr = makeelement('cNvGraphicFramePr',nsprefix='wp')
     framepr.append(framelocks)
-    docpr = makeelement('docPr',nsprefix='wp',attributes={'id':picid,'name':'Picture 1','descr':picdescription})
-    effectextent = makeelement('effectExtent',nsprefix='wp',attributes={'l':'25400','t':'0','r':'0','b':'0'})
+    docpr = makeelement('docPr',nsprefix='wp',
+        attributes={'id':picid,'name':'Picture 1','descr':picdescription})
+    effectextent = makeelement('effectExtent',nsprefix='wp',
+        attributes={'l':'25400','t':'0','r':'0','b':'0'})
     extent = makeelement('extent',nsprefix='wp',attributes={'cx':width,'cy':height})
-    inline = makeelement('inline',attributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
+    inline = makeelement('inline',
+        attributes={'distT':"0",'distB':"0",'distL':"0",'distR':"0"},nsprefix='wp')
     inline.append(extent)
     inline.append(effectextent)
     inline.append(docpr)
@@ -440,9 +449,11 @@ def savedocx(document,properties,contenttypes,websettings,wordrelationships,docx
     os.chdir(template_dir)
     
     # Serialize our trees into out zip file
-    treesandfiles = {document:'word/document.xml',properties:'docProps/core.xml',contenttypes:'[Content_Types].xml',websettings:'word/webSettings.xml',
-    wordrelationships:'word/_rels/document.xml.rels'
-    }
+    treesandfiles = {document:'word/document.xml',
+                     properties:'docProps/core.xml',
+                     contenttypes:'[Content_Types].xml',
+                     websettings:'word/webSettings.xml',
+                     wordrelationships:'word/_rels/document.xml.rels'}
     for tree in treesandfiles:
         print 'Saving: '+treesandfiles[tree]    
         treestring = etree.tostring(tree, pretty_print=True)

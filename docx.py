@@ -338,22 +338,22 @@ def picture(relationshiplist, picname, picdescription, pixelwidth=None,
 
 
 def search(document,search):
-    '''Search a document for a regex, return success / fail results'''
-    results = False
+    '''Search a document for a regex, return success / fail result'''
+    result = False
     searchre = re.compile(search)
     for element in document.iter():
-        if element.tag == '{%s}t' % nsprefixes['w']:
+        if element.tag == '{%s}t' % nsprefixes['w']: # t (text) elements
             if element.text:
-                if searchre.match(element.text):
-                    results = True
-    return results
+                if searchre.search(element.text):
+                    result = True
+    return result
 
 def replace(document,search,replace):
     '''Replace all occurences of string with a different string, return updated document'''
     newdocument = document
     searchre = re.compile(search)
     for element in newdocument.iter():
-        if element.tag == '{%s}t' % nsprefixes['w']:
+        if element.tag == '{%s}t' % nsprefixes['w']: # t (text) elements
             if element.text:
                 if searchre.search(element.text):
                     element.text = re.sub(search,replace,element.text)

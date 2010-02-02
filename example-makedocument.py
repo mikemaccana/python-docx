@@ -49,11 +49,15 @@ if __name__ == '__main__':
     relationships,picpara = picture(relationships,'image1.png','This is a test description')
     docbody.append(picpara)
  
-    # Search and replace 
-    # FIXME: search broken
-    print 'Search ...',
+    # Search and replace
+    print 'Searching for something in a paragraph ...',
     if search(docbody, 'the awesomeness'): print 'found it!'
     else: print 'nope.'
+    
+    print 'Searching for something in a heading ...',
+    if search(docbody, '200 lines'): print 'found it!'
+    else: print 'nope.'
+    
     print 'Replacing ...',
     docbody = replace(docbody,'the awesomeness','the goshdarned awesomeness') 
     print 'done.'

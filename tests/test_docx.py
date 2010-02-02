@@ -4,14 +4,17 @@ Test docx module
 '''
 import os
 import lxml
-import nose
 from docx import *
 
-TEST_FILE = 'Short python-docx test.docx'
+TEST_FILE = 'ShortTest.docx'
+IMAGE1_FILE = 'image1.png'
 
 # --- Setup & Support Functions ---
 def setup_module():
     '''Set up test fixtures'''
+    import shutil
+    if IMAGE1_FILE not in os.listdir('.'):
+        shutil.copyfile(os.path.join(os.path.pardir,IMAGE1_FILE), IMAGE1_FILE)
     testnewdocument()
 
 def teardown_module():
@@ -33,7 +36,7 @@ def simpledoc():
     docbody.append(paragraph('Paragraph 2')) 
     docbody.append(table([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
     docbody.append(pagebreak(type='section', orient='portrait'))
-    relationships,picpara = picture(relationships,'image1.png','This is a test description')
+    relationships,picpara = picture(relationships,IMAGE1_FILE,'This is a test description')
     docbody.append(picpara)
     docbody.append(pagebreak(type='section', orient='landscape'))
     docbody.append(paragraph('Paragraph 3'))
@@ -45,10 +48,14 @@ def testsearchandreplace():
     '''Ensure search and replace functions work'''
     document, docbody, relationships = simpledoc()
     docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
+    assert search(docbody, 'ing 1')
+    assert search(docbody, 'ing 2')
+    assert search(docbody, 'graph 3')
+    assert search(docbody, 'ist Item')
+    assert search(docbody, 'A1')
     if search(docbody, 'Paragraph 2'): 
         docbody = replace(docbody,'Paragraph 2','Whacko 55') 
     assert search(docbody, 'Whacko 55')
-    assert False # replace works, search fails for some cases
     
 def testtextextraction():
     '''Ensure text can be pulled out of a document'''
@@ -99,4 +106,5 @@ def testtable():
     assert testtable.xpath('/ns0:tbl/ns0:tr[2]/ns0:tc[2]/ns0:p/ns0:r/ns0:t',namespaces={'ns0':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})[0].text == 'B2'
 
 if __name__=='__main__':
+    import nose
     nose.main()

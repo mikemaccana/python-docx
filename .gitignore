@@ -1,6 +1,7 @@
 .coverage
 *.pyc
 *.docx
+*.kpf
 build
 problems
 template/word/media

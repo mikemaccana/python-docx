@@ -4,11 +4,12 @@ Test docx module
 '''
 import os
 import lxml
-from nose import with_setup
+import nose
 from docx import *
 
 TEST_FILE = 'Short python-docx test.docx'
 
+# --- Setup & Support Functions ---
 def setup_module():
     '''Set up test fixtures'''
     testnewdocument()
@@ -18,29 +19,8 @@ def teardown_module():
     if TEST_FILE in os.listdir('.'):
         os.remove(TEST_FILE)
 
-def testsearchandreplace():
-    '''Ensure search and replace functions work'''
-    # Need to add tests
-    assert False 
-    
-def testtextextraction():
-    '''Ensure text can be pulled out of a document'''
-    document = opendocx(TEST_FILE)
-    paratextlist = getdocumenttext(document)
-    assert len(paratextlist) > 0
-
-def testunsupportedpagebreak():
-    '''Ensure unsupported page break types are trapped'''
-    document = newdocument()
-    docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
-    try:
-        docbody.append(pagebreak(type='unsup'))
-    except ValueError:
-        return # passed
-    assert False # failed
-
-def testnewdocument():
-    '''Test that a new document can be created'''
+def simpledoc():
+    '''Make a docx (document, relationships) for use in other docx tests'''
     relationships = relationshiplist()
     document = newdocument()
     docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
@@ -57,6 +37,38 @@ def testnewdocument():
     docbody.append(picpara)
     docbody.append(pagebreak(type='section', orient='landscape'))
     docbody.append(paragraph('Paragraph 3'))
+    return (document, docbody, relationships)
+
+
+# --- Test Functions ---
+def testsearchandreplace():
+    '''Ensure search and replace functions work'''
+    document, docbody, relationships = simpledoc()
+    docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
+    if search(docbody, 'Paragraph 2'): 
+        docbody = replace(docbody,'Paragraph 2','Whacko 55') 
+    assert search(docbody, 'Whacko 55')
+    assert False # replace works, search fails for some cases
+    
+def testtextextraction():
+    '''Ensure text can be pulled out of a document'''
+    document = opendocx(TEST_FILE)
+    paratextlist = getdocumenttext(document)
+    assert len(paratextlist) > 0
+
+def testunsupportedpagebreak():
+    '''Ensure unsupported page break types are trapped'''
+    document = newdocument()
+    docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
+    try:
+        docbody.append(pagebreak(type='unsup'))
+    except ValueError:
+        return # passed
+    assert False # failed
+    
+def testnewdocument():
+    '''Test that a new document can be created'''
+    document, docbody, relationships = simpledoc()
     properties = docproperties('Python docx testnewdocument','A short example of making docx from Python','Alan Brooks',['python','Office Open XML','Word'])
     savedocx(document, properties, contenttypes(), websettings(), wordrelationships(relationships), TEST_FILE)
 
@@ -85,3 +97,6 @@ def testtable():
     testtable = table([['A1','A2'],['B1','B2'],['C1','C2']])
     ns = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
     assert testtable.xpath('/ns0:tbl/ns0:tr[2]/ns0:tc[2]/ns0:p/ns0:r/ns0:t',namespaces={'ns0':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})[0].text == 'B2'
+
+if __name__=='__main__':
+    nose.main()

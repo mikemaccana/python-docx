@@ -50,7 +50,13 @@ if __name__ == '__main__':
     docbody.append(picpara)
  
     # Search and replace 
-    document = replace(docbody,'the','the goshdarned')
+    # FIXME: search broken
+    print 'Search ...',
+    if search(docbody, 'the awesomeness'): print 'found it!'
+    else: print 'nope.'
+    print 'Replacing ...',
+    docbody = replace(docbody,'the awesomeness','the goshdarned awesomeness') 
+    print 'done.'
 
     # Add a pagebreak
     docbody.append(pagebreak(type='page', orient='portrait'))

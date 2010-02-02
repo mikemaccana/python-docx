@@ -342,7 +342,7 @@ def search(document,search):
     results = False
     searchre = re.compile(search)
     for element in document.iter():
-        if element.tag == nsprefixes['w']+'t':
+        if element.tag == '{%s}t' % nsprefixes['w']:
             if element.text:
                 if searchre.match(element.text):
                     results = True
@@ -353,7 +353,7 @@ def replace(document,search,replace):
     newdocument = document
     searchre = re.compile(search)
     for element in newdocument.iter():
-        if element.tag == nsprefixes['w']+'t':
+        if element.tag == '{%s}t' % nsprefixes['w']:
             if element.text:
                 if searchre.search(element.text):
                     element.text = re.sub(search,replace,element.text)

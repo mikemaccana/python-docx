@@ -7,6 +7,7 @@ Adding Features
 - The [OpenXML WordML specs and videos](http://openxmldeveloper.org) (if you're stuck)
 - Learning about [XML namespaces](http://www.w3schools.com/XML/xml_namespaces.asp)
 - The [Namespaces section of Dive into Python](http://diveintopython3.org/xml.html)
+- Microsoft's introduction to [the Office (2007) Open XML File Formats](http://msdn.microsoft.com/en-us/library/aa338205.aspx)
 
 # How can I contribute?
 

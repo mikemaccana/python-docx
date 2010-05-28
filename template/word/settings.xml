@@ -12,14 +12,6 @@
   <w:displayVerticalDrawingGridEvery w:val="0"/>
   <w:characterSpacingControl w:val="doNotCompress"/>
   <w:savePreviewPicture/>
-  <w:compat>
-    <w:doNotAutofitConstrainedTables/>
-    <w:doNotVertAlignCellWithSp/>
-    <w:doNotBreakConstrainedForcedTable/>
-    <w:useAnsiKerningPairs/>
-    <w:cachedColBalance/>
-    <w:splitPgBreakAndParaMark/>
-  </w:compat>
   <w:rsids>
     <w:rsidRoot w:val="00590D07"/>
     <w:rsid w:val="00011C8B"/>

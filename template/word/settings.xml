@@ -36,8 +36,8 @@
     <m:mathFont m:val="Lucida Grande"/>
     <m:brkBin m:val="before"/>
     <m:brkBinSub m:val="--"/>
-    <m:smallFrac m:val="off"/>
-    <m:dispDef m:val="off"/>
+    <m:smallFrac m:val="false"/>
+    <m:dispDef m:val="false"/>
     <m:lMargin m:val="0"/>
     <m:rMargin m:val="0"/>
     <m:wrapRight/>

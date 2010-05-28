@@ -203,7 +203,7 @@ def table(contents):
     # Table Grid    
     tablegrid = makeelement('tblGrid')
     for _ in range(columns):
-        tablegrid.append(makeelement('gridCol',attributes={'gridCol':'2390'}))
+        tablegrid.append(makeelement('gridCol',attributes={'w':'2390'}))
     table.append(tablegrid)     
     # Heading Row    
     row = makeelement('tr')

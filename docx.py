@@ -189,12 +189,16 @@ def contenttypes():
         types.append(makeelement('Default',nsprefix=None,attributes={'Extension':extension,'ContentType':filetypes[extension]}))
     return types
 
-def heading(headingtext,headinglevel):
+def heading(headingtext,headinglevel,lang='en'):
     '''Make a new heading, return the heading element'''
+    lmap = {
+        'en': 'Heading',
+        'it': 'Titolo',
+    }
     # Make our elements
     paragraph = makeelement('p')
     pr = makeelement('pPr')
-    pStyle = makeelement('pStyle',attributes={'val':'Heading'+str(headinglevel)})    
+    pStyle = makeelement('pStyle',attributes={'val':lmap[lang]+str(headinglevel)})    
     run = makeelement('r')
     text = makeelement('t',tagtext=headingtext)
     # Add the text the run, and the run to the paragraph
@@ -482,8 +486,8 @@ def advReplace(document,search,replace,bs=3):
     
     @param instance  document: The original document
     @param str       search: The text to search for (regexp)
-    @param str/etree replace: The replacement text or lxml.etree element to
-                                append
+    @param mixed replace: The replacement text or lxml.etree element to
+                          append, or a list of etree elements
     @param int       bs: See above
     
     @return instance The document with replacement applied
@@ -546,6 +550,8 @@ def advReplace(document,search,replace,bs=3):
                                     print "matched in elements:", e
                                     if isinstance(replace, etree._Element):
                                         print "Will replace with XML CODE"
+                                    elif type(replace) == list or type(replace) == tuple:
+                                        print "Will replace with LIST OF ELEMENTS"
                                     else:
                                         print "Will replace with:", re.sub(search,replace,txtsearch)
 
@@ -561,6 +567,11 @@ def advReplace(document,search,replace,bs=3):
                                             # tag and append the element
                                             searchels[i].text = re.sub(search,'',txtsearch)
                                             searchels[i].append(replace)
+                                        elif type(replace) == list or type(replace) == tuple:
+                                            # I'm replacing with a list of etree elements
+                                            searchels[i].text = re.sub(search,'',txtsearch)
+                                            for r in replace:
+                                                searchels[i].append(r)
                                         else:
                                             # Replacing with pure text
                                             searchels[i].text = re.sub(search,replace,txtsearch)

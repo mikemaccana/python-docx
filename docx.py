@@ -1,4 +1,5 @@
 #!/usr/bin/env python2.6
+# -*- coding: utf-8 -*-
 '''
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
 
@@ -188,8 +189,15 @@ def heading(headingtext,headinglevel):
     # Return the combined paragraph
     return paragraph   
 
-def table(contents):
-    '''Get a list of lists, return a table'''
+def table(contents, heading=True):
+    '''Get a list of lists, return a table
+    
+        @param list contents: A list of lists describing contents
+        @param bool heading: Tells whether first line should be threated as heading
+                             or not
+        
+        @return lxml.etree: Generated XML etree element
+    '''
     table = makeelement('tbl')
     columns = len(contents[0][0])    
     # Table properties
@@ -211,21 +219,22 @@ def table(contents):
     cnfStyle = makeelement('cnfStyle',attributes={'val':'000000100000'})
     rowprops.append(cnfStyle)
     row.append(rowprops)
-    for heading in contents[0]:
-        cell = makeelement('tc')  
-        # Cell properties  
-        cellprops = makeelement('tcPr')
-        cellwidth = makeelement('tcW',attributes={'w':'2390','type':'dxa'})
-        cellstyle = makeelement('shd',attributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
-        cellprops.append(cellwidth)
-        cellprops.append(cellstyle)
-        cell.append(cellprops)        
-        # Paragraph (Content)
-        cell.append(paragraph(heading))
-        row.append(cell)
-    table.append(row)            
-    # Contents Rows   
-    for contentrow in contents[1:]:
+    if heading:
+        for heading in contents[0]:
+            cell = makeelement('tc')  
+            # Cell properties  
+            cellprops = makeelement('tcPr')
+            cellwidth = makeelement('tcW',attributes={'w':'2390','type':'dxa'})
+            cellstyle = makeelement('shd',attributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
+            cellprops.append(cellwidth)
+            cellprops.append(cellstyle)
+            cell.append(cellprops)        
+            # Paragraph (Content)
+            cell.append(paragraph(heading))
+            row.append(cell)
+        table.append(row)            
+    # Contents Rows
+    for contentrow in contents[1 if heading else 0:]:
         row = makeelement('tr')     
         for content in contentrow:   
             cell = makeelement('tc')

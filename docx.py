@@ -370,6 +370,126 @@ def replace(document,search,replace):
                     element.text = re.sub(search,replace,element.text)
     return newdocument
 
+def advReplace(document,search,replace,bs=3):
+    '''Replace all occurences of string with a different string, return updated document
+    
+    This is a modified version of python-docx.replace() that takes into
+    account blocks of <bs> elements at a time. The replace element can also
+    be a string or an xml etree element.
+    
+    What it does:
+    It searches the entire document body for text blocks.
+    Then scan thos text blocks for replace.
+    Since the text to search could be spawned across multiple text blocks,
+    we need to adopt some sort of algorithm to handle this situation.
+    The smaller matching group of blocks (up to bs) is then adopted.
+    If the matching group has more than one block, blocks other than first
+    are cleared and all the replacement text is put on first block.
+    
+    Examples:
+    original text blocks : [ 'Hel', 'lo,', ' world!' ]
+    search / replace: 'Hello,' / 'Hi!'
+    output blocks : [ 'Hi!', '', ' world!' ]
+    
+    original text blocks : [ 'Hel', 'lo,', ' world!' ]
+    search / replace: 'Hello, world' / 'Hi!'
+    output blocks : [ 'Hi!!', '', '' ]
+    
+    original text blocks : [ 'Hel', 'lo,', ' world!' ]
+    search / replace: 'Hel' / 'Hal'
+    output blocks : [ 'Hal', 'lo,', ' world!' ]
+    
+    @param instance  document: The original document
+    @param str       search: The text to search for (regexp)
+    @param str/etree replace: The replacement text or lxml.etree element to
+                                append
+    @param int       bs: See above
+    
+    @return instance The document with replacement applied
+    
+    '''
+    # Enables debug output
+    DEBUG = True
+    
+    newdocument = document
+    
+    # Compile the search regexp
+    searchre = re.compile(search)
+    
+    # Will match against searchels. Searchels is a list that contains last
+    # n text elements found in the document. 1 < n < bs
+    searchels = []
+    
+    for element in newdocument.iter():
+        if element.tag == '{%s}t' % nsprefixes['w']: # t (text) elements
+            if element.text:
+                # Add this element to searchels
+                searchels.append(element)
+                if len(searchels) > bs:
+                    # Is searchels is too long, remove first elements
+                    searchels.pop(0)
+                
+                # Search all combinations, of searchels, starting from
+                # smaller up to bigger ones
+                # l = search lenght
+                # s = search start
+                # e = element IDs to merge
+                found = False
+                for l in range(1,len(searchels)+1):
+                    if found:
+                        break
+                    #print "slen:", l
+                    for s in range(len(searchels)):
+                        if found:
+                            break
+                        if s+l <= len(searchels):
+                            e = range(s,s+l)
+                            #print "elems:", e
+                            txtsearch = ''
+                            for k in e:
+                                txtsearch += searchels[k].text
+                
+                            # Searcs for the text in the whole txtsearch
+                            match = searchre.search(txtsearch)
+                            if match:
+                                found = True
+                                
+                                # I've found something :)
+                                if DEBUG:
+                                    print "Found element!"
+                                    print "Search regexp:", searchre.pattern
+                                    print "Requested replacement:", replace
+                                    print "Matched text:", txtsearch
+                                    print "Matched text (splitted):", map(lambda i:i.text,searchels)
+                                    print "Matched at position:", match.start()
+                                    print "matched in elements:", e
+                                    if isinstance(replace, etree._Element):
+                                        print "Will replace with XML CODE"
+                                    else:
+                                        print "Will replace with:", re.sub(search,replace,txtsearch)
+
+                                curlen = 0
+                                replaced = False
+                                for i in e:
+                                    curlen += len(searchels[i].text)
+                                    if curlen > match.start() and not replaced:
+                                        # The match occurred in THIS element. Puth in the
+                                        # whole replaced text
+                                        if isinstance(replace, etree._Element):
+                                            # If I'm replacing with XML, clear the text in the
+                                            # tag and append the element
+                                            searchels[i].text = re.sub(search,'',txtsearch)
+                                            searchels[i].append(replace)
+                                        else:
+                                            # Replacing with pure text
+                                            searchels[i].text = re.sub(search,replace,txtsearch)
+                                        replaced = True
+                                        if DEBUG:
+                                            print "Replacing in element #:", i
+                                    else:
+                                        # Clears the other text elements
+                                        searchels[i].text = ''
+    return newdocument
 
 def getdocumenttext(document):
     '''Return the raw text of a document, as a list of paragraphs.'''

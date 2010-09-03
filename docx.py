@@ -221,7 +221,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
         @return lxml.etree: Generated XML etree element
     '''
     table = makeelement('tbl')
-    columns = len(contents[0][0])    
+    columns = len(contents[0])
     # Table properties
     tableprops = makeelement('tblPr')
     tablestyle = makeelement('tblStyle',attributes={'val':'ColorfulGrid-Accent1'})

@@ -198,7 +198,7 @@ def heading(headingtext,headinglevel):
     # Return the combined paragraph
     return paragraph   
 
-def table(contents, heading=True):
+def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'):
     '''Get a list of lists, return a table
     
         @param list contents: A list of lists describing contents
@@ -207,6 +207,16 @@ def table(contents, heading=True):
                               all the listed elements will be merged into the cell.
         @param bool heading: Tells whether first line should be threated as heading
                              or not
+        @param list colw: A list of interger. The list must have same element
+                          count of content lines. Specify column Widths in
+                          wunitS
+        @param string cwunit: Unit user for column width:
+                                'pct': fifties of a percent
+                                'dxa': twenties of a point
+                                'nil': no width
+                                'auto': automagically determined
+        @param int tblw: Table width
+        @param int twunit: Unit used for table width. Same as cwunit
         
         @return lxml.etree: Generated XML etree element
     '''
@@ -215,15 +225,15 @@ def table(contents, heading=True):
     # Table properties
     tableprops = makeelement('tblPr')
     tablestyle = makeelement('tblStyle',attributes={'val':'ColorfulGrid-Accent1'})
-    tablewidth = makeelement('tblW',attributes={'w':'0','type':'auto'})
+    tablewidth = makeelement('tblW',attributes={'w':str(tblw),'type':str(twunit)})
     tablelook = makeelement('tblLook',attributes={'val':'0400'})
     for tableproperty in [tablestyle,tablewidth,tablelook]:
         tableprops.append(tableproperty)
     table.append(tableprops)    
     # Table Grid    
     tablegrid = makeelement('tblGrid')
-    for _ in range(columns):
-        tablegrid.append(makeelement('gridCol',attributes={'w':'2390'}))
+    for i in range(columns):
+        tablegrid.append(makeelement('gridCol',attributes={'w':str(colw[i]) if colw else '2390'}))
     table.append(tablegrid)     
     # Heading Row    
     row = makeelement('tr')
@@ -232,11 +242,16 @@ def table(contents, heading=True):
     rowprops.append(cnfStyle)
     row.append(rowprops)
     if heading:
+        i = 0
         for heading in contents[0]:
             cell = makeelement('tc')  
             # Cell properties  
             cellprops = makeelement('tcPr')
-            cellwidth = makeelement('tcW',attributes={'w':'2390','type':'dxa'})
+            if colw:
+                wattr = {'w':str(colw[i]),'type':cwunit}
+            else:
+                wattr = {'w':'0','type':'auto'}
+            cellwidth = makeelement('tcW',attributes=wattr)
             cellstyle = makeelement('shd',attributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
             cellprops.append(cellwidth)
             cellprops.append(cellstyle)
@@ -250,15 +265,21 @@ def table(contents, heading=True):
                 else:
                     cell.append(paragraph(h))
             row.append(cell)
-        table.append(row)            
+            i += 1
+        table.append(row)          
     # Contents Rows
     for contentrow in contents[1 if heading else 0:]:
         row = makeelement('tr')     
+        i = 0
         for content in contentrow:   
             cell = makeelement('tc')
             # Properties
             cellprops = makeelement('tcPr')
-            cellwidth = makeelement('tcW',attributes={'type':'dxa'})
+            if colw:
+                wattr = {'w':str(colw[i]),'type':cwunit}
+            else:
+                wattr = {'w':'0','type':'auto'}
+            cellwidth = makeelement('tcW',attributes=wattr)
             cellprops.append(cellwidth)
             cell.append(cellprops)
             # Paragraph (Content)
@@ -270,6 +291,7 @@ def table(contents, heading=True):
                 else:
                     cell.append(paragraph(c))
             row.append(cell)    
+            i += 1
         table.append(row)   
     return table                 
 

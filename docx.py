@@ -198,7 +198,7 @@ def heading(headingtext,headinglevel):
     # Return the combined paragraph
     return paragraph   
 
-def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'):
+def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto', borders={}):
     '''Get a list of lists, return a table
     
         @param list contents: A list of lists describing contents
@@ -217,6 +217,14 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
                                 'auto': automagically determined
         @param int tblw: Table width
         @param int twunit: Unit used for table width. Same as cwunit
+        @param dict borders: Dictionary defining table border. Supported keys are:
+                             'top', 'left', 'bottom', 'right', 'insideH', 'insideV', 'all'
+                             When specified, the 'all' key has precedence over others.
+                             Each key must define a dict of border attributes:
+                             color: The color of the border, in hex or 'auto'
+                             space: The space, measured in points
+                             sz: The size of the border, in eights of a point
+                             val: The style of the border, see http://www.schemacentral.com/sc/ooxml/t-w_ST_Border.htm
         
         @return lxml.etree: Generated XML etree element
     '''
@@ -226,9 +234,22 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
     tableprops = makeelement('tblPr')
     tablestyle = makeelement('tblStyle',attributes={'val':'ColorfulGrid-Accent1'})
     tablewidth = makeelement('tblW',attributes={'w':str(tblw),'type':str(twunit)})
+    if len(borders.keys()):
+        tableborders = makeelement('tblBorders')
+        for b in ['top', 'left', 'bottom', 'right', 'insideH', 'insideV']:
+            if b in borders.keys() or 'all' in borders.keys():
+                k = 'all' if 'all' in borders.keys() else b
+                attrs = {}
+                for a in borders[k].keys():
+                    attrs[a] = unicode(borders[k][a])
+                borderelem = makeelement(b,attributes=attrs)
+                tableborders.append(borderelem)
+    else:
+        tableborders = None
     tablelook = makeelement('tblLook',attributes={'val':'0400'})
-    for tableproperty in [tablestyle,tablewidth,tablelook]:
-        tableprops.append(tableproperty)
+    for tableproperty in [tablestyle,tableborders,tablewidth,tablelook]:
+        if tableproperty:
+            tableprops.append(tableproperty)
     table.append(tableprops)    
     # Table Grid    
     tablegrid = makeelement('tblGrid')

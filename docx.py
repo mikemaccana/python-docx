@@ -128,7 +128,10 @@ def pagebreak(type='page', orient='portrait'):
 
 def paragraph(paratext,style='BodyText',breakbefore=False):
     '''Make a new paragraph element, containing a run, and some text. 
-    Return the paragraph element.'''
+    Return the paragraph element.
+    
+    If paratext is a list, spawn multiple text elements.
+    '''
     # Make our elements
     paragraph = makeelement('p')
     run = makeelement('r')    
@@ -138,13 +141,19 @@ def paragraph(paratext,style='BodyText',breakbefore=False):
     if breakbefore:
         lastRenderedPageBreak = makeelement('lastRenderedPageBreak')
         run.append(lastRenderedPageBreak)    
-    text = makeelement('t',tagtext=paratext)
+    if type(paratext) == list:
+        text = []
+        for pt in paratext:
+            text.append(makeelement('t',tagtext=pt))
+    else:
+        text = [makeelement('t',tagtext=paratext),]
     pPr = makeelement('pPr')
     pStyle = makeelement('pStyle',attributes={'val':style})
     pPr.append(pStyle)
                 
     # Add the text the run, and the run to the paragraph
-    run.append(text)    
+    for t in text:
+        run.append(t)
     paragraph.append(pPr)    
     paragraph.append(run)    
     # Return the combined paragraph
@@ -230,7 +239,13 @@ def table(contents, heading=True):
             cellprops.append(cellstyle)
             cell.append(cellprops)        
             # Paragraph (Content)
-            cell.append(paragraph(heading))
+            if not type(heading) == list and not type(heading) == tuple:
+                heading = [heading,]
+            for h in heading:
+                if isinstance(h, etree._Element):
+                    cell.append(h)
+                else:
+                    cell.append(paragraph(h))
             row.append(cell)
         table.append(row)            
     # Contents Rows
@@ -244,7 +259,13 @@ def table(contents, heading=True):
             cellprops.append(cellwidth)
             cell.append(cellprops)
             # Paragraph (Content)
-            cell.append(paragraph(content))
+            if not type(content) == list and not type(content) == tuple:
+                content = [content,]
+            for c in content:
+                if isinstance(c, etree._Element):
+                    cell.append(c)
+                else:
+                    cell.append(paragraph(c))
             row.append(cell)    
         table.append(row)   
     return table                 

@@ -202,6 +202,9 @@ def table(contents, heading=True):
     '''Get a list of lists, return a table
     
         @param list contents: A list of lists describing contents
+                              Every item in the list can be a string or a valid
+                              XML element itself. It can also be a list. In that case
+                              all the listed elements will be merged into the cell.
         @param bool heading: Tells whether first line should be threated as heading
                              or not
         

@@ -126,9 +126,14 @@ def pagebreak(type='page', orient='portrait'):
         pagebreak.append(pPr)
     return pagebreak    
 
-def paragraph(paratext,style='BodyText',breakbefore=False):
+def paragraph(paratext,style='BodyText',breakbefore=False,jc='left'):
     '''Make a new paragraph element, containing a run, and some text. 
     Return the paragraph element.
+    
+    @param string jc: Paragraph alignment, possible values:
+                      left, center, right, both (justified), ...
+                      see http://www.schemacentral.com/sc/ooxml/t-w_ST_Jc.html
+                      for a full list
     
     If paratext is a list, spawn multiple text elements.
     '''
@@ -149,7 +154,9 @@ def paragraph(paratext,style='BodyText',breakbefore=False):
         text = [makeelement('t',tagtext=paratext),]
     pPr = makeelement('pPr')
     pStyle = makeelement('pStyle',attributes={'val':style})
+    pJc = makeelement('jc',attributes={'val':jc})
     pPr.append(pStyle)
+    pPr.append(pJc)
                 
     # Add the text the run, and the run to the paragraph
     for t in text:
@@ -198,7 +205,7 @@ def heading(headingtext,headinglevel):
     # Return the combined paragraph
     return paragraph   
 
-def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto', borders={}):
+def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto', borders={}, celstyle=None):
     '''Get a list of lists, return a table
     
         @param list contents: A list of lists describing contents
@@ -225,6 +232,9 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
                              space: The space, measured in points
                              sz: The size of the border, in eights of a point
                              val: The style of the border, see http://www.schemacentral.com/sc/ooxml/t-w_ST_Border.htm
+        @param list celstyle: Specify the style for each colum, list of dicts.
+                              supported keys:
+                              'align': specify the alignment, see paragraph documentation,
         
         @return lxml.etree: Generated XML etree element
     '''
@@ -284,7 +294,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
                 if isinstance(h, etree._Element):
                     cell.append(h)
                 else:
-                    cell.append(paragraph(h))
+                    cell.append(paragraph(h,jc='center'))
             row.append(cell)
             i += 1
         table.append(row)          
@@ -310,7 +320,11 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
                 if isinstance(c, etree._Element):
                     cell.append(c)
                 else:
-                    cell.append(paragraph(c))
+                    if celstyle and 'align' in celstyle[i].keys():
+                        align = celstyle[i]['align']
+                    else:
+                        align = 'left'
+                    cell.append(paragraph(c,jc=align))
             row.append(cell)    
             i += 1
         table.append(row)   

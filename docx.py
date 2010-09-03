@@ -247,7 +247,9 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
     # Table properties
     tableprops = makeelement('tblPr')
     tablestyle = makeelement('tblStyle',attributes={'val':'ColorfulGrid-Accent1'})
+    tableprops.append(tablestyle)
     tablewidth = makeelement('tblW',attributes={'w':str(tblw),'type':str(twunit)})
+    tableprops.append(tablewidth)
     if len(borders.keys()):
         tableborders = makeelement('tblBorders')
         for b in ['top', 'left', 'bottom', 'right', 'insideH', 'insideV']:
@@ -258,12 +260,9 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
                     attrs[a] = unicode(borders[k][a])
                 borderelem = makeelement(b,attributes=attrs)
                 tableborders.append(borderelem)
-    else:
-        tableborders = None
+        tableprops.append(tableborders)
     tablelook = makeelement('tblLook',attributes={'val':'0400'})
-    for tableproperty in [tablestyle,tableborders,tablewidth,tablelook]:
-        if tableproperty:
-            tableprops.append(tableproperty)
+    tableprops.append(tablelook)
     table.append(tableprops)    
     # Table Grid    
     tablegrid = makeelement('tblGrid')

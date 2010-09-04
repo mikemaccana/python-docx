@@ -135,23 +135,30 @@ def paragraph(paratext,style='BodyText',breakbefore=False,jc='left'):
                       see http://www.schemacentral.com/sc/ooxml/t-w_ST_Jc.html
                       for a full list
     
-    If paratext is a list, spawn multiple text elements.
+    If paratext is a list, spawn multiple run/text elements.
+    Support text styles (paratext must then be a list of lists in the form
+    <text> / <style>. Stile is a string containing a combination od 'bui' chars
+    
+    example
+    paratext = [
+        ['some bold text', 'b'],
+        ['some normal text', ''],
+        ['some italic underlined text', 'iu'],
+    ]
+    
     '''
     # Make our elements
     paragraph = makeelement('p')
-    run = makeelement('r')    
     
-    # Insert lastRenderedPageBreak for assistive technologies like
-    # document narrators to know when a page break occurred.
-    if breakbefore:
-        lastRenderedPageBreak = makeelement('lastRenderedPageBreak')
-        run.append(lastRenderedPageBreak)    
     if type(paratext) == list:
         text = []
         for pt in paratext:
-            text.append(makeelement('t',tagtext=pt))
+            if type(pt) == list:
+                text.append([makeelement('t',tagtext=pt[0]), pt[1]])
+            else:
+                text.append([makeelement('t',tagtext=pt), ''])
     else:
-        text = [makeelement('t',tagtext=paratext),]
+        text = [[makeelement('t',tagtext=paratext),''],]
     pPr = makeelement('pPr')
     pStyle = makeelement('pStyle',attributes={'val':style})
     pJc = makeelement('jc',attributes={'val':jc})
@@ -159,10 +166,28 @@ def paragraph(paratext,style='BodyText',breakbefore=False,jc='left'):
     pPr.append(pJc)
                 
     # Add the text the run, and the run to the paragraph
+    paragraph.append(pPr)
     for t in text:
-        run.append(t)
-    paragraph.append(pPr)    
-    paragraph.append(run)    
+        run = makeelement('r')
+        rPr = makeelement('rPr')
+        # Apply styles
+        if t[1].find('b') > -1:
+            b = makeelement('b')
+            rPr.append(b)
+        if t[1].find('u') > -1:
+            u = makeelement('u',attributes={'val':'single'})
+            rPr.append(u)
+        if t[1].find('i') > -1:
+            i = makeelement('i')
+            rPr.append(i)
+        run.append(rPr)
+        # Insert lastRenderedPageBreak for assistive technologies like
+        # document narrators to know when a page break occurred.
+        if breakbefore:
+            lastRenderedPageBreak = makeelement('lastRenderedPageBreak')
+            run.append(lastRenderedPageBreak)
+        run.append(t[0])
+        paragraph.append(run)
     # Return the combined paragraph
     return paragraph
 

@@ -479,6 +479,25 @@ def replace(document,search,replace):
                     element.text = re.sub(search,replace,element.text)
     return newdocument
 
+def clean(document):
+    """ Perform misc cleaning operations on documents.
+        Returns cleaned document.
+    """
+    
+    newdocument = document
+    
+    # Clean empty text and r tags
+    for t in ('t', 'r'):
+        rmlist = []
+        for element in newdocument.iter():
+            if element.tag == '{%s}%s' % (nsprefixes['w'], t):
+                if not element.text and not len(element):
+                    rmlist.append(element)
+        for element in rmlist:
+            element.getparent().remove(element)
+    
+    return newdocument
+
 def advReplace(document,search,replace,bs=3):
     '''Replace all occurences of string with a different string, return updated document
     
@@ -518,7 +537,7 @@ def advReplace(document,search,replace,bs=3):
     
     '''
     # Enables debug output
-    DEBUG = True
+    DEBUG = False
     
     newdocument = document
     

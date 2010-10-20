@@ -28,7 +28,7 @@ Features for making documents include:
 - Section and page breaks
 - Images
 
-<div style="float: right"><img src="screenshot.png"></div>
+<div style="float: right"><img src="http://github.com/mikemaccana/python-docx/blob/master/screenshot.png"></div>
 
 ### Editing documents
 

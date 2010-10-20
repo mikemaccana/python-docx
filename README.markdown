@@ -28,6 +28,8 @@ Features for making documents include:
 - Section and page breaks
 - Images
 
+<div style="float: right"><img src="screenshot.png"></div>
+
 ### Editing documents
 
 Thanks to the awesomeness of the lxml module, we can:
@@ -40,10 +42,10 @@ Thanks to the awesomeness of the lxml module, we can:
 
 # Getting started
 
-## Making a Document
+## Making and Modifying Documents
 
 - Just [download python docx](http://github.com/mikemaccana/python-docx/tarball/master).
-- Use **easy_install** to fetch the **lxml** and **PIL** modules. 
+- Use **pip** or **easy_install** to fetch the **lxml** and **PIL** modules. 
 - Then run: 
 
 <pre>example-makedocument.py</pre>
@@ -63,9 +65,11 @@ If you just want to extract the text from a Word file, run:
 - Egg
 - Markdown conversion support
 
-### We love forks & changes!
+### We love forks, changes and pull requests!
 
-Check out the [HACKING](HACKING.markdown) to add your own changes!
+- Check out the [HACKING](HACKING.markdown) to add your own changes!
+- For this project on github
+- Send a pull request via github and we'll add your changes!
 
 ### Want to talk? Need help?
 

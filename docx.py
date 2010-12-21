@@ -498,6 +498,24 @@ def clean(document):
     
     return newdocument
 
+def findTypeParent(element, tag):
+    """ Finds fist parent of element of the given type
+    
+    @param object element: etree element
+    @param string the tag parent to search for
+    
+    @return object element: the found parent or None when not found
+    """
+    
+    p = element
+    while True:
+        p = p.getparent()
+        if p.tag == tag:
+            return p
+    
+    # Not found
+    return None
+
 def advReplace(document,search,replace,bs=3):
     '''Replace all occurences of string with a different string, return updated document
     
@@ -606,15 +624,19 @@ def advReplace(document,search,replace,bs=3):
                                         # The match occurred in THIS element. Puth in the
                                         # whole replaced text
                                         if isinstance(replace, etree._Element):
-                                            # If I'm replacing with XML, clear the text in the
-                                            # tag and append the element
-                                            searchels[i].text = re.sub(search,'',txtsearch)
-                                            searchels[i].append(replace)
-                                        elif type(replace) == list or type(replace) == tuple:
+                                            # Convert to a list and process it later
+                                            replace = [ replace, ]
+                                        if type(replace) == list or type(replace) == tuple:
                                             # I'm replacing with a list of etree elements
+                                            # clear the text in the tag and append the element after the
+                                            # parent paragraph
+                                            # (because t elements cannot have childs)
+                                            p = findTypeParent(searchels[i], '{%s}p' % nsprefixes['w'])
                                             searchels[i].text = re.sub(search,'',txtsearch)
+                                            insindex = p.getparent().index(p) + 1
                                             for r in replace:
-                                                searchels[i].append(r)
+                                                p.getparent().insert(insindex, r)
+                                                insindex += 1
                                         else:
                                             # Replacing with pure text
                                             searchels[i].text = re.sub(search,replace,txtsearch)

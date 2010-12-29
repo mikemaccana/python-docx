@@ -7,6 +7,7 @@ Part of Python's docx module - http://github.com/mikemaccana/python-docx
 See LICENSE for licensing information.
 '''
 
+import logging
 from lxml import etree
 try:
     from PIL import Image
@@ -18,6 +19,8 @@ import re
 import time
 import os
 from os.path import join
+
+log = logging.getLogger(__name__)
 
 # Record template directory's location which is just 'template' for a docx
 # developer or 'site-packages/docx-template' if you have installed docx
@@ -587,19 +590,19 @@ def advReplace(document,search,replace,bs=3):
                                 
                                 # I've found something :)
                                 if DEBUG:
-                                    print "Found element!"
-                                    print "Search regexp:", searchre.pattern
-                                    print "Requested replacement:", replace
-                                    print "Matched text:", txtsearch
-                                    print "Matched text (splitted):", map(lambda i:i.text,searchels)
-                                    print "Matched at position:", match.start()
-                                    print "matched in elements:", e
+                                    log.debug("Found element!")
+                                    log.debug("Search regexp: %s", searchre.pattern)
+                                    log.debug("Requested replacement: %s", replace)
+                                    log.debug("Matched text: %s", txtsearch)
+                                    log.debug( "Matched text (splitted): %s", map(lambda i:i.text,searchels))
+                                    log.debug("Matched at position: %s", match.start())
+                                    log.debug( "matched in elements: %s", e)
                                     if isinstance(replace, etree._Element):
-                                        print "Will replace with XML CODE"
+                                        log.debug("Will replace with XML CODE")
                                     elif type(replace) == list or type(replace) == tuple:
-                                        print "Will replace with LIST OF ELEMENTS"
+                                        log.debug("Will replace with LIST OF ELEMENTS")
                                     else:
-                                        print "Will replace with:", re.sub(search,replace,txtsearch)
+                                        log.debug("Will replace with:", re.sub(search,replace,txtsearch))
 
                                 curlen = 0
                                 replaced = False
@@ -622,8 +625,7 @@ def advReplace(document,search,replace,bs=3):
                                             # Replacing with pure text
                                             searchels[i].text = re.sub(search,replace,txtsearch)
                                         replaced = True
-                                        if DEBUG:
-                                            print "Replacing in element #:", i
+                                        log.debug("Replacing in element #: %s", i)
                                     else:
                                         # Clears the other text elements
                                         searchels[i].text = ''
@@ -757,7 +759,7 @@ def savedocx(document,coreprops,appprops,contenttypes,websettings,wordrelationsh
                      websettings:'word/webSettings.xml',
                      wordrelationships:'word/_rels/document.xml.rels'}
     for tree in treesandfiles:
-        print 'Saving: '+treesandfiles[tree]    
+        log.info('Saving: '+treesandfiles[tree]    )
         treestring = etree.tostring(tree, pretty_print=True)
         docxfile.writestr(treesandfiles[tree],treestring)
     
@@ -769,9 +771,9 @@ def savedocx(document,coreprops,appprops,contenttypes,websettings,wordrelationsh
                 continue
             templatefile = join(dirpath,filename)
             archivename = templatefile[2:]
-            print 'Saving: '+archivename          
+            log.info('Saving: %s', archivename)
             docxfile.write(templatefile, archivename)
-    print 'Saved new file to: '+docxfilename
+    log.info('Saved new file to: %s', docxfilename)
     os.chdir(prev_dir) # restore previous working dir
     return
     

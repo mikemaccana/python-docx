@@ -774,6 +774,7 @@ def savedocx(document,coreprops,appprops,contenttypes,websettings,wordrelationsh
             log.info('Saving: %s', archivename)
             docxfile.write(templatefile, archivename)
     log.info('Saved new file to: %r', output)
+    docxfile.close()
     os.chdir(prev_dir) # restore previous working dir
     return
 

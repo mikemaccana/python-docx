@@ -76,7 +76,7 @@ def makeelement(tagname,tagtext=None,nsprefix='w',attributes=None,attrnsprefix=N
     '''Create an element & return it'''
     # Deal with list of nsprefix by making namespacemap
     namespacemap = None
-    if type(nsprefix) == list:
+    if isinstance(nsprefix, list):
         namespacemap = {}
         for prefix in nsprefix:
             namespacemap[prefix] = nsprefixes[prefix]
@@ -147,19 +147,19 @@ def paragraph(paratext,style='BodyText',breakbefore=False,jc='left'):
 
     example
     paratext = [
-        ['some bold text', 'b'],
-        ['some normal text', ''],
-        ['some italic underlined text', 'iu'],
+        ('some bold text', 'b'),
+        ('some normal text', ''),
+        ('some italic underlined text', 'iu'),
     ]
 
     '''
     # Make our elements
     paragraph = makeelement('p')
 
-    if type(paratext) == list:
+    if isinstance(paratext, list):
         text = []
         for pt in paratext:
-            if type(pt) == list:
+            if isinstance(pt, (list,tuple)):
                 text.append([makeelement('t',tagtext=pt[0]), pt[1]])
             else:
                 text.append([makeelement('t',tagtext=pt), ''])
@@ -322,7 +322,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
             cellprops.append(cellstyle)
             cell.append(cellprops)
             # Paragraph (Content)
-            if not type(heading) == list and not type(heading) == tuple:
+            if not isinstance(heading, (list, tuple)):
                 heading = [heading,]
             for h in heading:
                 if isinstance(h, etree._Element):
@@ -348,7 +348,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
             cellprops.append(cellwidth)
             cell.append(cellprops)
             # Paragraph (Content)
-            if not type(content) == list and not type(content) == tuple:
+            if not isinstance(content, (list, tuple)):
                 content = [content,]
             for c in content:
                 if isinstance(c, etree._Element):
@@ -599,7 +599,7 @@ def advReplace(document,search,replace,bs=3):
                                     log.debug( "matched in elements: %s", e)
                                     if isinstance(replace, etree._Element):
                                         log.debug("Will replace with XML CODE")
-                                    elif type(replace) == list or type(replace) == tuple:
+                                    elif isinstance(replace (list, tuple)):
                                         log.debug("Will replace with LIST OF ELEMENTS")
                                     else:
                                         log.debug("Will replace with:", re.sub(search,replace,txtsearch))
@@ -616,7 +616,7 @@ def advReplace(document,search,replace,bs=3):
                                             # tag and append the element
                                             searchels[i].text = re.sub(search,'',txtsearch)
                                             searchels[i].append(replace)
-                                        elif type(replace) == list or type(replace) == tuple:
+                                        elif isinstance(replace, (list,tuple)):
                                             # I'm replacing with a list of etree elements
                                             searchels[i].text = re.sub(search,'',txtsearch)
                                             for r in replace:

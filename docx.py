@@ -742,10 +742,10 @@ def wordrelationships(relationshiplist):
         count += 1
     return relationships
 
-def savedocx(document,coreprops,appprops,contenttypes,websettings,wordrelationships,docxfilename):
+def savedocx(document,coreprops,appprops,contenttypes,websettings,wordrelationships,output):
     '''Save a modified document'''
     assert os.path.isdir(template_dir)
-    docxfile = zipfile.ZipFile(docxfilename,mode='w',compression=zipfile.ZIP_DEFLATED)
+    docxfile = zipfile.ZipFile(output,mode='w',compression=zipfile.ZIP_DEFLATED)
 
     # Move to the template data path
     prev_dir = os.path.abspath('.') # save previous working dir
@@ -773,7 +773,7 @@ def savedocx(document,coreprops,appprops,contenttypes,websettings,wordrelationsh
             archivename = templatefile[2:]
             log.info('Saving: %s', archivename)
             docxfile.write(templatefile, archivename)
-    log.info('Saved new file to: %s', docxfilename)
+    log.info('Saved new file to: %r', output)
     os.chdir(prev_dir) # restore previous working dir
     return
 

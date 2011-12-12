@@ -317,7 +317,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
             else:
                 wattr = {'w':'0','type':'auto'}
             cellwidth = makeelement('tcW',attributes=wattr)
-            cellstyle = makeelement('shd',attributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
+            cellstyle = makeelement('shd',attributes={'val':'clear','color':'auto','fill':'FFFFFF','themeFill':'text2','themeFillTint':'99'})
             cellprops.append(cellwidth)
             cellprops.append(cellstyle)
             cell.append(cellprops)

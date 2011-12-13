@@ -277,7 +277,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
     columns = len(contents[0])
     # Table properties
     tableprops = makeelement('tblPr')
-    tablestyle = makeelement('tblStyle',attributes={'val':'ColorfulGrid-Accent1'})
+    tablestyle = makeelement('tblStyle',attributes={'val':''})
     tableprops.append(tablestyle)
     tablewidth = makeelement('tblW',attributes={'w':str(tblw),'type':str(twunit)})
     tableprops.append(tablewidth)

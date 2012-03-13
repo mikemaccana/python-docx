@@ -280,7 +280,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
     columns = len(contents[0])
     # Table properties
     tableprops = makeelement('tblPr')
-    tablestyle = makeelement('tblStyle',attributes={'val':'ColorfulGrid-Accent1'})
+    tablestyle = makeelement('tblStyle',attributes={'val':''})
     tableprops.append(tablestyle)
     tablewidth = makeelement('tblW',attributes={'w':str(tblw),'type':str(twunit)})
     tableprops.append(tablewidth)
@@ -320,7 +320,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
             else:
                 wattr = {'w':'0','type':'auto'}
             cellwidth = makeelement('tcW',attributes=wattr)
-            cellstyle = makeelement('shd',attributes={'val':'clear','color':'auto','fill':'548DD4','themeFill':'text2','themeFillTint':'99'})
+            cellstyle = makeelement('shd',attributes={'val':'clear','color':'auto','fill':'FFFFFF','themeFill':'text2','themeFillTint':'99'})
             cellprops.append(cellwidth)
             cellprops.append(cellstyle)
             cell.append(cellprops)
@@ -524,6 +524,86 @@ def findTypeParent(element, tag):
     
     # Not found
     return None
+
+def AdvSearch(document, search, bs=3):
+    '''Return set of all regex matches
+
+    This is an advanced version of python-docx.search() that takes into
+    account blocks of <bs> elements at a time.
+
+    What it does:
+    It searches the entire document body for text blocks.
+    Since the text to search could be spawned across multiple text blocks,
+    we need to adopt some sort of algorithm to handle this situation.
+    The smaller matching group of blocks (up to bs) is then adopted.
+    If the matching group has more than one block, blocks other than first
+    are cleared and all the replacement text is put on first block.
+
+    Examples:
+    original text blocks : [ 'Hel', 'lo,', ' world!' ]
+    search : 'Hello,'
+    output blocks : [ 'Hello,' ]
+
+    original text blocks : [ 'Hel', 'lo', ' __', 'name', '__!' ]
+    search : '(__[a-z]+__)'
+    output blocks : [ '__name__' ]
+
+    @param instance  document: The original document
+    @param str       search: The text to search for (regexp)
+                          append, or a list of etree elements
+    @param int       bs: See above
+
+    @return set      All occurences of search string
+
+    '''
+
+    # Compile the search regexp
+    searchre = re.compile(search)
+
+    matches = []
+
+    # Will match against searchels. Searchels is a list that contains last
+    # n text elements found in the document. 1 < n < bs
+    searchels = []
+
+    for element in document.iter():
+        if element.tag == '{%s}t' % nsprefixes['w']: # t (text) elements
+            if element.text:
+                # Add this element to searchels
+                searchels.append(element)
+                if len(searchels) > bs:
+                    # Is searchels is too long, remove first elements
+                    searchels.pop(0)
+
+                # Search all combinations, of searchels, starting from
+                # smaller up to bigger ones
+                # l = search lenght
+                # s = search start
+                # e = element IDs to merge
+                found = False
+                for l in range(1,len(searchels)+1):
+                    if found:
+                        break
+                    for s in range(len(searchels)):
+                        if found:
+                            break
+                        if s+l <= len(searchels):
+                            e = range(s,s+l)
+                            txtsearch = ''
+                            for k in e:
+                                txtsearch += searchels[k].text
+
+                            # Searcs for the text in the whole txtsearch
+                            match = searchre.search(txtsearch)
+                            if match:
+                                matches.append(match.group())
+                                found = True
+
+    return set(matches)
+
+
+
+
 
 def advReplace(document,search,replace,bs=3):
     '''Replace all occurences of string with a different string, return updated document

@@ -8,10 +8,7 @@ See LICENSE for licensing information.
 '''
 
 import logging
-try:
-    from xml.etree import ElementTree as etree
-except ImportError:
-    from lxml import etree
+from lxml import etree
 try:
     from PIL import Image
 except ImportError:

@@ -752,6 +752,8 @@ def getdocumenttext(document):
             if element.tag == '{'+nsprefixes['w']+'}t':
                 if element.text:
                     paratext = paratext+element.text
+            elif element.tag == '{'+nsprefixes['w']+'}tab':
+                paratext = paratext + '\t'
         # Add our completed paragraph text to the list of paragraph text
         if not len(paratext) == 0:
             paratextlist.append(paratext)

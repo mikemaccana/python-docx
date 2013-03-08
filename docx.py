@@ -1,11 +1,12 @@
 #!/usr/bin/env python2.6
 # -*- coding: utf-8 -*-
-'''
-Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and 'Office OpenXML' by Microsoft)
+"""
+Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and
+'Office OpenXML' by Microsoft)
 
 Part of Python's docx module - http://github.com/mikemaccana/python-docx
 See LICENSE for licensing information.
-'''
+"""
 
 import logging
 from lxml import etree
@@ -24,42 +25,42 @@ log = logging.getLogger(__name__)
 
 # Record template directory's location which is just 'template' for a docx
 # developer or 'site-packages/docx-template' if you have installed docx
-template_dir = join(os.path.dirname(__file__), 'docx-template') # installed
+template_dir = join(os.path.dirname(__file__), 'docx-template')  # installed
 if not os.path.isdir(template_dir):
-    template_dir = join(os.path.dirname(__file__), 'template') # dev
+    template_dir = join(os.path.dirname(__file__), 'template')  # dev
 
 # All Word prefixes / namespace matches used in document.xml & core.xml.
 # LXML doesn't actually use prefixes (just the real namespace) , but these
 # make it easier to copy Word output more easily.
-nsprefixes =\
-    { 'mo'  : 'http://schemas.microsoft.com/office/mac/office/2008/main'
-    , 'o'   : 'urn:schemas-microsoft-com:office:office'
-    , 've'  : 'http://schemas.openxmlformats.org/markup-compatibility/2006'
-      # Text Content
-    , 'w'   : 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
-    , 'w10' : 'urn:schemas-microsoft-com:office:word'
-    , 'wne' : 'http://schemas.microsoft.com/office/word/2006/wordml'
-      # Drawing
-    , 'a'   : 'http://schemas.openxmlformats.org/drawingml/2006/main'
-    , 'm'   : 'http://schemas.openxmlformats.org/officeDocument/2006/math'
-    , 'mv'  : 'urn:schemas-microsoft-com:mac:vml'
-    , 'pic' : 'http://schemas.openxmlformats.org/drawingml/2006/picture'
-    , 'v'   : 'urn:schemas-microsoft-com:vml'
-    , 'wp'  : 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing'
-      # Properties (core and extended)
-    , 'cp'  : 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties'
-    , 'dc'  : 'http://purl.org/dc/elements/1.1/'
-    , 'ep'  : 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties'
-    , 'xsi' : 'http://www.w3.org/2001/XMLSchema-instance'
-      # Content Types (we're just making up our own namespaces here to save time)
-    , 'ct'  : 'http://schemas.openxmlformats.org/package/2006/content-types'
-      # Package Relationships (we're just making up our own namespaces here to save time)
-    , 'r'   : 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-    , 'pr'  : 'http://schemas.openxmlformats.org/package/2006/relationships'
-      # Dublin Core document properties
-    , 'dcmitype' :'http://purl.org/dc/dcmitype/'
-    , 'dcterms'  :'http://purl.org/dc/terms/'
-    }
+nsprefixes = {
+    'mo': 'http://schemas.microsoft.com/office/mac/office/2008/main',
+    'o':  'urn:schemas-microsoft-com:office:office',
+    've': 'http://schemas.openxmlformats.org/markup-compatibility/2006',
+    # Text Content
+    'w':   'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+    'w10': 'urn:schemas-microsoft-com:office:word',
+    'wne': 'http://schemas.microsoft.com/office/word/2006/wordml',
+    # Drawing
+    'a':   'http://schemas.openxmlformats.org/drawingml/2006/main',
+    'm':   'http://schemas.openxmlformats.org/officeDocument/2006/math',
+    'mv':  'urn:schemas-microsoft-com:mac:vml',
+    'pic': 'http://schemas.openxmlformats.org/drawingml/2006/picture',
+    'v':   'urn:schemas-microsoft-com:vml',
+    'wp':  'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
+    # Properties (core and extended)
+    'cp':  'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
+    'dc':  'http://purl.org/dc/elements/1.1/',
+    'ep':  'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties',
+    'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+    # Content Types
+    'ct':  'http://schemas.openxmlformats.org/package/2006/content-types',
+    # Package Relationships
+    'r':   'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+    'pr':  'http://schemas.openxmlformats.org/package/2006/relationships',
+    # Dublin Core document properties
+    'dcmitype': 'http://purl.org/dc/dcmitype/',
+    'dcterms':  'http://purl.org/dc/terms/'}
+
 
 def opendocx(file):
     '''Open a docx file, return a document XML tree'''
@@ -68,10 +69,12 @@ def opendocx(file):
     document = etree.fromstring(xmlcontent)
     return document
 
+
 def newdocument():
     document = makeelement('document')
     document.append(makeelement('body'))
     return document
+
 
 def makeelement(tagname, tagtext=None, nsprefix='w', attributes=None, attrnsprefix=None):
     '''Create an element & return it'''
@@ -81,7 +84,8 @@ def makeelement(tagname, tagtext=None, nsprefix='w', attributes=None, attrnspref
         namespacemap = {}
         for prefix in nsprefix:
             namespacemap[prefix] = nsprefixes[prefix]
-        nsprefix = nsprefix[0] # FIXME: rest of code below expects a single prefix
+        # FIXME: rest of code below expects a single prefix
+        nsprefix = nsprefix[0]
     if nsprefix:
         namespace = '{'+nsprefixes[nsprefix]+'}'
     else:
@@ -100,12 +104,13 @@ def makeelement(tagname, tagtext=None, nsprefix='w', attributes=None, attrnspref
                 attributenamespace = ''
         else:
             attributenamespace = '{'+nsprefixes[attrnsprefix]+'}'
-            
+
         for tagattribute in attributes:
             newelement.set(attributenamespace+tagattribute, attributes[tagattribute])
     if tagtext:
         newelement.text = tagtext
     return newelement
+
 
 def pagebreak(type='page', orient='portrait'):
     '''Insert a break, default 'page'.
@@ -114,49 +119,52 @@ def pagebreak(type='page', orient='portrait'):
     # Need to enumerate different types of page breaks.
     validtypes = ['page', 'section']
     if type not in validtypes:
-        raise ValueError('Page break style "%s" not implemented. Valid styles: %s.' % (type, validtypes))
+        tmpl = 'Page break style "%s" not implemented. Valid styles: %s.'
+        raise ValueError(tmpl % (type, validtypes))
     pagebreak = makeelement('p')
     if type == 'page':
         run = makeelement('r')
-        br = makeelement('br', attributes={'type':type})
+        br = makeelement('br', attributes={'type': type})
         run.append(br)
         pagebreak.append(run)
     elif type == 'section':
         pPr = makeelement('pPr')
         sectPr = makeelement('sectPr')
         if orient == 'portrait':
-            pgSz = makeelement('pgSz', attributes={'w':'12240', 'h':'15840'})
+            pgSz = makeelement('pgSz', attributes={'w': '12240', 'h': '15840'})
         elif orient == 'landscape':
-            pgSz = makeelement('pgSz', attributes={'h':'12240', 'w':'15840', 'orient':'landscape'})
+            pgSz = makeelement('pgSz', attributes={'h': '12240', 'w': '15840',
+                                                   'orient': 'landscape'})
         sectPr.append(pgSz)
         pPr.append(sectPr)
         pagebreak.append(pPr)
     return pagebreak
 
+
 def paragraph(paratext, style='BodyText', breakbefore=False, jc='left'):
     '''Make a new paragraph element, containing a run, and some text.
     Return the paragraph element.
-    
+
     @param string jc: Paragraph alignment, possible values:
                       left, center, right, both (justified), ...
                       see http://www.schemacentral.com/sc/ooxml/t-w_ST_Jc.html
                       for a full list
-    
+
     If paratext is a list, spawn multiple run/text elements.
     Support text styles (paratext must then be a list of lists in the form
     <text> / <style>. Stile is a string containing a combination od 'bui' chars
-    
+
     example
     paratext =\
         [ ('some bold text', 'b')
         , ('some normal text', '')
         , ('some italic underlined text', 'iu')
         ]
-    
+
     '''
     # Make our elements
     paragraph = makeelement('p')
-    
+
     if isinstance(paratext, list):
         text = []
         for pt in paratext:
@@ -167,11 +175,11 @@ def paragraph(paratext, style='BodyText', breakbefore=False, jc='left'):
     else:
         text = [[makeelement('t', tagtext=paratext), ''], ]
     pPr = makeelement('pPr')
-    pStyle = makeelement('pStyle', attributes={'val':style})
-    pJc = makeelement('jc', attributes={'val':jc})
+    pStyle = makeelement('pStyle', attributes={'val': style})
+    pJc = makeelement('jc', attributes={'val': jc})
     pPr.append(pStyle)
     pPr.append(pJc)
-    
+
     # Add the text the run, and the run to the paragraph
     paragraph.append(pPr)
     for t in text:
@@ -182,7 +190,7 @@ def paragraph(paratext, style='BodyText', breakbefore=False, jc='left'):
             b = makeelement('b')
             rPr.append(b)
         if t[1].find('u') > -1:
-            u = makeelement('u', attributes={'val':'single'})
+            u = makeelement('u', attributes={'val': 'single'})
             rPr.append(u)
         if t[1].find('i') > -1:
             i = makeelement('i')
@@ -198,35 +206,47 @@ def paragraph(paratext, style='BodyText', breakbefore=False, jc='left'):
     # Return the combined paragraph
     return paragraph
 
+
 def contenttypes():
-    # FIXME - doesn't quite work...read from string as temp hack...
-    #types = makeelement('Types', nsprefix='ct')
-    types = etree.fromstring('<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"></Types>')
-    parts =\
-        { '/word/theme/theme1.xml' : 'application/vnd.openxmlformats-officedocument.theme+xml'
-        , '/word/fontTable.xml'    : 'application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml'
-        , '/docProps/core.xml'     : 'application/vnd.openxmlformats-package.core-properties+xml'
-        , '/docProps/app.xml'      : 'application/vnd.openxmlformats-officedocument.extended-properties+xml'
-        , '/word/document.xml'     : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'
-        , '/word/settings.xml'     : 'application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml'
-        , '/word/numbering.xml'    : 'application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml'
-        , '/word/styles.xml'       : 'application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml'
-        , '/word/webSettings.xml'  : 'application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml'
-        }
+    types = etree.fromstring(
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/conten'
+        't-types"></Types>')
+    parts = {
+        '/word/theme/theme1.xml': 'application/vnd.openxmlformats-officedocu'
+                                  'ment.theme+xml',
+        '/word/fontTable.xml':    'application/vnd.openxmlformats-officedocu'
+                                  'ment.wordprocessingml.fontTable+xml',
+        '/docProps/core.xml':     'application/vnd.openxmlformats-package.co'
+                                  're-properties+xml',
+        '/docProps/app.xml':      'application/vnd.openxmlformats-officedocu'
+                                  'ment.extended-properties+xml',
+        '/word/document.xml':     'application/vnd.openxmlformats-officedocu'
+                                  'ment.wordprocessingml.document.main+xml',
+        '/word/settings.xml':     'application/vnd.openxmlformats-officedocu'
+                                  'ment.wordprocessingml.settings+xml',
+        '/word/numbering.xml':    'application/vnd.openxmlformats-officedocu'
+                                  'ment.wordprocessingml.numbering+xml',
+        '/word/styles.xml':       'application/vnd.openxmlformats-officedocu'
+                                  'ment.wordprocessingml.styles+xml',
+        '/word/webSettings.xml':  'application/vnd.openxmlformats-officedocu'
+                                  'ment.wordprocessingml.webSettings+xml'}
     for part in parts:
-        types.append(makeelement('Override', nsprefix=None, attributes={'PartName':part, 'ContentType':parts[part]}))
+        types.append(makeelement('Override', nsprefix=None,
+                                 attributes={'PartName': part,
+                                             'ContentType': parts[part]}))
     # Add support for filetypes
-    filetypes =\
-        { 'gif'  : 'image/gif'
-        , 'jpeg' : 'image/jpeg'
-        , 'jpg'  : 'image/jpeg'
-        , 'png'  : 'image/png'
-        , 'rels' : 'application/vnd.openxmlformats-package.relationships+xml'
-        , 'xml'  : 'application/xml'
-        }
+    filetypes = {'gif':  'image/gif',
+                 'jpeg': 'image/jpeg',
+                 'jpg':  'image/jpeg',
+                 'png':  'image/png',
+                 'rels': 'application/vnd.openxmlformats-package.relationships+xml',
+                 'xml':  'application/xml'}
     for extension in filetypes:
-        types.append(makeelement('Default', nsprefix=None, attributes={'Extension':extension, 'ContentType':filetypes[extension]}))
+        types.append(makeelement('Default', nsprefix=None,
+                                 attributes={'Extension': extension,
+                                             'ContentType': filetypes[extension]}))
     return types
+
 
 def heading(headingtext, headinglevel, lang='en'):
     '''Make a new heading, return the heading element'''
@@ -234,7 +254,7 @@ def heading(headingtext, headinglevel, lang='en'):
     # Make our elements
     paragraph = makeelement('p')
     pr = makeelement('pPr')
-    pStyle = makeelement('pStyle', attributes={'val':lmap[lang]+str(headinglevel)})
+    pStyle = makeelement('pStyle', attributes={'val': lmap[lang]+str(headinglevel)})
     run = makeelement('r')
     text = makeelement('t', tagtext=headingtext)
     # Add the text the run, and the run to the paragraph
@@ -245,46 +265,52 @@ def heading(headingtext, headinglevel, lang='en'):
     # Return the combined paragraph
     return paragraph
 
+
 def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto', borders={}, celstyle=None):
-    '''Get a list of lists, return a table
-    
-        @param list contents: A list of lists describing contents
-                              Every item in the list can be a string or a valid
-                              XML element itself. It can also be a list. In that case
-                              all the listed elements will be merged into the cell.
-        @param bool heading: Tells whether first line should be threated as heading
-                             or not
-        @param list colw: A list of interger. The list must have same element
-                          count of content lines. Specify column Widths in
-                          wunitS
-        @param string cwunit: Unit user for column width:
-                                'pct': fifties of a percent
-                                'dxa': twenties of a point
-                                'nil': no width
-                                'auto': automagically determined
-        @param int tblw: Table width
-        @param int twunit: Unit used for table width. Same as cwunit
-        @param dict borders: Dictionary defining table border. Supported keys are:
-                             'top', 'left', 'bottom', 'right', 'insideH', 'insideV', 'all'
-                             When specified, the 'all' key has precedence over others.
-                             Each key must define a dict of border attributes:
-                             color: The color of the border, in hex or 'auto'
-                             space: The space, measured in points
-                             sz: The size of the border, in eights of a point
-                             val: The style of the border, see http://www.schemacentral.com/sc/ooxml/t-w_ST_Border.htm
-        @param list celstyle: Specify the style for each colum, list of dicts.
-                              supported keys:
-                              'align': specify the alignment, see paragraph documentation.
-    
-        @return lxml.etree: Generated XML etree element
-    '''
+    """
+    Return a table element based on specified parameters
+
+    @param list contents: A list of lists describing contents. Every item in
+                          the list can be a string or a valid XML element
+                          itself. It can also be a list. In that case all the
+                          listed elements will be merged into the cell.
+    @param bool heading:  Tells whether first line should be treated as
+                          heading or not
+    @param list colw:     list of integer column widths specified in wunitS.
+    @param str  cwunit:   Unit used for column width:
+                            'pct'  : fiftieths of a percent
+                            'dxa'  : twentieths of a point
+                            'nil'  : no width
+                            'auto' : automagically determined
+    @param int  tblw:     Table width
+    @param int  twunit:   Unit used for table width. Same possible values as
+                          cwunit.
+    @param dict borders:  Dictionary defining table border. Supported keys
+                          are: 'top', 'left', 'bottom', 'right',
+                          'insideH', 'insideV', 'all'.
+                          When specified, the 'all' key has precedence over
+                          others. Each key must define a dict of border
+                          attributes:
+                            color : The color of the border, in hex or
+                                    'auto'
+                            space : The space, measured in points
+                            sz    : The size of the border, in eighths of
+                                    a point
+                            val   : The style of the border, see
+                http://www.schemacentral.com/sc/ooxml/t-w_ST_Border.htm
+    @param list celstyle: Specify the style for each colum, list of dicts.
+                          supported keys:
+                          'align' : specify the alignment, see paragraph
+                                    documentation.
+    @return lxml.etree:   Generated XML etree element
+    """
     table = makeelement('tbl')
     columns = len(contents[0])
     # Table properties
     tableprops = makeelement('tblPr')
-    tablestyle = makeelement('tblStyle', attributes={'val':''})
+    tablestyle = makeelement('tblStyle', attributes={'val': ''})
     tableprops.append(tablestyle)
-    tablewidth = makeelement('tblW', attributes={'w':str(tblw), 'type':str(twunit)})
+    tablewidth = makeelement('tblW', attributes={'w': str(tblw), 'type': str(twunit)})
     tableprops.append(tablewidth)
     if len(borders.keys()):
         tableborders = makeelement('tblBorders')
@@ -297,18 +323,18 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
                 borderelem = makeelement(b, attributes=attrs)
                 tableborders.append(borderelem)
         tableprops.append(tableborders)
-    tablelook = makeelement('tblLook', attributes={'val':'0400'})
+    tablelook = makeelement('tblLook', attributes={'val': '0400'})
     tableprops.append(tablelook)
     table.append(tableprops)
     # Table Grid
     tablegrid = makeelement('tblGrid')
     for i in range(columns):
-        tablegrid.append(makeelement('gridCol', attributes={'w':str(colw[i]) if colw else '2390'}))
+        tablegrid.append(makeelement('gridCol', attributes={'w': str(colw[i]) if colw else '2390'}))
     table.append(tablegrid)
     # Heading Row
     row = makeelement('tr')
     rowprops = makeelement('trPr')
-    cnfStyle = makeelement('cnfStyle', attributes={'val':'000000100000'})
+    cnfStyle = makeelement('cnfStyle', attributes={'val': '000000100000'})
     rowprops.append(cnfStyle)
     row.append(rowprops)
     if heading:
@@ -318,11 +344,15 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
             # Cell properties
             cellprops = makeelement('tcPr')
             if colw:
-                wattr = {'w':str(colw[i]), 'type':cwunit}
+                wattr = {'w': str(colw[i]), 'type': cwunit}
             else:
-                wattr = {'w':'0', 'type':'auto'}
+                wattr = {'w': '0', 'type': 'auto'}
             cellwidth = makeelement('tcW', attributes=wattr)
-            cellstyle = makeelement('shd', attributes={'val':'clear', 'color':'auto', 'fill':'FFFFFF', 'themeFill':'text2', 'themeFillTint':'99'})
+            cellstyle = makeelement('shd', attributes={'val': 'clear',
+                                                       'color': 'auto',
+                                                       'fill': 'FFFFFF',
+                                                       'themeFill': 'text2',
+                                                       'themeFillTint': '99'})
             cellprops.append(cellwidth)
             cellprops.append(cellstyle)
             cell.append(cellprops)
@@ -346,9 +376,9 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
             # Properties
             cellprops = makeelement('tcPr')
             if colw:
-                wattr = {'w':str(colw[i]), 'type':cwunit}
+                wattr = {'w': str(colw[i]), 'type': cwunit}
             else:
-                wattr = {'w':'0', 'type':'auto'}
+                wattr = {'w': '0', 'type': 'auto'}
             cellwidth = makeelement('tcW', attributes=wattr)
             cellprops.append(cellwidth)
             cell.append(cellprops)
@@ -369,6 +399,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0, twunit='auto'
         table.append(row)
     return table
 
+
 def picture(relationshiplist, picname, picdescription, pixelwidth=None, pixelheight=None, nochangeaspect=True, nochangearrowheads=True):
     '''Take a relationshiplist, picture file name, and return a paragraph containing the image
     and an updated relationshiplist'''
@@ -380,79 +411,86 @@ def picture(relationshiplist, picname, picdescription, pixelwidth=None, pixelhei
     if not os.path.isdir(media_dir):
         os.mkdir(media_dir)
     shutil.copyfile(picname, join(media_dir, picname))
-    
+
     # Check if the user has specified a size
     if not pixelwidth or not pixelheight:
         # If not, get info from the picture itself
         pixelwidth, pixelheight = Image.open(picname).size[0:2]
-    
+
     # OpenXML measures on-screen objects in English Metric Units
     # 1cm = 36000 EMUs
     emuperpixel = 12667
     width = str(pixelwidth * emuperpixel)
     height = str(pixelheight * emuperpixel)
-    
+
     # Set relationship ID to the first available
     picid = '2'
     picrelid = 'rId'+str(len(relationshiplist)+1)
     relationshiplist.append([
         'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image',
         'media/'+picname])
-    
+
     # There are 3 main elements inside a picture
     # 1. The Blipfill - specifies how the image fills the picture area (stretch, tile, etc.)
     blipfill = makeelement('blipFill', nsprefix='pic')
-    blipfill.append(makeelement('blip', nsprefix='a', attrnsprefix='r', attributes={'embed':picrelid}))
+    blipfill.append(makeelement('blip', nsprefix='a', attrnsprefix='r',
+                    attributes={'embed': picrelid}))
     stretch = makeelement('stretch', nsprefix='a')
     stretch.append(makeelement('fillRect', nsprefix='a'))
     blipfill.append(makeelement('srcRect', nsprefix='a'))
     blipfill.append(stretch)
-    
+
     # 2. The non visual picture properties
     nvpicpr = makeelement('nvPicPr', nsprefix='pic')
     cnvpr = makeelement('cNvPr', nsprefix='pic',
-                        attributes={'id':'0', 'name':'Picture 1', 'descr':picname})
+                        attributes={'id': '0', 'name': 'Picture 1', 'descr': picname})
     nvpicpr.append(cnvpr)
     cnvpicpr = makeelement('cNvPicPr', nsprefix='pic')
     cnvpicpr.append(makeelement('picLocks', nsprefix='a',
-                    attributes={'noChangeAspect':str(int(nochangeaspect)),
-                    'noChangeArrowheads':str(int(nochangearrowheads))}))
+                    attributes={'noChangeAspect': str(int(nochangeaspect)),
+                                'noChangeArrowheads': str(int(nochangearrowheads))}))
     nvpicpr.append(cnvpicpr)
-    
+
     # 3. The Shape properties
-    sppr = makeelement('spPr', nsprefix='pic', attributes={'bwMode':'auto'})
+    sppr = makeelement('spPr', nsprefix='pic', attributes={'bwMode': 'auto'})
     xfrm = makeelement('xfrm', nsprefix='a')
-    xfrm.append(makeelement('off', nsprefix='a', attributes={'x':'0', 'y':'0'}))
-    xfrm.append(makeelement('ext', nsprefix='a', attributes={'cx':width, 'cy':height}))
-    prstgeom = makeelement('prstGeom', nsprefix='a', attributes={'prst':'rect'})
+    xfrm.append(makeelement('off', nsprefix='a', attributes={'x': '0', 'y': '0'}))
+    xfrm.append(makeelement('ext', nsprefix='a', attributes={'cx': width, 'cy': height}))
+    prstgeom = makeelement('prstGeom', nsprefix='a', attributes={'prst': 'rect'})
     prstgeom.append(makeelement('avLst', nsprefix='a'))
     sppr.append(xfrm)
     sppr.append(prstgeom)
-    
+
     # Add our 3 parts to the picture element
     pic = makeelement('pic', nsprefix='pic')
     pic.append(nvpicpr)
     pic.append(blipfill)
     pic.append(sppr)
-    
+
     # Now make the supporting elements
     # The following sequence is just: make element, then add its children
     graphicdata = makeelement('graphicData', nsprefix='a',
-        attributes={'uri':'http://schemas.openxmlformats.org/drawingml/2006/picture'})
+                              attributes={'uri': 'http://schemas.openxmlforma'
+                                                 'ts.org/drawingml/2006/picture'})
     graphicdata.append(pic)
     graphic = makeelement('graphic', nsprefix='a')
     graphic.append(graphicdata)
-    
-    framelocks = makeelement('graphicFrameLocks', nsprefix='a', attributes={'noChangeAspect':'1'})
+
+    framelocks = makeelement('graphicFrameLocks', nsprefix='a',
+                             attributes={'noChangeAspect': '1'})
     framepr = makeelement('cNvGraphicFramePr', nsprefix='wp')
     framepr.append(framelocks)
     docpr = makeelement('docPr', nsprefix='wp',
-        attributes={'id':picid, 'name':'Picture 1', 'descr':picdescription})
+                        attributes={'id': picid, 'name': 'Picture 1',
+                                    'descr': picdescription})
     effectextent = makeelement('effectExtent', nsprefix='wp',
-        attributes={'l':'25400', 't':'0', 'r':'0', 'b':'0'})
-    extent = makeelement('extent', nsprefix='wp', attributes={'cx':width, 'cy':height})
-    inline = makeelement('inline',
-        attributes={'distT':"0", 'distB':"0", 'distL':"0", 'distR':"0"}, nsprefix='wp')
+                               attributes={'l': '25400', 't': '0', 'r': '0',
+                                           'b': '0'})
+    extent = makeelement('extent', nsprefix='wp',
+                         attributes={'cx': width, 'cy': height})
+    inline = makeelement('inline', attributes={'distT': "0", 'distB': "0",
+                                               'distL': "0", 'distR': "0"},
+                         nsprefix='wp')
     inline.append(extent)
     inline.append(effectextent)
     inline.append(docpr)
@@ -466,35 +504,38 @@ def picture(relationshiplist, picname, picdescription, pixelwidth=None, pixelhei
     paragraph.append(run)
     return relationshiplist, paragraph
 
+
 def search(document, search):
     '''Search a document for a regex, return success / fail result'''
     result = False
     searchre = re.compile(search)
     for element in document.iter():
-        if element.tag == '{%s}t' % nsprefixes['w']: # t (text) elements
+        if element.tag == '{%s}t' % nsprefixes['w']:  # t (text) elements
             if element.text:
                 if searchre.search(element.text):
                     result = True
     return result
+
 
 def replace(document, search, replace):
     '''Replace all occurences of string with a different string, return updated document'''
     newdocument = document
     searchre = re.compile(search)
     for element in newdocument.iter():
-        if element.tag == '{%s}t' % nsprefixes['w']: # t (text) elements
+        if element.tag == '{%s}t' % nsprefixes['w']:  # t (text) elements
             if element.text:
                 if searchre.search(element.text):
                     element.text = re.sub(search, replace, element.text)
     return newdocument
 
+
 def clean(document):
     """ Perform misc cleaning operations on documents.
         Returns cleaned document.
     """
-    
+
     newdocument = document
-    
+
     # Clean empty text and r tags
     for t in ('t', 'r'):
         rmlist = []
@@ -504,33 +545,35 @@ def clean(document):
                     rmlist.append(element)
         for element in rmlist:
             element.getparent().remove(element)
-    
+
     return newdocument
+
 
 def findTypeParent(element, tag):
     """ Finds fist parent of element of the given type
-    
+
     @param object element: etree element
     @param string the tag parent to search for
-    
+
     @return object element: the found parent or None when not found
     """
-    
+
     p = element
     while True:
         p = p.getparent()
         if p.tag == tag:
             return p
-    
+
     # Not found
     return None
 
+
 def AdvSearch(document, search, bs=3):
     '''Return set of all regex matches
-    
+
     This is an advanced version of python-docx.search() that takes into
     account blocks of <bs> elements at a time.
-    
+
     What it does:
     It searches the entire document body for text blocks.
     Since the text to search could be spawned across multiple text blocks,
@@ -538,43 +581,43 @@ def AdvSearch(document, search, bs=3):
     The smaller matching group of blocks (up to bs) is then adopted.
     If the matching group has more than one block, blocks other than first
     are cleared and all the replacement text is put on first block.
-    
+
     Examples:
     original text blocks : [ 'Hel', 'lo,', ' world!' ]
     search : 'Hello,'
     output blocks : [ 'Hello,' ]
-    
+
     original text blocks : [ 'Hel', 'lo', ' __', 'name', '__!' ]
     search : '(__[a-z]+__)'
     output blocks : [ '__name__' ]
-    
+
     @param instance  document: The original document
     @param str       search: The text to search for (regexp)
                           append, or a list of etree elements
     @param int       bs: See above
-    
+
     @return set      All occurences of search string
-    
+
     '''
-    
+
     # Compile the search regexp
     searchre = re.compile(search)
-    
+
     matches = []
-    
+
     # Will match against searchels. Searchels is a list that contains last
     # n text elements found in the document. 1 < n < bs
     searchels = []
-    
+
     for element in document.iter():
-        if element.tag == '{%s}t' % nsprefixes['w']: # t (text) elements
+        if element.tag == '{%s}t' % nsprefixes['w']:  # t (text) elements
             if element.text:
                 # Add this element to searchels
                 searchels.append(element)
                 if len(searchels) > bs:
                     # Is searchels is too long, remove first elements
                     searchels.pop(0)
-    
+
                 # Search all combinations, of searchels, starting from
                 # smaller up to bigger ones
                 # l = search lenght
@@ -592,23 +635,24 @@ def AdvSearch(document, search, bs=3):
                             txtsearch = ''
                             for k in e:
                                 txtsearch += searchels[k].text
-    
+
                             # Searcs for the text in the whole txtsearch
                             match = searchre.search(txtsearch)
                             if match:
                                 matches.append(match.group())
                                 found = True
-    
     return set(matches)
+
 
 def advReplace(document, search, replace, bs=3):
     """
-    Replace all occurences of string with a different string, return updated document
-    
+    Replace all occurences of string with a different string, return updated
+    document
+
     This is a modified version of python-docx.replace() that takes into
     account blocks of <bs> elements at a time. The replace element can also
     be a string or an xml etree element.
-    
+
     What it does:
     It searches the entire document body for text blocks.
     Then scan thos text blocks for replace.
@@ -617,50 +661,50 @@ def advReplace(document, search, replace, bs=3):
     The smaller matching group of blocks (up to bs) is then adopted.
     If the matching group has more than one block, blocks other than first
     are cleared and all the replacement text is put on first block.
-    
+
     Examples:
     original text blocks : [ 'Hel', 'lo,', ' world!' ]
     search / replace: 'Hello,' / 'Hi!'
     output blocks : [ 'Hi!', '', ' world!' ]
-    
+
     original text blocks : [ 'Hel', 'lo,', ' world!' ]
     search / replace: 'Hello, world' / 'Hi!'
     output blocks : [ 'Hi!!', '', '' ]
-    
+
     original text blocks : [ 'Hel', 'lo,', ' world!' ]
     search / replace: 'Hel' / 'Hal'
     output blocks : [ 'Hal', 'lo,', ' world!' ]
-    
+
     @param instance  document: The original document
     @param str       search: The text to search for (regexp)
-    @param mixed replace: The replacement text or lxml.etree element to
-                          append, or a list of etree elements
+    @param mixed     replace: The replacement text or lxml.etree element to
+                         append, or a list of etree elements
     @param int       bs: See above
-    
+
     @return instance The document with replacement applied
-    
+
     """
     # Enables debug output
     DEBUG = False
-    
+
     newdocument = document
-    
+
     # Compile the search regexp
     searchre = re.compile(search)
-    
+
     # Will match against searchels. Searchels is a list that contains last
     # n text elements found in the document. 1 < n < bs
     searchels = []
-    
+
     for element in newdocument.iter():
-        if element.tag == '{%s}t' % nsprefixes['w']: # t (text) elements
+        if element.tag == '{%s}t' % nsprefixes['w']:  # t (text) elements
             if element.text:
                 # Add this element to searchels
                 searchels.append(element)
                 if len(searchels) > bs:
                     # Is searchels is too long, remove first elements
                     searchels.pop(0)
-    
+
                 # Search all combinations, of searchels, starting from
                 # smaller up to bigger ones
                 # l = search lenght
@@ -680,28 +724,28 @@ def advReplace(document, search, replace, bs=3):
                             txtsearch = ''
                             for k in e:
                                 txtsearch += searchels[k].text
-    
+
                             # Searcs for the text in the whole txtsearch
                             match = searchre.search(txtsearch)
                             if match:
                                 found = True
-    
+
                                 # I've found something :)
                                 if DEBUG:
                                     log.debug("Found element!")
                                     log.debug("Search regexp: %s", searchre.pattern)
                                     log.debug("Requested replacement: %s", replace)
                                     log.debug("Matched text: %s", txtsearch)
-                                    log.debug( "Matched text (splitted): %s", map(lambda i:i.text, searchels))
+                                    log.debug("Matched text (splitted): %s", map(lambda i: i.text, searchels))
                                     log.debug("Matched at position: %s", match.start())
-                                    log.debug( "matched in elements: %s", e)
+                                    log.debug("matched in elements: %s", e)
                                     if isinstance(replace, etree._Element):
                                         log.debug("Will replace with XML CODE")
-                                    elif isinstance(replace (list, tuple)):
+                                    elif isinstance(replace(list, tuple)):
                                         log.debug("Will replace with LIST OF ELEMENTS")
                                     else:
                                         log.debug("Will replace with:", re.sub(search, replace, txtsearch))
-    
+
                                 curlen = 0
                                 replaced = False
                                 for i in e:
@@ -711,7 +755,7 @@ def advReplace(document, search, replace, bs=3):
                                         # whole replaced text
                                         if isinstance(replace, etree._Element):
                                             # Convert to a list and process it later
-                                            replace = [ replace, ]
+                                            replace = [replace]
                                         if isinstance(replace, (list, tuple)):
                                             # I'm replacing with a list of etree elements
                                             # clear the text in the tag and append the element after the
@@ -733,9 +777,10 @@ def advReplace(document, search, replace, bs=3):
                                         searchels[i].text = ''
     return newdocument
 
+
 def getdocumenttext(document):
     '''Return the raw text of a document, as a list of paragraphs.'''
-    paratextlist=[]
+    paratextlist = []
     # Compile a list of all paragraph (p) elements
     paralist = []
     for element in document.iter():
@@ -745,7 +790,7 @@ def getdocumenttext(document):
     # Since a single sentence might be spread over multiple text elements, iterate through each
     # paragraph, appending all text (t) children to that paragraphs text.
     for para in paralist:
-        paratext=u''
+        paratext = u''
         # Loop through each paragraph
         for element in para.iter():
             # Find t (text) elements
@@ -758,6 +803,7 @@ def getdocumenttext(document):
         if not len(paratext) == 0:
             paratextlist.append(paratext)
     return paratextlist
+
 
 def coreproperties(title, subject, creator, keywords, lastmodifiedby=None):
     '''Create core properties (common document properties referred to in the 'Dublin Core' specification).
@@ -783,38 +829,39 @@ def coreproperties(title, subject, creator, keywords, lastmodifiedby=None):
         pass
     return coreprops
 
+
 def appproperties():
     """
     Create app-specific properties. See docproperties() for more common
     document properties.
-    
+
     """
     appprops = makeelement('Properties', nsprefix='ep')
     appprops = etree.fromstring(
-        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-        '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/'
-        '2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.or'
-        'g/officeDocument/2006/docPropsVTypes"></Properties>')
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties x'
+        'mlns="http://schemas.openxmlformats.org/officeDocument/2006/extended'
+        '-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocum'
+        'ent/2006/docPropsVTypes"></Properties>')
     props =\
-        { 'Template'             : 'Normal.dotm'
-        , 'TotalTime'            : '6'
-        , 'Pages'                : '1'
-        , 'Words'                : '83'
-        , 'Characters'           : '475'
-        , 'Application'          : 'Microsoft Word 12.0.0'
-        , 'DocSecurity'          : '0'
-        , 'Lines'                : '12'
-        , 'Paragraphs'           : '8'
-        , 'ScaleCrop'            : 'false'
-        , 'LinksUpToDate'        : 'false'
-        , 'CharactersWithSpaces' : '583'
-        , 'SharedDoc'            : 'false'
-        , 'HyperlinksChanged'    : 'false'
-        , 'AppVersion'           : '12.0000'
-        }
+        {'Template':             'Normal.dotm',
+         'TotalTime':            '6',
+         'Pages':                '1',
+         'Words':                '83',
+         'Characters':           '475',
+         'Application':          'Microsoft Word 12.0.0',
+         'DocSecurity':          '0',
+         'Lines':                '12',
+         'Paragraphs':           '8',
+         'ScaleCrop':            'false',
+         'LinksUpToDate':        'false',
+         'CharactersWithSpaces': '583',
+         'SharedDoc':            'false',
+         'HyperlinksChanged':    'false',
+         'AppVersion':           '12.0000'}
     for prop in props:
         appprops.append(makeelement(prop, tagtext=props[prop], nsprefix=None))
     return appprops
+
 
 def websettings():
     '''Generate websettings'''
@@ -823,55 +870,68 @@ def websettings():
     web.append(makeelement('doNotSaveAsSingleFile'))
     return web
 
+
 def relationshiplist():
     relationshiplist =\
-        [ [ 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering'   , 'numbering.xml'    ]
-        , [ 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles'      , 'styles.xml'       ]
-        , [ 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings'    , 'settings.xml'     ]
-        , [ 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings' , 'webSettings.xml'  ]
-        , [ 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable'   , 'fontTable.xml'    ]
-        , [ 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme'       , 'theme/theme1.xml' ]
-        ]
+        [['http://schemas.openxmlformats.org/officeDocument/2006/'
+          'relationships/numbering', 'numbering.xml'],
+         ['http://schemas.openxmlformats.org/officeDocument/2006/'
+          'relationships/styles', 'styles.xml'],
+         ['http://schemas.openxmlformats.org/officeDocument/2006/'
+          'relationships/settings', 'settings.xml'],
+         ['http://schemas.openxmlformats.org/officeDocument/2006/'
+          'relationships/webSettings', 'webSettings.xml'],
+         ['http://schemas.openxmlformats.org/officeDocument/2006/'
+          'relationships/fontTable', 'fontTable.xml'],
+         ['http://schemas.openxmlformats.org/officeDocument/2006/'
+          'relationships/theme', 'theme/theme1.xml']]
     return relationshiplist
+
 
 def wordrelationships(relationshiplist):
     '''Generate a Word relationships file'''
     # Default list of relationships
     # FIXME: using string hack instead of making element
     #relationships = makeelement('Relationships', nsprefix='pr')
-    relationships = etree.fromstring('<Relationships xmlns="http://schemas.op'
-        'enxmlformats.org/package/2006/relationships"></Relationships>')
+    relationships = etree.fromstring(
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006'
+        '/relationships"></Relationships>')
     count = 0
     for relationship in relationshiplist:
         # Relationship IDs (rId) start at 1.
-        relationships.append(makeelement('Relationship', attributes={'Id':'rId'+str(count+1),
-        'Type':relationship[0], 'Target':relationship[1]}, nsprefix=None))
+        rel_elm = makeelement('Relationship', nsprefix=None,
+                              attributes={'Id':     'rId'+str(count+1),
+                                          'Type':   relationship[0],
+                                          'Target': relationship[1]}
+                              )
+        relationships.append(rel_elm)
         count += 1
     return relationships
+
 
 def savedocx(document, coreprops, appprops, contenttypes, websettings, wordrelationships, output):
     '''Save a modified document'''
     assert os.path.isdir(template_dir)
     docxfile = zipfile.ZipFile(output, mode='w', compression=zipfile.ZIP_DEFLATED)
-    
+
     # Move to the template data path
-    prev_dir = os.path.abspath('.') # save previous working dir
+    prev_dir = os.path.abspath('.')  # save previous working dir
     os.chdir(template_dir)
-    
+
     # Serialize our trees into out zip file
-    treesandfiles = {document:'word/document.xml',
-                     coreprops:'docProps/core.xml',
-                     appprops:'docProps/app.xml',
-                     contenttypes:'[Content_Types].xml',
-                     websettings:'word/webSettings.xml',
-                     wordrelationships:'word/_rels/document.xml.rels'}
+    treesandfiles = {document:     'word/document.xml',
+                     coreprops:    'docProps/core.xml',
+                     appprops:     'docProps/app.xml',
+                     contenttypes: '[Content_Types].xml',
+                     websettings:  'word/webSettings.xml',
+                     wordrelationships: 'word/_rels/document.xml.rels'}
     for tree in treesandfiles:
-        log.info('Saving: '+treesandfiles[tree]    )
+        log.info('Saving: %s' % treesandfiles[tree])
         treestring = etree.tostring(tree, pretty_print=True)
         docxfile.writestr(treesandfiles[tree], treestring)
-    
+
     # Add & compress support files
-    files_to_ignore = ['.DS_Store'] # nuisance from some os's
+    files_to_ignore = ['.DS_Store']  # nuisance from some os's
     for dirpath, dirnames, filenames in os.walk('.'):
         for filename in filenames:
             if filename in files_to_ignore:
@@ -882,7 +942,5 @@ def savedocx(document, coreprops, appprops, contenttypes, websettings, wordrelat
             docxfile.write(templatefile, archivename)
     log.info('Saved new file to: %r', output)
     docxfile.close()
-    os.chdir(prev_dir) # restore previous working dir
+    os.chdir(prev_dir)  # restore previous working dir
     return
-
-

@@ -1,8 +1,7 @@
 .coverage
-*.pyc
-*.docx
-*.kpf
-build
 dist
-template/word/media
+*.docx
 MANIFEST
+*.pyc
+_scratch
+template/word/media

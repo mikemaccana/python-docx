@@ -419,7 +419,7 @@ def picture(relationshiplist, picname, picdescription, pixelwidth=None, pixelhei
 
     # OpenXML measures on-screen objects in English Metric Units
     # 1cm = 36000 EMUs
-    emuperpixel = 12667
+    emuperpixel = 12700
     width = str(pixelwidth * emuperpixel)
     height = str(pixelheight * emuperpixel)
 

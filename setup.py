@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:    
+    from distutils.core import setup
 from glob import glob
 
 # Make data go into site-packages (http://tinyurl.com/site-pkg)
@@ -10,7 +13,7 @@ for scheme in INSTALL_SCHEMES.values():
 
 setup(name='docx',
       version='0.2.0',
-      requires=['lxml'],
+      install_requires=['lxml', 'PIL'],
       description='The docx module creates, reads and writes Microsoft Office Word 2007 docx files',
       author='Mike MacCana',
       author_email='python.docx@librelist.com',

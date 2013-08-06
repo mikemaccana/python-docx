@@ -37,8 +37,8 @@ if __name__ == '__main__':
              ]
     for point in points:
         body.append(paragraph(point, style='ListNumber'))
-    body.append(paragraph('For those of us who prefer something simpler, I '
-                          'made docx.'))
+    body.append(paragraph([('For those of us who prefer something simpler, I '
+                          'made docx.', 'i')]))    
     body.append(heading('Making documents', 2))
     body.append(paragraph('The docx module has the following features:'))
 

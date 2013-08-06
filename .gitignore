@@ -5,3 +5,4 @@ MANIFEST
 *.pyc
 _scratch
 template/word/media
+.tox

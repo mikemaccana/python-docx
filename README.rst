@@ -95,7 +95,7 @@ We love forks, changes and pull requests!
 Want to talk? Need help?
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Email python.docx@librelist.com
+Email python-docx@googlegroups.com
 
 
 License

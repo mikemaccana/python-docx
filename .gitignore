@@ -3,6 +3,7 @@ dist
 *.docx
 MANIFEST
 *.pyc
+README.html
 _scratch
 template/word/media
 .tox

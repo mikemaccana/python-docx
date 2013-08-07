@@ -8,18 +8,27 @@ Part of Python's docx module - http://github.com/mikemaccana/python-docx
 See LICENSE for licensing information.
 """
 
-import logging
+import os
+import re
+import time
+import shutil
+import zipfile
+
 from lxml import etree
+from os.path import abspath, basename, join
+
 try:
     from PIL import Image
 except ImportError:
     import Image
-import zipfile
-import shutil
-import re
-import time
-import os
-from os.path import join, basename, abspath
+
+try:
+    from PIL.ExifTags import TAGS
+except ImportError:
+    TAGS = {}
+
+import logging
+
 
 log = logging.getLogger(__name__)
 
@@ -433,10 +442,11 @@ def picture(
 
     # Set relationship ID to that of the image or the first available one
     picid = '2'
+    picpath = abspath(picname)
+
     if imagefiledict is not None:
         # Keep track of the image files in a separate dictionary so they don't
         # need to be copied into the template directory
-        picpath = abspath(picname)
 
         if picpath not in imagefiledict:
             picrelid = 'rId' + str(len(imagefiledict.keys()) + 1)
@@ -463,10 +473,33 @@ def picture(
             os.mkdir(media_dir)
         shutil.copyfile(picname, join(media_dir, picname))
 
+    image = Image.open(picpath)
+
+    # Extract EXIF data, if available
+    imageExif = {}
+    try:
+        exif = image._getexif()
+    except:
+        exif = {}
+
+    for tag, value in exif.items():
+        imageExif[TAGS.get(tag, tag)] = value
+
+    imageOrientation = imageExif.get('Orientation', 1)
+    imageAngle = {
+        1: 0, 2: 0, 3: 180, 4: 0, 5: 90, 6: 90, 7: 270, 8: 270
+    }[imageOrientation]
+    imageFlipH = 'true' if imageOrientation in (2, 5, 7) else 'false'
+    imageFlipV = 'true' if imageOrientation == 4 else 'false'
+
     # Check if the user has specified a size
     if not pixelwidth or not pixelheight:
         # If not, get info from the picture itself
-        pixelwidth, pixelheight = Image.open(picname).size[0:2]
+        pixelwidth, pixelheight = image.size[0:2]
+
+    # Swap width and height if necessary
+    if imageOrientation in (5, 6, 7, 8):
+        pixelwidth, pixelheight = pixelheight, pixelwidth
 
     # OpenXML measures on-screen objects in English Metric Units
     # 1cm = 36000 EMUs
@@ -500,13 +533,23 @@ def picture(
 
     # 3. The Shape properties
     sppr = makeelement('spPr', nsprefix='pic', attributes={'bwMode': 'auto'})
-    xfrm = makeelement('xfrm', nsprefix='a')
-    xfrm.append(makeelement(
-        'off', nsprefix='a', attributes={'x': '0', 'y': '0'}))
-    xfrm.append(makeelement(
-        'ext', nsprefix='a', attributes={'cx': width, 'cy': height}))
+    xfrm = makeelement(
+        'xfrm', nsprefix='a', attributes={
+            'rot': str(imageAngle * 60000), 'flipH': imageFlipH,
+            'flipV': imageFlipV
+        }
+    )
+    xfrm.append(
+        makeelement('off', nsprefix='a', attributes={'x': '0', 'y': '0'})
+    )
+    xfrm.append(
+        makeelement(
+            'ext', nsprefix='a', attributes={'cx': width, 'cy': height}
+        )
+    )
     prstgeom = makeelement(
-        'prstGeom', nsprefix='a', attributes={'prst': 'rect'})
+        'prstGeom', nsprefix='a', attributes={'prst': 'rect'}
+    )
     prstgeom.append(makeelement('avLst', nsprefix='a'))
     sppr.append(xfrm)
     sppr.append(prstgeom)

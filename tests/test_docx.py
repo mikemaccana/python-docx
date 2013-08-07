@@ -22,9 +22,10 @@ def teardown_module():
     if TEST_FILE in os.listdir('.'):
         os.remove(TEST_FILE)
 
-def simpledoc():
+def simpledoc(noimagecopy=False):
     '''Make a docx (document, relationships) for use in other docx tests'''
     relationships = relationshiplist()
+    imagefiledict = {}
     document = newdocument()
     docbody = document.xpath('/w:document/w:body', namespaces=nsprefixes)[0]
     docbody.append(heading('Heading 1',1)  )   
@@ -36,11 +37,17 @@ def simpledoc():
     docbody.append(paragraph('Paragraph 2')) 
     docbody.append(table([['A1','A2','A3'],['B1','B2','B3'],['C1','C2','C3']]))
     docbody.append(pagebreak(type='section', orient='portrait'))
-    relationships,picpara = picture(relationships,IMAGE1_FILE,'This is a test description')
+    if noimagecopy:
+        relationships,picpara,imagefiledict = picture(relationships,IMAGE1_FILE,'This is a test description', imagefiledict=imagefiledict)
+    else:
+        relationships,picpara = picture(relationships,IMAGE1_FILE,'This is a test description')
     docbody.append(picpara)
     docbody.append(pagebreak(type='section', orient='landscape'))
     docbody.append(paragraph('Paragraph 3'))
-    return (document, docbody, relationships)
+    if noimagecopy:
+        return (document, docbody, relationships, imagefiledict)
+    else:
+        return (document, docbody, relationships)
 
 
 # --- Test Functions ---
@@ -56,7 +63,7 @@ def testsearchandreplace():
     if search(docbody, 'Paragraph 2'): 
         docbody = replace(docbody,'Paragraph 2','Whacko 55') 
     assert search(docbody, 'Whacko 55')
-    
+
 def testtextextraction():
     '''Ensure text can be pulled out of a document'''
     document = opendocx(TEST_FILE)
@@ -72,12 +79,18 @@ def testunsupportedpagebreak():
     except ValueError:
         return # passed
     assert False # failed
-    
+
 def testnewdocument():
     '''Test that a new document can be created'''
     document, docbody, relationships = simpledoc()
     coreprops = coreproperties('Python docx testnewdocument','A short example of making docx from Python','Alan Brooks',['python','Office Open XML','Word'])
     savedocx(document, coreprops, appproperties(), contenttypes(), websettings(), wordrelationships(relationships), TEST_FILE)
+
+def testnewdocument_noimagecopy():
+    '''Test that a new document can be created'''
+    document, docbody, relationships, imagefiledict = simpledoc(noimagecopy=True)
+    coreprops = coreproperties('Python docx testnewdocument','A short example of making docx from Python','Alan Brooks',['python','Office Open XML','Word'])
+    savedocx(document, coreprops, appproperties(), contenttypes(), websettings(), wordrelationships(relationships), TEST_FILE, imagefiledict=imagefiledict)
 
 def testopendocx():
     '''Ensure an etree element is returned'''

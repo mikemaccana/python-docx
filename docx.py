@@ -19,7 +19,7 @@ import shutil
 import re
 import time
 import os
-from os.path import join
+from os.path import join, basename, abspath
 
 log = logging.getLogger(__name__)
 
@@ -421,19 +421,47 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0,
 
 def picture(
         relationshiplist, picname, picdescription, pixelwidth=None,
-        pixelheight=None, nochangeaspect=True, nochangearrowheads=True):
+        pixelheight=None, nochangeaspect=True, nochangearrowheads=True,
+        imagefiledict=None):
     """
     Take a relationshiplist, picture file name, and return a paragraph
-    containing the image and an updated relationshiplist.
+    containing the image and an updated relationshiplist
     """
     # http://openxmldeveloper.org/articles/462.aspx
     # Create an image. Size may be specified, otherwise it will based on the
-    # pixel size of image. Return a paragraph containing the picture'''
-    # Copy the file into the media dir
-    media_dir = join(template_dir, 'word', 'media')
-    if not os.path.isdir(media_dir):
-        os.mkdir(media_dir)
-    shutil.copyfile(picname, join(media_dir, picname))
+    # pixel size of image. Return a paragraph containing the picture
+
+    # Set relationship ID to that of the image or the first available one
+    picid = '2'
+    if imagefiledict is not None:
+        # Keep track of the image files in a separate dictionary so they don't
+        # need to be copied into the template directory
+        picpath = abspath(picname)
+
+        if picpath not in imagefiledict:
+            picrelid = 'rId' + str(len(imagefiledict.keys()) + 1)
+            imagefiledict[picpath] = picrelid
+
+            relationshiplist.append([
+                'http://schemas.openxmlformats.org/officeDocument/2006/relat'
+                'ionships/image', 'media/' + basename(picpath)
+            ])
+        else:
+            picrelid = imagefiledict[picpath]
+    else:
+        # Copy files into template directory for backwards compatibility
+        # Images still accumulate in the template directory this way
+        picrelid = 'rId' + str(len(relationshiplist) + 1)
+
+        relationshiplist.append([
+            'http://schemas.openxmlformats.org/officeDocument/2006/relations'
+            'hips/image', 'media/' + picname
+        ])
+
+        media_dir = join(template_dir, 'word', 'media')
+        if not os.path.isdir(media_dir):
+            os.mkdir(media_dir)
+        shutil.copyfile(picname, join(media_dir, picname))
 
     # Check if the user has specified a size
     if not pixelwidth or not pixelheight:
@@ -445,13 +473,6 @@ def picture(
     emuperpixel = 12700
     width = str(pixelwidth * emuperpixel)
     height = str(pixelheight * emuperpixel)
-
-    # Set relationship ID to the first available
-    picid = '2'
-    picrelid = 'rId'+str(len(relationshiplist)+1)
-    relationshiplist.append([
-        ('http://schemas.openxmlformats.org/officeDocument/2006/relationship'
-         's/image'), 'media/'+picname])
 
     # There are 3 main elements inside a picture
     # 1. The Blipfill - specifies how the image fills the picture area
@@ -532,7 +553,11 @@ def picture(
     run.append(drawing)
     paragraph = makeelement('p')
     paragraph.append(run)
-    return relationshiplist, paragraph
+
+    if imagefiledict is not None:
+        return relationshiplist, paragraph, imagefiledict
+    else:
+        return relationshiplist, paragraph
 
 
 def search(document, search):
@@ -970,9 +995,12 @@ def wordrelationships(relationshiplist):
     return relationships
 
 
-def savedocx(document, coreprops, appprops, contenttypes, websettings,
-             wordrelationships, output):
-    '''Save a modified document'''
+def savedocx(
+        document, coreprops, appprops, contenttypes, websettings,
+        wordrelationships, output, imagefiledict=None):
+    """
+    Save a modified document
+    """
     assert os.path.isdir(template_dir)
     docxfile = zipfile.ZipFile(
         output, mode='w', compression=zipfile.ZIP_DEFLATED)
@@ -993,6 +1021,13 @@ def savedocx(document, coreprops, appprops, contenttypes, websettings,
         treestring = etree.tostring(tree, pretty_print=True)
         docxfile.writestr(treesandfiles[tree], treestring)
 
+    # Add & compress images, if applicable
+    if imagefiledict is not None:
+        for imagepath in imagefiledict.keys():
+            archivename = 'word/media/' + basename(imagepath)
+            log.info('Saving: %s', archivename)
+            docxfile.write(imagepath, archivename)
+
     # Add & compress support files
     files_to_ignore = ['.DS_Store']  # nuisance from some os's
     for dirpath, dirnames, filenames in os.walk('.'):
@@ -1003,6 +1038,7 @@ def savedocx(document, coreprops, appprops, contenttypes, websettings,
             archivename = templatefile[2:]
             log.info('Saving: %s', archivename)
             docxfile.write(templatefile, archivename)
+
     log.info('Saved new file to: %r', output)
     docxfile.close()
     os.chdir(prev_dir)  # restore previous working dir

@@ -447,14 +447,14 @@ def picture(
     if imagefiledict is not None:
         # Keep track of the image files in a separate dictionary so they don't
         # need to be copied into the template directory
-
         if picpath not in imagefiledict:
-            picrelid = 'rId' + str(len(imagefiledict.keys()) + 1)
+            picrelid = 'rId' + str(len(relationshiplist) + 1)
             imagefiledict[picpath] = picrelid
 
             relationshiplist.append([
                 'http://schemas.openxmlformats.org/officeDocument/2006/relat'
-                'ionships/image', 'media/' + basename(picpath)
+                'ionships/image',
+                'media/%s_%s' % (picrelid, basename(picpath))
             ])
         else:
             picrelid = imagefiledict[picpath]
@@ -522,7 +522,8 @@ def picture(
     nvpicpr = makeelement('nvPicPr', nsprefix='pic')
     cnvpr = makeelement(
         'cNvPr', nsprefix='pic',
-        attributes={'id': '0', 'name': 'Picture 1', 'descr': picname})
+        attributes={'id': '0', 'name': 'Picture 1', 'descr': picdescription}
+    )
     nvpicpr.append(cnvpr)
     cnvpicpr = makeelement('cNvPicPr', nsprefix='pic')
     cnvpicpr.append(makeelement(
@@ -1066,8 +1067,8 @@ def savedocx(
 
     # Add & compress images, if applicable
     if imagefiledict is not None:
-        for imagepath in imagefiledict.keys():
-            archivename = 'word/media/' + basename(imagepath)
+        for imagepath, picrelid in imagefiledict.items():
+            archivename = 'word/media/%s_%s' % (picrelid, basename(imagepath))
             log.info('Saving: %s', archivename)
             docxfile.write(imagepath, archivename)
 

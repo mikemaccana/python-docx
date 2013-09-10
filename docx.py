@@ -149,66 +149,69 @@ def pagebreak(type='page', orient='portrait'):
 
 
 def paragraph(paratext, style='BodyText', breakbefore=False, jc='left'):
-    '''Make a new paragraph element, containing a run, and some text.
-    Return the paragraph element.
+    """
+    Return a new paragraph element containing *paratext*. The paragraph's
+    default style is 'Body Text', but a new style may be set using the
+    *style* parameter.
 
     @param string jc: Paragraph alignment, possible values:
                       left, center, right, both (justified), ...
                       see http://www.schemacentral.com/sc/ooxml/t-w_ST_Jc.html
                       for a full list
 
-    If paratext is a list, spawn multiple run/text elements.
-    Support text styles (paratext must then be a list of lists in the form
-    <text> / <style>. Stile is a string containing a combination od 'bui' chars
+    If *paratext* is a list, add a run for each (text, char_format_str)
+    2-tuple in the list. char_format_str is a string containing one or more
+    of the characters 'b', 'i', or 'u', meaning bold, italic, and underline
+    respectively. For example:
 
-    example
-    paratext =\
-        [ ('some bold text', 'b')
-        , ('some normal text', '')
-        , ('some italic underlined text', 'iu')
+        paratext = [
+            ('some bold text', 'b'),
+            ('some normal text', ''),
+            ('some italic underlined text', 'iu')
         ]
-
-    '''
+    """
     # Make our elements
     paragraph = makeelement('p')
 
-    if isinstance(paratext, list):
-        text = []
-        for pt in paratext:
-            if isinstance(pt, (list, tuple)):
-                text.append([makeelement('t', tagtext=pt[0]), pt[1]])
-            else:
-                text.append([makeelement('t', tagtext=pt), ''])
-    else:
-        text = [[makeelement('t', tagtext=paratext), ''], ]
+    if not isinstance(paratext, list):
+        paratext = [(paratext, '')]
+    text_tuples = []
+    for pt in paratext:
+        text, char_styles_str = (pt if isinstance(pt, (list, tuple))
+                                 else (pt, ''))
+        text_elm = makeelement('t', tagtext=text)
+        if len(text.strip()) < len(text):
+            text_elm.set('{http://www.w3.org/XML/1998/namespace}space',
+                         'preserve')
+        text_tuples.append([text_elm, char_styles_str])
     pPr = makeelement('pPr')
     pStyle = makeelement('pStyle', attributes={'val': style})
     pJc = makeelement('jc', attributes={'val': jc})
     pPr.append(pStyle)
     pPr.append(pJc)
 
-    # Add the text the run, and the run to the paragraph
+    # Add the text to the run, and the run to the paragraph
     paragraph.append(pPr)
-    for t in text:
+    for text_elm, char_styles_str in text_tuples:
         run = makeelement('r')
         rPr = makeelement('rPr')
         # Apply styles
-        if t[1].find('b') > -1:
+        if 'b' in char_styles_str:
             b = makeelement('b')
             rPr.append(b)
-        if t[1].find('u') > -1:
-            u = makeelement('u', attributes={'val': 'single'})
-            rPr.append(u)
-        if t[1].find('i') > -1:
+        if 'i' in char_styles_str:
             i = makeelement('i')
             rPr.append(i)
+        if 'u' in char_styles_str:
+            u = makeelement('u', attributes={'val': 'single'})
+            rPr.append(u)
         run.append(rPr)
         # Insert lastRenderedPageBreak for assistive technologies like
         # document narrators to know when a page break occurred.
         if breakbefore:
             lastRenderedPageBreak = makeelement('lastRenderedPageBreak')
             run.append(lastRenderedPageBreak)
-        run.append(t[0])
+        run.append(text_elm)
         paragraph.append(run)
     # Return the combined paragraph
     return paragraph

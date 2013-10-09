@@ -300,7 +300,7 @@ def table(contents, heading=True, colw=None, cwunit='dxa', tblw=0,
                             'nil'  : no width
                             'auto' : automagically determined
     @param int  tblw:     Table width
-    @param int  twunit:   Unit used for table width. Same possible values as
+    @param str  twunit:   Unit used for table width. Same possible values as
                           cwunit.
     @param dict borders:  Dictionary defining table border. Supported keys
                           are: 'top', 'left', 'bottom', 'right',

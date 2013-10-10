@@ -2,7 +2,7 @@
 
 try:
     from setuptools import setup
-except ImportError:    
+except ImportError:
     from distutils.core import setup
 from glob import glob
 
@@ -12,13 +12,13 @@ for scheme in INSTALL_SCHEMES.values():
     scheme['data'] = scheme['purelib']
 
 setup(name='docx',
-      version='0.2.0',
+      version='0.2.1',
       install_requires=['lxml', 'PIL'],
       description='The docx module creates, reads and writes Microsoft Office Word 2007 docx files',
       author='Mike MacCana',
-      author_email='python.docx@librelist.com',
+      author_email='python-docx@googlegroups.com',
       maintainer='Steve Canny',
-      maintainer_email='python.docx@librelist.com',
+      maintainer_email='python-docx@googlegroups.com',
       url='http://github.com/mikemaccana/python-docx',
       py_modules=['docx'],
       data_files=[

@@ -12,7 +12,7 @@ for scheme in INSTALL_SCHEMES.values():
     scheme['data'] = scheme['purelib']
 
 setup(name='docx',
-      version='0.2.1',
+      version='0.2.2',
       install_requires=['lxml', 'PIL'],
       description='The docx module creates, reads and writes Microsoft Office Word 2007 docx files',
       author='Mike MacCana',

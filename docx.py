@@ -1,5 +1,5 @@
-#!/usr/bin/env python2.6
-# -*- coding: utf-8 -*-
+# encoding: utf-8
+
 """
 Open and modify Microsoft Word 2007 docx files (called 'OpenXML' and
 'Office OpenXML' by Microsoft)
@@ -104,7 +104,7 @@ def makeelement(tagname, tagtext=None, nsprefix='w', attributes=None,
         # FIXME: rest of code below expects a single prefix
         nsprefix = nsprefix[0]
     if nsprefix:
-        namespace = '{'+nsprefixes[nsprefix]+'}'
+        namespace = '{%s}' % nsprefixes[nsprefix]
     else:
         # For when namespace = None
         namespace = ''
@@ -485,12 +485,13 @@ def picture(
     image = Image.open(picpath)
 
     # Extract EXIF data, if available
-    imageExif = {}
     try:
         exif = image._getexif()
+        exif = {} if exif is None else exif
     except:
         exif = {}
 
+    imageExif = {}
     for tag, value in exif.items():
         imageExif[TAGS.get(tag, tag)] = value
 
@@ -1069,12 +1070,14 @@ def savedocx(
     os.chdir(template_dir)
 
     # Serialize our trees into out zip file
-    treesandfiles = {document:     'word/document.xml',
-                     coreprops:    'docProps/core.xml',
-                     appprops:     'docProps/app.xml',
-                     contenttypes: '[Content_Types].xml',
-                     websettings:  'word/webSettings.xml',
-                     wordrelationships: 'word/_rels/document.xml.rels'}
+    treesandfiles = {
+        document:          'word/document.xml',
+        coreprops:         'docProps/core.xml',
+        appprops:          'docProps/app.xml',
+        contenttypes:      '[Content_Types].xml',
+        websettings:       'word/webSettings.xml',
+        wordrelationships: 'word/_rels/document.xml.rels'
+    }
     for tree in treesandfiles:
         log.info('Saving: %s' % treesandfiles[tree])
         treestring = etree.tostring(tree, pretty_print=True)
